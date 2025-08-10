@@ -40,18 +40,9 @@ import('./services/enterprise-validation-service').then(module => {
   }, 5 * 60 * 1000);
 });
 
-// Security & CORS
-app.use(cors(corsOptions));
-app.use(securityHeaders);
-app.use(requestIdMiddleware);
-app.use(validateSecurityHeaders);
-
 // Body parsing with size limits (Fortune 20 standard)
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));
-
-// Input sanitization
-app.use(sanitizeInput);
 
 // Performance monitoring
 app.use(performanceMiddleware);
@@ -87,6 +78,15 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Security & CORS - Apply after basic middleware but before routes
+  app.use(cors(corsOptions));
+  app.use(securityHeaders);
+  app.use(requestIdMiddleware);
+  app.use(validateSecurityHeaders);
+  
+  // Input sanitization
+  app.use(sanitizeInput);
+  
   const server = await registerRoutes(app);
 
   // importantly only setup vite in development and after

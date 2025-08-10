@@ -162,6 +162,12 @@ export const validateApiKey = (req: Request, res: Response, next: NextFunction):
 // CORS Configuration
 export const corsOptions = {
   origin: (origin: string | undefined, callback: Function) => {
+    // In development, allow all origins to support Vite dev server
+    if (process.env.NODE_ENV === 'development') {
+      callback(null, true);
+      return;
+    }
+    
     const allowedOrigins = [
       'http://localhost:5000',
       'https://cognomega.com',

@@ -1,0 +1,41 @@
+3635-fa2c34df72f2ed9c.js:1  WebSocket connection to 'wss://eval.riker.platform.replit.com/wsv2/v2.public.Q2dZSWx1Yml4QVlTQmdpMWd1UEVCaUlGY21sclpYSXdBRHJiQVFva05tRTJOREl4TVRJdE1HVmxaUzAwWmpnNUxUazFOV010TXpOa09UVTFPR1V4T1RVekVnTnVhWGdhRjNKbGNHeHBkQzF5WlhCc0xXWnBiR1Z6TFhKcGEyVnlJZ2xCZFhKaFZtVnljMlVxRDBKb1lYSmhkR2d0YTI5c1pXdGhja0pSQ2hoeVpYQnNhWFF0Y21Wd2JDMWliRzlqYTNNdGNtbHJaWElTRm5KbGNHeHBkQzF5WlhCc0xXMWxkR0V0Y21sclpYSWFIWEpsY0d4cGRDMXRZWEpuWVhKcGJtVXRZbXh2WTJ0ekxYSnBhMlZ5U2djSWg3R2ZDUkFCVUFCYUdXOXVZbTloY21ScGJtZGZaWGh3WlhKcFpXNWpaVjlzYjNkNEFGSWpDQUVRZ0lDQWdDQVpBQUFBQUFBQUVFQWhBQUFBQUFBQUVFQW9nSUNBZ01nQk1BSmdBR29XQ0lleG53a1NEMEpvWVhKaGRHZ3RhMjlzWld0aGNvSUJBaW9BbWdFS0NnZ3dMakF1TVRVNU9hQUJBUT09nvOZQaAEG_PqO-7lF324nwZKGibtEcknxxwOQSWTDLaGMn_6TaucDA-_-dzHxJKABE6AUPZ0gkWtkrmFr3p9Bw.Q2dad2NtOWtPak1pQ25KbGNHeHBkQzVqYjIwPQ' failed: 
+(anonymous) @ 3635-fa2c34df72f2ed9c.js:1
+logs.browser-intake-us5-datadoghq.com/api/v2/logs?ddsource=browser&ddtags=sdk_version%3A4.46.0%2Capi%3Afetch%2Cenv%3Aproduction%2Cservice%3Awebsite%2Cversion%3A2f8f169a&dd-api-key=pub31a5047a3a4692afb84a423db984dc57&dd-evp-origin-version=4.46.0&dd-evp-origin=browser&dd-request-id=fce88640-2ea8-463d-98cc-451d23746e38:1   Failed to load resource: net::ERR_NAME_NOT_RESOLVED
+api.sorryapp.com/v1/pages/27c7b5fc:1   Failed to load resource: net::ERR_NAME_NOT_RESOLVED
+api.sorryapp.com/v1/pages/27c7b5fc:1   Failed to load resource: net::ERR_NAME_NOT_RESOLVED
+events.launchdarkly.com/events/diagnostic/62b35a865152ab14c5942820:1   Failed to load resource: net::ERR_NAME_NOT_RESOLVED
+logs.browser-intake-us5-datadoghq.com/api/v2/logs?ddsource=browser&ddtags=sdk_version%3A4.46.0%2Capi%3Axhr%2Cenv%3Aproduction%2Cservice%3Awebsite%2Cversion%3A2f8f169a&dd-api-key=pub31a5047a3a4692afb84a423db984dc57&dd-evp-origin-version=4.46.0&dd-evp-origin=browser&dd-request-id=ad9ce388-d93f-463e-9948-ade49fa4f6b0:1   Failed to load resource: net::ERR_NAME_NOT_RESOLVED
+events.launchdarkly.com/events/diagnostic/62b35a865152ab14c5942820:1   Failed to load resource: net::ERR_NAME_NOT_RESOLVED
+/data/repls/6a642112-0eee-4f89-955c-33d9558e1953/get_connection_metadata:1   Failed to load resource: net::ERR_NAME_NOT_RESOLVED
+/graphql:1   Failed to load resource: net::ERR_NAME_NOT_RESOLVED
+/data/repls/6a642112-0eee-4f89-955c-33d9558e1953/get_connection_metadata:1   Failed to load resource: net::ERR_NAME_NOT_RESOLVED
+events.launchdarkly.com/events/bulk/62b35a865152ab14c5942820:1   Failed to load resource: net::ERR_NAME_NOT_RESOLVED
+events.launchdarkly.com/events/bulk/62b35a865152ab14c5942820:1   Failed to load resource: net::ERR_NAME_NOT_RESOLVED
+workspace_iframe.html?initialPath=%2F&id=%3Ar3m9%3A:32  Unrecognized feature: 'ambient-light-sensor'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar3m9%3A:32  Unrecognized feature: 'battery'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar3m9%3A:32  Unrecognized feature: 'execution-while-not-rendered'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar3m9%3A:32  Unrecognized feature: 'execution-while-out-of-viewport'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar3m9%3A:32  Unrecognized feature: 'layout-animations'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar3m9%3A:32  Unrecognized feature: 'legacy-image-formats'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar3m9%3A:32  Unrecognized feature: 'navigation-override'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar3m9%3A:32  Unrecognized feature: 'oversized-images'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar3m9%3A:32  Unrecognized feature: 'publickey-credentials'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar3m9%3A:32  Unrecognized feature: 'speaker-selection'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar3m9%3A:32  Unrecognized feature: 'unoptimized-images'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar3m9%3A:32  Unrecognized feature: 'unsized-media'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar3m9%3A:32  Allow attribute will take precedence over 'allowfullscreen'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar3m9%3A:32  Allow attribute will take precedence over 'allowpaymentrequest'.
+client:1   Failed to load resource: the server responded with a status of 403 (Forbidden)
+main.tsx:1   Failed to load resource: the server responded with a status of 403 (Forbidden)
+6Refused to load the font '<URL>' because it violates the following Content Security Policy directive: "font-src 'self' <URL>".
+
+(index):1  Refused to load the script 'https://replit.com/public/js/replit-dev-banner.js' because it violates the following Content Security Policy directive: "script-src 'self' 'unsafe-inline' 'unsafe-eval'". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
+
+6a642112-0eee-4f89-955c-33d9558e1953-00-35pn5egtkxlpl.riker.replit.dev/@react-refresh:1   Failed to load resource: the server responded with a status of 403 (Forbidden)
+workspace_iframe.html?initialPath=%2F&id=%3Ar3m9%3A:142  Refused to load the script 'https://replit.com/public/js/beacon.js' because it violates the following Content Security Policy directive: "script-src 'self' 'unsafe-inline' 'unsafe-eval'". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
+
+onIframeLoad @ workspace_iframe.html?initialPath=%2F&id=%3Ar3m9%3A:142
+[NEW] Explain Console errors by using Copilot in Edge: click
+         
+         to explain an error. 
+        Learn more
