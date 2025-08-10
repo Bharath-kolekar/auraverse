@@ -76,7 +76,7 @@ export default function Landing() {
   const stats = [
     { number: "10-1500x", label: "Faster Processing", suffix: "", icon: <Zap className="w-6 h-6" /> },
     { number: "99.8", label: "Profit Margin", suffix: "%", icon: <TrendingUp className="w-6 h-6" /> },
-    { number: "0", label: "API Costs", suffix: "$", icon: <Award className="w-6 h-6" /> },
+    { number: "2-5", label: "Credits Per Use", suffix: "", icon: <Award className="w-6 h-6" /> },
     { number: "12", label: "AI Models", suffix: "", icon: <Star className="w-6 h-6" /> }
   ];
 
@@ -84,7 +84,7 @@ export default function Landing() {
     {
       name: "Sarah Chen",
       role: "Content Creator", 
-      content: "Revolutionary! I'm creating Hollywood-quality content at zero ongoing costs.",
+      content: "Revolutionary! I'm creating Hollywood-quality content with affordable pay-per-use pricing.",
       rating: 5
     },
     {
@@ -207,7 +207,7 @@ export default function Landing() {
                     <Sparkles className="w-6 h-6 text-purple-400" />
                   </motion.div>
                   <span className="text-lg font-semibold text-white">
-                    Revolutionary Zero-Cost AI Platform
+                    Revolutionary Pay-Per-Intelligence Platform
                   </span>
                   <motion.div
                     className="w-3 h-3 bg-green-400 rounded-full status-online"
@@ -243,7 +243,7 @@ export default function Landing() {
                 >
                   Create <strong className="text-white">Oscar-quality</strong> content with 
                   cutting-edge AI. Experience <strong className="text-gradient">10-1500x faster</strong> processing 
-                  at <strong className="text-green-400">zero ongoing costs</strong>.
+                  with <strong className="text-green-400">affordable pay-per-use</strong> pricing.
                 </motion.p>
 
                 <motion.div 
@@ -519,7 +519,7 @@ export default function Landing() {
               transition={{ delay: 0.2 }}
             >
               Join thousands of creators using the most advanced AI platform. 
-              Experience unlimited creativity with zero ongoing costs.
+              Experience unlimited creativity with transparent pay-per-use pricing.
             </motion.p>
             
             <motion.div

@@ -35,7 +35,7 @@ export default function Intelligence() {
       id: 'cost',
       title: 'Cost Optimization',
       icon: <TrendingUp className="w-6 h-6" />,
-      value: '$0.00',
+      value: 'Optimized',
       change: '-100%',
       trend: 'up',
       color: 'text-green-400',
@@ -95,9 +95,9 @@ export default function Intelligence() {
 
   const intelligenceInsights = [
     {
-      title: 'Zero API Costs Maintained',
-      description: 'All AI processing runs locally with zero external API usage',
-      impact: 'Saving $36,000-103,200 annually vs competitors',
+      title: 'Optimized Cost Structure',
+      description: 'Advanced local processing reduces operational expenses',
+      impact: 'Pay-per-intelligence model with transparent pricing',
       status: 'success'
     },
     {
@@ -109,7 +109,7 @@ export default function Intelligence() {
     {
       title: 'Revenue Maximization',
       description: 'Dynamic pricing and optimization increase profit margins',
-      impact: '99.8% profit margin achieved through zero-cost operations',
+      impact: '99.8% profit margin achieved through efficient pay-per-use model',
       status: 'success'
     },
     {
