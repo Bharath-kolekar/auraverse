@@ -13,6 +13,7 @@ import { insertContentSchema, insertProjectSchema, insertVoiceCommandSchema } fr
 import { registerIntelligenceRoutes } from "./routes-intelligence";
 import { registerVideoRoutes } from "./routes-video";
 import { registerSuperIntelligenceRoutes } from "./routes-super-intelligence";
+import advancedAiRoutes from "./routes-advanced-ai";
 import { oscarStandardsService } from "./services/oscar-standards-service";
 import { productionIntelligenceService } from "./services/production-intelligence-service";
 import { enhancedRouterService } from "./services/enhanced-router-service";
@@ -329,6 +330,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Register super intelligence routes with advanced AI capabilities
   registerSuperIntelligenceRoutes(app);
+  
+  // Register advanced AI orchestrator routes
+  app.use('/api', advancedAiRoutes);
 
   // Oscar Standards API routes
   app.get('/api/oscar/standards/:category', async (req, res) => {
