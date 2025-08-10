@@ -2,11 +2,8 @@ import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-import { PlacementProvider } from "@/contexts/PlacementContext";
-import NeuralIntelligenceCore from "@/components/NeuralIntelligenceCore";
-import SuperIntelligencePanel from "@/components/ui/super-intelligence-panel";
-import EnhancedVoiceAssistant from "@/components/ui/enhanced-voice-assistant";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import { TrainingAssistantButton } from "@/components/ui/training-assistant-button";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -69,10 +66,12 @@ function AppContent() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <AppContent />
-      </TooltipProvider>
+      <ThemeProvider>
+        <TooltipProvider>
+          <Toaster />
+          <AppContent />
+        </TooltipProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

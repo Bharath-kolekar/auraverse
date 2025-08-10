@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from "@/hooks/useAuth";
-import { Sparkles, Mic, Video, Music, Zap, Globe, BarChart3, Brain, Cpu, TrendingUp, Award, Calendar, Clock, Star, Settings, Bell, User, Plus, ArrowRight, Play, Pause } from "lucide-react";
+import { Sparkles, Mic, Video, Music, Zap, Globe, BarChart3, Brain, Cpu, TrendingUp, Award, Calendar, Clock, Star, Settings, Bell, User, Plus, ArrowRight, Play, Pause, Palette } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { FixedNavigation } from '@/components/ui/fixed-navigation';
+import { ThemeCustomizer } from '@/components/ui/theme-customizer';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export default function Home() {
   const { user } = useAuth();
@@ -11,6 +13,8 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState('overview');
   const [isRecording, setIsRecording] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [themeCustomizerOpen, setThemeCustomizerOpen] = useState(false);
+  const { currentTheme, themeName } = useTheme();
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -92,6 +96,15 @@ export default function Home() {
                   whileTap={{ scale: 0.95 }}
                 >
                   <Bell className="w-5 h-5 text-white/70" />
+                </motion.button>
+                <motion.button 
+                  className="p-3 glass-card rounded-xl hover:bg-white/10 transition-all duration-300"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setThemeCustomizerOpen(true)}
+                  title="Customize Theme"
+                >
+                  <Palette className="w-5 h-5 text-white/70" />
                 </motion.button>
                 <motion.button 
                   className="p-3 glass-card rounded-xl hover:bg-white/10 transition-all duration-300"
@@ -362,6 +375,12 @@ export default function Home() {
           </div>
         </motion.div>
       </main>
+      
+      {/* Theme Customizer */}
+      <ThemeCustomizer 
+        isOpen={themeCustomizerOpen}
+        onClose={() => setThemeCustomizerOpen(false)}
+      />
     </div>
   );
 }
