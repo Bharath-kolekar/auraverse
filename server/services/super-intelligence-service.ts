@@ -1,6 +1,12 @@
 // Super Intelligence Service with Advanced AI Capabilities
 import { globalAIAgent } from './global-ai-agent';
 import { productionIntelligenceService } from './production-intelligence-service';
+import OpenAI from 'openai';
+
+// Initialize OpenAI with API key
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 export interface SuperIntelligenceRequest {
   type: 'analysis' | 'enhancement' | 'generation' | 'optimization' | 'prediction';
@@ -259,27 +265,71 @@ class SuperIntelligenceService {
   }
 
   private async applyNeuralProcessing(input: any): Promise<any> {
-    const processors = Array.from(this.neuralProcessors.values());
-    let processedResult = input;
+    try {
+      // Use OpenAI for neural processing
+      const prompt = `Apply advanced neural processing to enhance this content:
+Input: ${JSON.stringify(input)}
 
-    for (const processor of processors) {
-      if (processor.processing === 'realtime') {
-        processedResult = await this.applyNeuralProcessor(processedResult, processor);
-      }
+Please analyze and enhance the input using advanced AI techniques. Return a JSON response with:
+- enhancedContent: the improved version
+- improvements: array of enhancements made
+- confidence: confidence score (0-1)`;
+
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+        messages: [{ role: "user", content: prompt }],
+        response_format: { type: "json_object" }
+      });
+
+      const result = JSON.parse(response.choices[0].message.content || '{}');
+      return {
+        ...input,
+        enhanced: true,
+        improvements: result.improvements || [],
+        confidence: result.confidence || 0.9,
+        content: result.enhancedContent || input
+      };
+    } catch (error) {
+      console.error('Neural processing failed:', error);
+      return input; // Fallback to original input
     }
-
-    return processedResult;
   }
 
   private async applyCreativityBoost(input: any): Promise<any> {
-    const creativityEnhancements = Array.from(this.creativityEngine.values());
-    let creativeResult = input;
+    try {
+      // Use OpenAI for creativity enhancement
+      const prompt = `Apply creative intelligence to boost the originality and artistic value of this content:
+Input: ${JSON.stringify(input)}
 
-    for (const enhancement of creativityEnhancements) {
-      creativeResult = await this.applyCreativityEnhancement(creativeResult, enhancement);
+Enhance creativity by:
+1. Adding unique artistic elements
+2. Suggesting innovative approaches
+3. Improving visual composition
+4. Enhancing narrative elements
+
+Return a JSON response with:
+- creativeEnhancements: the enhanced content
+- creativeTechniques: array of techniques applied
+- originalityScore: creativity score (0-1)`;
+
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+        messages: [{ role: "user", content: prompt }],
+        response_format: { type: "json_object" }
+      });
+
+      const result = JSON.parse(response.choices[0].message.content || '{}');
+      return {
+        ...input,
+        creativityBoost: true,
+        techniques: result.creativeTechniques || [],
+        originalityScore: result.originalityScore || 0.8,
+        enhancedContent: result.creativeEnhancements || input.content
+      };
+    } catch (error) {
+      console.error('Creativity boost failed:', error);
+      return input; // Fallback to original input
     }
-
-    return creativeResult;
   }
 
   private async applyEmotionalIntelligence(input: any): Promise<any> {
@@ -338,13 +388,37 @@ class SuperIntelligenceService {
   }
 
   private async generateRecommendations(result: any, request: SuperIntelligenceRequest): Promise<string[]> {
-    return [
-      'Apply advanced neural style transfer for visual enhancement',
-      'Utilize multi-modal processing for richer content experience',
-      'Implement predictive analytics for performance optimization',
-      'Enable real-time collaboration features',
-      'Add emotional intelligence for user engagement'
-    ];
+    try {
+      // Use OpenAI to generate personalized recommendations
+      const prompt = `Based on this processing result and user request, generate 3-5 actionable recommendations:
+
+Result: ${JSON.stringify(result)}
+Request Type: ${request.type}
+Domain: ${request.context.domain}
+Quality: ${request.context.quality}
+
+Provide practical, specific recommendations for improving the content or workflow. Return as JSON array of strings.`;
+
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+        messages: [{ role: "user", content: prompt }],
+        response_format: { type: "json_object" }
+      });
+
+      const result_parsed = JSON.parse(response.choices[0].message.content || '{}');
+      return result_parsed.recommendations || [
+        'Consider enhancing quality settings',
+        'Try different creative approaches',
+        'Experiment with style variations'
+      ];
+    } catch (error) {
+      console.error('Recommendation generation failed:', error);
+      return [
+        'Enable advanced processing for better results',
+        'Consider applying style enhancements',
+        'Try experimenting with different quality settings'
+      ];
+    }
   }
 
   private async suggestNextSteps(result: any, request: SuperIntelligenceRequest): Promise<string[]> {

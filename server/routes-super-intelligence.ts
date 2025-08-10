@@ -306,10 +306,11 @@ export function registerSuperIntelligenceRoutes(app: Express): void {
     try {
       const userId = req.userContext?.userId;
       if (!userId) {
-        return res.status(400).json({
+        res.status(400).json({
           success: false,
           error: 'User ID not found'
         });
+        return;
       }
 
       const analytics = await voiceFirstService.getVoiceAnalytics(userId);
