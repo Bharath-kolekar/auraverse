@@ -135,11 +135,15 @@ export class NLPConversationEngine {
 
   public processInput(input: string): string {
     const intent = this.detectIntent(input);
-    const response = this.generateResponse(intent, input);
+    const sentiment = this.analyzeSentiment(input);
+    const response = this.generateIntelligentResponse(intent, input, sentiment);
     
-    // Update conversation context
+    // Update conversation context with intelligence
     this.conversationContext.lastIntent = intent;
     this.conversationContext.conversationLength++;
+    
+    // Track user interests for smarter responses
+    this.updateUserInterests(input, intent);
     
     return response;
   }
@@ -157,22 +161,138 @@ export class NLPConversationEngine {
     return 'default';
   }
 
-  private generateResponse(intent: string, userInput: string): string {
+  private generateIntelligentResponse(intent: string, userInput: string, sentiment: 'positive' | 'neutral' | 'negative'): string {
+    // Intelligent response generation based on context and user input
+    const specificResponse = this.generateSpecificResponse(intent, userInput, sentiment);
+    if (specificResponse) return specificResponse;
+    
     const langResponses = this.responses[this.selectedLanguage as keyof typeof this.responses] || this.responses.en;
     const intentResponses = langResponses[intent as keyof typeof langResponses] || langResponses.default;
     
-    // Add personalization based on conversation context
     let response = this.getRandomResponse(intentResponses);
     
-    // Add contextual awareness
-    if (this.conversationContext.conversationLength > 1) {
-      response = this.addContextualFlair(response, intent);
-    }
-    
-    // Add follow-up questions for engagement
-    response = this.addFollowUpQuestion(response, intent);
+    // Add intelligent personalization
+    response = this.addIntelligentPersonalization(response, intent, userInput, sentiment);
     
     return response;
+  }
+
+  private generateSpecificResponse(intent: string, userInput: string, sentiment: 'positive' | 'neutral' | 'negative'): string | null {
+    const lowerInput = userInput.toLowerCase();
+    
+    // VFX-specific responses
+    if (lowerInput.includes('vfx') || lowerInput.includes('visual effects')) {
+      if (lowerInput.includes('yes') || lowerInput.includes('interested')) {
+        return "Excellent choice! Our VFX tools use advanced neural networks to create Hollywood-quality visual effects. You can generate particle systems, 3D environments, realistic explosions, magical effects, and cinematic transformations. Would you like me to show you how to create your first VFX sequence?";
+      }
+      return "Our VFX capabilities are incredible! We offer neural particle generation, 3D environment synthesis, realistic physics simulations, and cinematic effects. What type of visual effects are you interested in creating?";
+    }
+    
+    // Audio-specific responses
+    if (lowerInput.includes('audio') || lowerInput.includes('music') || lowerInput.includes('sound')) {
+      return "Great choice! Our AI audio tools can generate professional music, realistic voice synthesis, sound effects, and audio enhancement. We support all genres from classical orchestral to modern electronic. What style of audio content would you like to create?";
+    }
+    
+    // Video-specific responses
+    if (lowerInput.includes('video') || lowerInput.includes('movie') || lowerInput.includes('film')) {
+      return "Perfect! Our video AI creates Oscar-quality footage with neural cinematography, automated editing, scene composition, and character animation. You can generate everything from short clips to full productions. What kind of video project do you have in mind?";
+    }
+    
+    // Image-specific responses
+    if (lowerInput.includes('image') || lowerInput.includes('picture') || lowerInput.includes('photo')) {
+      return "Wonderful! Our image AI produces stunning visuals using advanced diffusion models. Create photorealistic portraits, fantasy art, product photos, architectural renders, or abstract designs. What type of images would you like to generate?";
+    }
+    
+    // Pricing inquiries
+    if (lowerInput.includes('cost') || lowerInput.includes('price') || lowerInput.includes('credit')) {
+      return "Our transparent pricing is simple: 2-3 credits for standard AI generations (great quality), 4-5 credits for premium models (Hollywood-level). You only pay for what you create - no subscriptions! New users get 10 free credits to explore. Ready to start creating?";
+    }
+    
+    // Technical questions
+    if (lowerInput.includes('how') && (lowerInput.includes('work') || lowerInput.includes('generate'))) {
+      return "Our AI uses cutting-edge neural networks: transformer models for audio, diffusion models for images, and advanced CNNs for video processing. The magic happens through GPU-accelerated inference that processes your creative vision into professional content in seconds. Want to see it in action?";
+    }
+    
+    // Getting started
+    if (lowerInput.includes('start') || lowerInput.includes('begin') || lowerInput.includes('create')) {
+      return "Let's get you creating! First, choose your medium - audio, video, images, or VFX. Then describe your creative vision, and our AI will bring it to life. You can start with your free credits right now. What would you like to create first?";
+    }
+    
+    // Confused or unclear responses
+    if (lowerInput.includes('nothing') || lowerInput.includes('dunno') || lowerInput.includes('not sure')) {
+      return "No worries! Let me help you discover what's possible. We can create AI music that sounds like your favorite artists, generate videos that look like movie scenes, design images that capture your imagination, or build VFX that rival Hollywood blockbusters. What sounds most exciting to you?";
+    }
+    
+    // Short responses indicating interest
+    if (lowerInput.length < 10 && (lowerInput.includes('yes') || lowerInput.includes('okay') || lowerInput.includes('sure'))) {
+      return `Perfect! Since you're interested, let me recommend starting with ${this.getRecommendation()}. It's beginner-friendly but produces professional results. Should I walk you through creating your first project?`;
+    }
+    
+    return null; // No specific response found
+  }
+
+  private getRecommendation(): string {
+    const recommendations = [
+      'AI image generation - create stunning artwork in seconds',
+      'AI audio creation - compose music in any style you like',
+      'AI video production - generate cinematic scenes from descriptions',
+      'AI VFX tools - add Hollywood-quality effects to your content'
+    ];
+    return recommendations[Math.floor(Math.random() * recommendations.length)];
+  }
+
+  private addIntelligentPersonalization(response: string, intent: string, userInput: string, sentiment: 'positive' | 'neutral' | 'negative'): string {
+    // Add sentiment-based personalization
+    if (sentiment === 'positive') {
+      response = response.replace(/^/, "I love your enthusiasm! ");
+    } else if (sentiment === 'negative') {
+      response = response.replace(/^/, "I understand your concerns. ");
+    }
+    
+    // Add conversation flow intelligence
+    if (this.conversationContext.conversationLength > 1) {
+      const flowPhrases = [
+        "Building on our discussion, ",
+        "Following up on that, ",
+        "To continue, ",
+        "Great question! "
+      ];
+      const randomPhrase = flowPhrases[Math.floor(Math.random() * flowPhrases.length)];
+      response = randomPhrase + response.toLowerCase();
+    }
+    
+    // Add user interest tracking
+    if (this.conversationContext.userInterests.length > 0) {
+      const interests = this.conversationContext.userInterests.join(' and ');
+      if (!response.includes(interests)) {
+        response += ` Since you're interested in ${interests}, I can provide specialized guidance for that area.`;
+      }
+    }
+    
+    return response;
+  }
+
+  private updateUserInterests(input: string, intent: string): void {
+    const lowerInput = input.toLowerCase();
+    const interests = [];
+    
+    if (lowerInput.includes('vfx') || lowerInput.includes('visual effects')) interests.push('VFX');
+    if (lowerInput.includes('audio') || lowerInput.includes('music')) interests.push('audio');
+    if (lowerInput.includes('video') || lowerInput.includes('movie')) interests.push('video');
+    if (lowerInput.includes('image') || lowerInput.includes('photo')) interests.push('images');
+    if (lowerInput.includes('ai') || lowerInput.includes('artificial intelligence')) interests.push('AI technology');
+    
+    // Add unique interests only
+    interests.forEach(interest => {
+      if (!this.conversationContext.userInterests.includes(interest)) {
+        this.conversationContext.userInterests.push(interest);
+      }
+    });
+    
+    // Keep only last 3 interests to avoid overwhelming
+    if (this.conversationContext.userInterests.length > 3) {
+      this.conversationContext.userInterests = this.conversationContext.userInterests.slice(-3);
+    }
   }
 
   private getRandomResponse(responses: string[]): string {

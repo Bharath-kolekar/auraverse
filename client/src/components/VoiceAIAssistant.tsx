@@ -203,11 +203,13 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
           console.log('Speech ended');
           setIsSpeaking(false);
           // Auto-start listening after speech ends if assistant is open
-          if (isOpen && recognition) {
+          if (isOpen && recognition && !isSpeaking) {
             setTimeout(() => {
               console.log('Auto-starting listening after speech');
-              startListening();
-            }, 500);
+              if (!isListening && !isSpeaking) { // Double-check states
+                startListening();
+              }
+            }, 1000); // Increased delay to prevent overlap
           }
         };
         
@@ -361,10 +363,19 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
       // Update UI and speak response
       setCurrentMessage(response);
       
-      // Small delay before speaking to ensure UI updates
-      setTimeout(() => {
-        speakMessage(response);
-      }, 100);
+      // Prevent duplicate responses by checking if the response is different
+      const lastAIResponse = conversationHistory
+        .filter(msg => msg.type === 'ai')
+        .slice(-1)[0]?.message;
+      
+      if (response !== lastAIResponse) {
+        // Small delay before speaking to ensure UI updates
+        setTimeout(() => {
+          speakMessage(response);
+        }, 100);
+      } else {
+        console.log('Preventing duplicate response');
+      }
       
     } catch (error) {
       console.error('Error processing voice command:', error);
@@ -381,16 +392,20 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
     onToggle?.(newState);
     
     if (newState) {
-      const welcomeMessage = selectedLanguage === 'en' 
-        ? 'Hello! I am your AI assistant. How can I help you create amazing content today?'
-        : selectedLanguage === 'es'
-        ? '¡Hola! Soy tu asistente de IA. ¿Cómo puedo ayudarte a crear contenido increíble hoy?'
-        : selectedLanguage === 'fr'
-        ? 'Bonjour! Je suis votre assistant IA. Comment puis-je vous aider à créer du contenu incroyable aujourd\'hui?'
-        : 'Hello! I am your AI assistant. How can I help you create amazing content today?';
+      // Reset NLP engine context for fresh conversation
+      nlpEngine.resetContext();
       
-      console.log('Setting welcome message:', welcomeMessage);
+      const welcomeMessage = selectedLanguage === 'en' 
+        ? 'Hello! I am your intelligent AI creative assistant. I can help you generate professional audio, stunning videos, beautiful images, and Hollywood-quality VFX. What type of content would you like to create today?'
+        : selectedLanguage === 'es'
+        ? '¡Hola! Soy tu asistente creativo de IA inteligente. Puedo ayudarte a generar audio profesional, videos impresionantes, imágenes hermosas y VFX de calidad de Hollywood. ¿Qué tipo de contenido te gustaría crear hoy?'
+        : selectedLanguage === 'fr'
+        ? 'Bonjour! Je suis votre assistant créatif IA intelligent. Je peux vous aider à générer de l\'audio professionnel, des vidéos époustouflantes, de belles images et des VFX de qualité hollywoodienne. Quel type de contenu aimeriez-vous créer aujourd\'hui?'
+        : 'Hello! I am your intelligent AI creative assistant. I can help you generate professional audio, stunning videos, beautiful images, and Hollywood-quality VFX. What type of content would you like to create today?';
+      
+      console.log('Setting intelligent welcome message:', welcomeMessage);
       setCurrentMessage(welcomeMessage);
+      setConversationHistory([]); // Clear previous conversation
       
       // Add a small delay to ensure the panel is visible before speaking
       setTimeout(() => {
