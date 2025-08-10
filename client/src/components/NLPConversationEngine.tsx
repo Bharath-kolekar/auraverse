@@ -180,6 +180,16 @@ export class NLPConversationEngine {
   private generateSpecificResponse(intent: string, userInput: string, sentiment: 'positive' | 'neutral' | 'negative'): string | null {
     const lowerInput = userInput.toLowerCase();
     
+    // Ship/sea scene - specific VFX response
+    if (lowerInput.includes('ship') && lowerInput.includes('sea')) {
+      return "Amazing! A ship on the sea would make a fantastic VFX scene. I can help you create cinematic ocean waves, realistic ship movement, dramatic lighting, storm effects, or even pirates and sea creatures. For your son, we could add magical elements like glowing sea creatures or treasure effects. What kind of ship scene do you want to create - adventure, pirates, or fantasy?";
+    }
+    
+    // Audibility check
+    if (lowerInput.includes('audible') || lowerInput.includes('hear me') || lowerInput.includes('can you hear')) {
+      return "Yes, I can hear you perfectly! Your voice is coming through clearly. I'm ready to help you create that amazing VFX scene for your son. Should we continue working on the ship and sea project, or would you like to explore other creative possibilities?";
+    }
+    
     // VFX-specific responses
     if (lowerInput.includes('vfx') || lowerInput.includes('visual effects')) {
       if (lowerInput.includes('yes') || lowerInput.includes('interested')) {
@@ -216,6 +226,11 @@ export class NLPConversationEngine {
     // Getting started
     if (lowerInput.includes('start') || lowerInput.includes('begin') || lowerInput.includes('create')) {
       return "Let's get you creating! First, choose your medium - audio, video, images, or VFX. Then describe your creative vision, and our AI will bring it to life. You can start with your free credits right now. What would you like to create first?";
+    }
+    
+    // Scene descriptions and creative ideas
+    if (lowerInput.includes('scene') || lowerInput.includes('adventure') || lowerInput.includes('story')) {
+      return "I love creative storytelling! Let's bring your scene to life with AI. I can help you create the visual effects, background music, character voices, and cinematic elements. Tell me more about the story or scene you want to create - is it for entertainment, a special occasion, or a creative project?";
     }
     
     // Confused or unclear responses

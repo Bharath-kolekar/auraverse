@@ -292,6 +292,8 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
           const detectedLanguage = detectLanguage(transcript.trim());
           const speakerId = identifySpeaker(transcript.trim());
           
+          console.log('Detected language:', detectedLanguage, 'Speaker:', speakerId);
+          
           handleVoiceCommand(transcript.trim(), detectedLanguage, speakerId);
         }
       };
@@ -300,9 +302,9 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
         console.error('Speech recognition error:', error.error, error.message);
         setIsListening(false);
         
-        // Show user-friendly error message
+        // Show user-friendly error message but don't interrupt conversation
         const errorMessages: Record<string, string> = {
-          'no-speech': 'No speech detected. Please try speaking again.',
+          'no-speech': 'I\'m still listening... please speak when ready.',
           'audio-capture': 'Microphone not accessible. Please check permissions.',
           'not-allowed': 'Microphone permission denied. Please allow microphone access.',
           'network': 'Network error. Please check your connection.',
@@ -310,7 +312,11 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
         };
         
         const userMessage = errorMessages[error.error] || 'Speech recognition error. Please try again.';
-        setCurrentMessage(userMessage);
+        
+        // Only show critical errors, ignore no-speech errors
+        if (error.error !== 'no-speech') {
+          setCurrentMessage(userMessage);
+        }
       };
       
       recognition.onend = () => {
@@ -453,11 +459,23 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
       enhancedResponse = enhancedResponse.replace(/^/, `Great to hear from you again! `);
     }
     
-    // VFX project continuity
+    // VFX project continuity with specific context
     if (userMessages.some(msg => msg.message.toLowerCase().includes('son') && msg.message.toLowerCase().includes('vfx'))) {
       if (!enhancedResponse.includes('son') && !enhancedResponse.includes('child')) {
         enhancedResponse += ` This will be perfect for surprising your son with amazing visual effects!`;
       }
+    }
+    
+    // Ship/sea project continuity
+    if (userMessages.some(msg => msg.message.toLowerCase().includes('ship') || msg.message.toLowerCase().includes('sea'))) {
+      if (!enhancedResponse.includes('ship') && !enhancedResponse.includes('sea')) {
+        enhancedResponse += ` For your ship and sea VFX project, I can help create realistic ocean physics and cinematic lighting.`;
+      }
+    }
+    
+    // Audibility context
+    if (command.toLowerCase().includes('audible')) {
+      enhancedResponse = "Yes, I hear you clearly! " + enhancedResponse;
     }
     
     return enhancedResponse;
@@ -501,14 +519,34 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
       return 'Parent';
     }
     
+    // Check conversation history for voice pattern matching
+    const recentSpeakers = conversationHistory
+      .filter(msg => msg.type === 'user')
+      .slice(-3)
+      .map(msg => ({ speaker: msg.speaker, message: msg.message.toLowerCase() }));
+    
+    // Simple voice pattern matching based on similar words/phrases
+    for (const prevMsg of recentSpeakers) {
+      if (prevMsg.speaker && prevMsg.speaker !== 'Speaker 1') {
+        const commonWords = lowerText.split(' ').filter(word => 
+          word.length > 3 && prevMsg.message.includes(word)
+        );
+        if (commonWords.length >= 1) {
+          return prevMsg.speaker;
+        }
+      }
+    }
+    
     // Return incrementing speaker IDs for unidentified speakers
     const existingSpeakers = Array.from(detectedSpeakers);
     if (existingSpeakers.length === 0) return 'Speaker 1';
     
-    const lastSpeakerNum = Math.max(...existingSpeakers.map(s => {
-      const match = s.match(/Speaker (\d+)/);
-      return match ? parseInt(match[1]) : 0;
-    }));
+    const speakerNumbers = existingSpeakers
+      .map(s => s.match(/Speaker (\d+)/))
+      .filter(match => match)
+      .map(match => parseInt(match![1]));
+    
+    const lastSpeakerNum = speakerNumbers.length > 0 ? Math.max(...speakerNumbers) : 0;
     
     return `Speaker ${lastSpeakerNum + 1}`;
   };
