@@ -100,39 +100,116 @@ export function VideoPlayer({ videoData, thumbnail, duration = 30, prompt }: Vid
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (frames.length === 0) return;
 
-    // Create downloadable video data
-    const videoBlob = new Blob([JSON.stringify({
-      type: 'procedural-video',
-      frames,
-      duration,
-      prompt,
-      metadata: {
-        fps: 30,
-        width: 1920,
-        height: 1080,
-        totalFrames: frames.length
-      }
-    })], { type: 'application/json' });
+    try {
+      // Create video package for download
+      const videoPackage = {
+        type: 'video-package',
+        prompt,
+        duration,
+        frames,
+        metadata: {
+          fps: 30,
+          width: 1920,
+          height: 1080,
+          totalFrames: frames.length,
+          format: 'svg-sequence',
+          instructions: 'This package contains all video frames as SVG files. Import into video editing software or use FFmpeg to create MP4.'
+        }
+      };
 
-    const url = URL.createObjectURL(videoBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `video_${prompt?.replace(/\s+/g, '_') || 'generated'}.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+      // Create MP4-ready package
+      const packageBlob = new Blob([JSON.stringify(videoPackage, null, 2)], { 
+        type: 'application/octet-stream' 
+      });
 
-    // Also download first frame as thumbnail
-    if (frames[0]) {
-      const thumbnailLink = document.createElement('a');
-      thumbnailLink.href = frames[0];
-      thumbnailLink.download = `thumbnail_${prompt?.replace(/\s+/g, '_') || 'generated'}.svg`;
-      thumbnailLink.click();
+      const url = URL.createObjectURL(packageBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${prompt?.replace(/\s+/g, '_') || 'generated'}_video.mp4.package`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      // Also create a WebM video using Canvas recording
+      await generateWebMVideo();
+
+    } catch (error) {
+      console.error('Download failed:', error);
+      // Fallback to JSON download
+      const videoBlob = new Blob([JSON.stringify({
+        frames,
+        duration,
+        prompt,
+        fps: 30
+      })], { type: 'application/json' });
+
+      const url = URL.createObjectURL(videoBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `video_${prompt?.replace(/\s+/g, '_') || 'generated'}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
     }
+  };
+
+  const generateWebMVideo = async () => {
+    if (!canvasRef.current) return;
+
+    const canvas = canvasRef.current;
+    const stream = canvas.captureStream(30); // 30 FPS
+    const recorder = new MediaRecorder(stream, {
+      mimeType: 'video/webm;codecs=vp8'
+    });
+
+    const chunks: Blob[] = [];
+    recorder.ondataavailable = (event) => {
+      if (event.data.size > 0) {
+        chunks.push(event.data);
+      }
+    };
+
+    recorder.onstop = () => {
+      const videoBlob = new Blob(chunks, { type: 'video/webm' });
+      const url = URL.createObjectURL(videoBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${prompt?.replace(/\s+/g, '_') || 'generated'}.webm`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    };
+
+    // Record the entire video playback
+    recorder.start();
+    
+    // Play through all frames quickly for recording
+    let frameIndex = 0;
+    const recordingInterval = setInterval(() => {
+      if (frameIndex >= frames.length) {
+        clearInterval(recordingInterval);
+        recorder.stop();
+        return;
+      }
+
+      // Render frame for recording
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      img.onload = () => {
+        if (ctx) {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        }
+      };
+      img.src = frames[frameIndex];
+      frameIndex++;
+    }, 1000 / 30); // 30 FPS recording
   };
 
   if (frames.length === 0) {
@@ -233,9 +310,22 @@ export function VideoPlayer({ videoData, thumbnail, duration = 30, prompt }: Vid
               Download
             </motion.button>
 
-            <button className="text-white hover:text-purple-400 transition-colors">
+            <motion.button
+              onClick={() => {
+                if (canvasRef.current) {
+                  if (document.fullscreenElement) {
+                    document.exitFullscreen();
+                  } else {
+                    canvasRef.current.requestFullscreen();
+                  }
+                }
+              }}
+              className="text-white hover:text-purple-400 transition-colors"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
               <Maximize className="w-5 h-5" />
-            </button>
+            </motion.button>
           </div>
         </div>
 

@@ -11,6 +11,7 @@ import { localTrainingService } from "./services/localTrainingService";
 // To switch back to external APIs: import { aiServices } and { TrainingService }
 import { insertContentSchema, insertProjectSchema, insertVoiceCommandSchema } from "@shared/schema";
 import { registerIntelligenceRoutes } from "./routes-intelligence";
+import { registerVideoRoutes } from "./routes-video";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
@@ -277,6 +278,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Register intelligence routes for pay-per-use model
   registerIntelligenceRoutes(app);
+
+  // Register video processing routes
+  registerVideoRoutes(app);
   
   // Import enhanced routes
   const { registerEnhancedIntelligenceRoutes } = await import("./routes-intelligence-enhanced");

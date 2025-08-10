@@ -496,10 +496,7 @@ class HybridAIService {
       const svg = `
         <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            <linearGradient id="videoGrad${frame}" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" style="stop-color:hsl(${220 + Math.sin(time) * 20}, 70%, 50%);stop-opacity:1" />
-              <stop offset="100%" style="stop-color:hsl(${280 + Math.cos(time) * 20}, 70%, 40%);stop-opacity:1" />
-            </linearGradient>
+            ${this.generateBackgroundGradient(request.prompt, frame, time)}
             <filter id="glow">
               <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
               <feMerge> 
@@ -520,8 +517,11 @@ class HybridAIService {
             return `<circle cx="${x}" cy="${y}" r="${size}" fill="rgba(255,255,255,0.8)" filter="url(#glow)"/>`;
           }).join('')}
           
+          <!-- Sun for yellow sky -->
+          ${request.prompt.toLowerCase().includes('yellow') && request.prompt.toLowerCase().includes('sky') ? `<circle cx="${20 + Math.sin(time * 0.1) * 10}%" cy="15%" r="60" fill="url(#sun${frame})"/>` : ''}
+          
           <!-- Main content -->
-          <text x="50%" y="30%" font-family="Arial Black" font-size="48" fill="white" text-anchor="middle" filter="url(#glow)">
+          <text x="50%" y="30%" font-family="Arial Black" font-size="48" fill="white" text-anchor="middle" filter="url(#glow)" stroke="#000" stroke-width="2">
             ${request.prompt}
           </text>
           
@@ -571,6 +571,40 @@ class HybridAIService {
     const lowerPrompt = prompt.toLowerCase();
     let elements = '';
     
+    // Sky/birds elements
+    if (lowerPrompt.includes('sky') || lowerPrompt.includes('bird')) {
+      // Add flying birds
+      elements += Array.from({length: 12}, (_, i) => {
+        const birdX = 100 + i * 120 + Math.sin(time * 1.2 + i) * 80;
+        const birdY = 150 + i * 20 + Math.cos(time * 0.8 + i * 0.5) * 40;
+        const wingFlap = Math.sin(time * 8 + i * 2) * 0.3 + 1;
+        return `
+          <g transform="translate(${birdX}, ${birdY})">
+            <path d="M-15,0 Q-8,-8 0,0 Q8,-8 15,0" 
+                  stroke="#2d3748" 
+                  stroke-width="2" 
+                  fill="none" 
+                  transform="scale(${wingFlap}, 1)"/>
+            <circle cx="0" cy="2" r="1.5" fill="#4a5568"/>
+          </g>
+        `;
+      }).join('');
+
+      // Add clouds
+      elements += Array.from({length: 6}, (_, i) => {
+        const cloudX = 50 + i * 200 + Math.sin(time * 0.1 + i) * 30;
+        const cloudY = 80 + i * 15 + Math.cos(time * 0.15 + i) * 20;
+        const opacity = 0.4 + Math.sin(time * 0.5 + i) * 0.2;
+        return `
+          <g transform="translate(${cloudX}, ${cloudY})" opacity="${opacity}">
+            <ellipse cx="0" cy="0" rx="40" ry="15" fill="white"/>
+            <ellipse cx="20" cy="-5" rx="25" ry="12" fill="white"/>
+            <ellipse cx="-15" cy="-3" rx="30" ry="10" fill="white"/>
+          </g>
+        `;
+      }).join('');
+    }
+    
     // Ship/boat elements
     if (lowerPrompt.includes('ship') || lowerPrompt.includes('boat')) {
       const shipX = 200 + Math.sin(time * 0.5) * 100;
@@ -608,6 +642,46 @@ class HybridAIService {
     }
     
     return elements;
+  }
+
+  private generateBackgroundGradient(prompt: string, frame: number, time: number): string {
+    const lowerPrompt = prompt.toLowerCase();
+    
+    // Yellow sky background
+    if (lowerPrompt.includes('yellow') && lowerPrompt.includes('sky')) {
+      const sunPosition = 20 + Math.sin(time * 0.1) * 10;
+      return `
+        <linearGradient id="videoGrad${frame}" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:hsl(${45 + Math.sin(time * 0.2) * 10}, 90%, 75%);stop-opacity:1" />
+          <stop offset="30%" style="stop-color:hsl(${50 + Math.cos(time * 0.15) * 5}, 85%, 70%);stop-opacity:1" />
+          <stop offset="70%" style="stop-color:hsl(${55 + Math.sin(time * 0.3) * 8}, 80%, 65%);stop-opacity:1" />
+          <stop offset="100%" style="stop-color:hsl(${60 + Math.cos(time * 0.1) * 5}, 75%, 60%);stop-opacity:1" />
+        </linearGradient>
+        <radialGradient id="sun${frame}" cx="${sunPosition}%" cy="15%">
+          <stop offset="0%" style="stop-color:#FFE55C;stop-opacity:1" />
+          <stop offset="70%" style="stop-color:#FFD93D;stop-opacity:0.8" />
+          <stop offset="100%" style="stop-color:#FFC107;stop-opacity:0.3" />
+        </radialGradient>
+      `;
+    }
+    
+    // Blue sky default
+    if (lowerPrompt.includes('sky')) {
+      return `
+        <linearGradient id="videoGrad${frame}" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:hsl(${200 + Math.sin(time * 0.1) * 10}, 80%, 70%);stop-opacity:1" />
+          <stop offset="100%" style="stop-color:hsl(${220 + Math.cos(time * 0.1) * 10}, 70%, 50%);stop-opacity:1" />
+        </linearGradient>
+      `;
+    }
+    
+    // Default gradient
+    return `
+      <linearGradient id="videoGrad${frame}" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:hsl(${220 + Math.sin(time) * 20}, 70%, 50%);stop-opacity:1" />
+        <stop offset="100%" style="stop-color:hsl(${280 + Math.cos(time) * 20}, 70%, 40%);stop-opacity:1" />
+      </linearGradient>
+    `;
   }
 
   private generateLocalAudio(request: ContentGenerationRequest): string {
