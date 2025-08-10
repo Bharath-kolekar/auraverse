@@ -68,7 +68,10 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
   const [synthesis, setSynthesis] = useState<SpeechSynthesis | null>(null);
   const [proactiveTriggered, setProactiveTriggered] = useState<Set<string>>(new Set());
   const [nlpEngine] = useState(() => new NLPConversationEngine(selectedLanguage));
-  const [conversationHistory, setConversationHistory] = useState<Array<{type: 'user' | 'ai', message: string}>>([]);
+  const [conversationHistory, setConversationHistory] = useState<Array<{type: 'user' | 'ai', message: string, timestamp: Date, language?: string, speaker?: string}>>([]);
+  const [detectedSpeakers, setDetectedSpeakers] = useState<Set<string>>(new Set());
+  const [currentSpeaker, setCurrentSpeaker] = useState<string>('Speaker 1');
+  const [autoLanguageDetection, setAutoLanguageDetection] = useState(true);
   
   useEffect(() => {
     const initializeSpeech = () => {
@@ -177,7 +180,8 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
     }
   };
 
-  const speakMessage = (message: string) => {
+  const speakMessage = (message: string, targetLanguage?: string) => {
+    const langToUse = targetLanguage || selectedLanguage;
     console.log('Attempting to speak:', message);
     if (!message || message.trim() === '') {
       console.error('No message to speak');
@@ -189,7 +193,7 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
         synthesis.cancel(); // Cancel any ongoing speech
         
         const utterance = new SpeechSynthesisUtterance(message.trim());
-        utterance.lang = selectedLanguage === 'zh' ? 'zh-CN' : selectedLanguage === 'ja' ? 'ja-JP' : selectedLanguage;
+        utterance.lang = langToUse === 'zh' ? 'zh-CN' : langToUse === 'ja' ? 'ja-JP' : langToUse;
         utterance.rate = 0.9;
         utterance.pitch = 1.0;
         utterance.volume = 1;
@@ -224,12 +228,12 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
         
         if (voices.length > 0) {
           const preferredVoice = voices.find(voice => 
-            voice.lang.startsWith(selectedLanguage) || 
+            voice.lang.startsWith(langToUse) || 
             voice.lang.startsWith('en')
           );
           if (preferredVoice) {
             utterance.voice = preferredVoice;
-            console.log('Using voice:', preferredVoice.name);
+            console.log('Using voice:', preferredVoice.name, 'for language:', langToUse);
           }
         }
         
@@ -283,7 +287,12 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
         if (lastResult.isFinal && transcript.trim()) {
           console.log('Processing final transcript:', transcript);
           setIsListening(false);
-          handleVoiceCommand(transcript.trim());
+          
+          // Detect language and speaker
+          const detectedLanguage = detectLanguage(transcript.trim());
+          const speakerId = identifySpeaker(transcript.trim());
+          
+          handleVoiceCommand(transcript.trim(), detectedLanguage, speakerId);
         }
       };
       
@@ -339,8 +348,8 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
     }
   };
 
-  const handleVoiceCommand = (command: string) => {
-    console.log('Processing voice command:', command);
+  const handleVoiceCommand = (command: string, detectedLanguage?: string, speakerId?: string) => {
+    console.log('Processing voice command:', command, 'Language:', detectedLanguage, 'Speaker:', speakerId);
     
     if (!command || command.trim() === '') {
       console.log('Empty command received');
@@ -348,34 +357,52 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
     }
     
     try {
-      // Add user message to conversation history
-      setConversationHistory(prev => [...prev, { type: 'user', message: command }]);
+      const currentTime = new Date();
+      const finalSpeakerId = speakerId || currentSpeaker;
+      const finalLanguage = detectedLanguage || selectedLanguage;
       
-      // Use NLP engine for natural conversation
-      nlpEngine.setLanguage(selectedLanguage);
-      const response = nlpEngine.processInput(command);
+      // Add speaker to detected speakers set
+      setDetectedSpeakers(prev => new Set(prev).add(finalSpeakerId));
+      setCurrentSpeaker(finalSpeakerId);
       
-      console.log('Generated response:', response);
+      // Auto-switch language if detected different language
+      if (autoLanguageDetection && detectedLanguage && detectedLanguage !== selectedLanguage) {
+        console.log(`Auto-switching language from ${selectedLanguage} to ${detectedLanguage}`);
+        setSelectedLanguage(detectedLanguage);
+      }
+      
+      // Add user message to conversation history with metadata
+      setConversationHistory(prev => [...prev, { 
+        type: 'user', 
+        message: command, 
+        timestamp: currentTime,
+        language: finalLanguage,
+        speaker: finalSpeakerId
+      }]);
+      
+      // Use NLP engine with context from conversation history
+      nlpEngine.setLanguage(finalLanguage);
+      
+      // Provide conversation context to NLP engine
+      const contextualResponse = generateContextualResponse(command, finalLanguage, finalSpeakerId);
+      
+      console.log('Generated contextual response:', contextualResponse);
       
       // Add AI response to conversation history
-      setConversationHistory(prev => [...prev, { type: 'ai', message: response }]);
+      setConversationHistory(prev => [...prev, { 
+        type: 'ai', 
+        message: contextualResponse, 
+        timestamp: new Date(),
+        language: finalLanguage
+      }]);
       
       // Update UI and speak response
-      setCurrentMessage(response);
+      setCurrentMessage(contextualResponse);
       
-      // Prevent duplicate responses by checking if the response is different
-      const lastAIResponse = conversationHistory
-        .filter(msg => msg.type === 'ai')
-        .slice(-1)[0]?.message;
-      
-      if (response !== lastAIResponse) {
-        // Small delay before speaking to ensure UI updates
-        setTimeout(() => {
-          speakMessage(response);
-        }, 100);
-      } else {
-        console.log('Preventing duplicate response');
-      }
+      // Speak response in detected language
+      setTimeout(() => {
+        speakMessage(contextualResponse, finalLanguage);
+      }, 100);
       
     } catch (error) {
       console.error('Error processing voice command:', error);
@@ -383,6 +410,107 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
       setCurrentMessage(fallbackResponse);
       speakMessage(fallbackResponse);
     }
+  };
+
+  const generateContextualResponse = (command: string, language: string, speakerId: string): string => {
+    // Get recent conversation context
+    const recentHistory = conversationHistory.slice(-6); // Last 6 messages
+    const userMessages = recentHistory.filter(msg => msg.type === 'user');
+    const speakerMessages = recentHistory.filter(msg => msg.speaker === speakerId);
+    
+    // Build context for NLP engine
+    let contextPrompt = '';
+    
+    if (speakerMessages.length > 0) {
+      contextPrompt += `Previous messages from ${speakerId}: ${speakerMessages.map(msg => msg.message).join('. ')}. `;
+    }
+    
+    if (detectedSpeakers.size > 1) {
+      contextPrompt += `Note: Multiple speakers detected in this conversation (${Array.from(detectedSpeakers).join(', ')}). `;
+    }
+    
+    if (userMessages.some(msg => msg.message.toLowerCase().includes('son') || msg.message.toLowerCase().includes('child'))) {
+      contextPrompt += 'User mentioned creating content for their child. ';
+    }
+    
+    if (userMessages.some(msg => msg.message.toLowerCase().includes('vfx') || msg.message.toLowerCase().includes('visual effects'))) {
+      contextPrompt += 'User is specifically interested in VFX creation. ';
+    }
+    
+    // Generate response with context
+    const baseResponse = nlpEngine.processInput(command);
+    
+    // Enhance response with conversation memory
+    let enhancedResponse = baseResponse;
+    
+    // Add speaker-specific personalization
+    if (detectedSpeakers.size > 1) {
+      enhancedResponse = `Hi ${speakerId}! ${enhancedResponse}`;
+    }
+    
+    // Reference previous context
+    if (speakerMessages.length > 0 && speakerId !== 'Speaker 1') {
+      enhancedResponse = enhancedResponse.replace(/^/, `Great to hear from you again! `);
+    }
+    
+    // VFX project continuity
+    if (userMessages.some(msg => msg.message.toLowerCase().includes('son') && msg.message.toLowerCase().includes('vfx'))) {
+      if (!enhancedResponse.includes('son') && !enhancedResponse.includes('child')) {
+        enhancedResponse += ` This will be perfect for surprising your son with amazing visual effects!`;
+      }
+    }
+    
+    return enhancedResponse;
+  };
+
+  const detectLanguage = (text: string): string => {
+    const lowerText = text.toLowerCase();
+    
+    // Simple language detection based on common words and patterns
+    if (/\b(hola|gracias|por favor|qué|cómo|sí|no)\b/i.test(text)) return 'es';
+    if (/\b(bonjour|merci|s'il vous plaît|que|comment|oui|non)\b/i.test(text)) return 'fr';
+    if (/\b(hallo|danke|bitte|was|wie|ja|nein)\b/i.test(text)) return 'de';
+    if (/\b(こんにちは|ありがとう|はい|いいえ)\b/i.test(text)) return 'ja';
+    if (/\b(你好|谢谢|请|是|不)\b/i.test(text)) return 'zh';
+    if (/\b(привет|спасибо|пожалуйста|да|нет)\b/i.test(text)) return 'ru';
+    if (/\b(ciao|grazie|prego|sì|no)\b/i.test(text)) return 'it';
+    if (/\b(olá|obrigado|por favor|sim|não)\b/i.test(text)) return 'pt';
+    
+    return 'en'; // Default to English
+  };
+
+  const identifySpeaker = (text: string): string => {
+    // Simple speaker identification based on speech patterns and content
+    const lowerText = text.toLowerCase();
+    
+    // Look for self-identification
+    if (lowerText.includes('my name is') || lowerText.includes('i am')) {
+      const nameMatch = text.match(/(?:my name is|i am)\s+([a-zA-Z]+)/i);
+      if (nameMatch) {
+        return nameMatch[1];
+      }
+    }
+    
+    // Look for child-specific language patterns
+    if (lowerText.includes('dad') || lowerText.includes('daddy') || lowerText.includes('papa')) {
+      return 'Child';
+    }
+    
+    // Look for adult-specific language patterns
+    if (lowerText.includes('my son') || lowerText.includes('my daughter') || lowerText.includes('my child')) {
+      return 'Parent';
+    }
+    
+    // Return incrementing speaker IDs for unidentified speakers
+    const existingSpeakers = Array.from(detectedSpeakers);
+    if (existingSpeakers.length === 0) return 'Speaker 1';
+    
+    const lastSpeakerNum = Math.max(...existingSpeakers.map(s => {
+      const match = s.match(/Speaker (\d+)/);
+      return match ? parseInt(match[1]) : 0;
+    }));
+    
+    return `Speaker ${lastSpeakerNum + 1}`;
   };
 
   const toggleAssistant = () => {
@@ -405,7 +533,8 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
       
       console.log('Setting intelligent welcome message:', welcomeMessage);
       setCurrentMessage(welcomeMessage);
-      setConversationHistory([]); // Clear previous conversation
+      // Don't clear conversation history to maintain memory across sessions
+      // setConversationHistory([]); // Commented out to preserve memory
       
       // Add a small delay to ensure the panel is visible before speaking
       setTimeout(() => {
@@ -535,9 +664,14 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
               {/* Conversation History */}
               {conversationHistory.length > 0 && (
                 <div className="mb-4 space-y-2 max-h-32 overflow-y-auto">
-                  {conversationHistory.slice(-4).map((msg, index) => (
+                  {conversationHistory.slice(-6).map((msg, index) => (
                     <div key={index} className={`text-xs ${msg.type === 'user' ? 'text-cyan-300' : 'text-white/60'}`}>
-                      <span className="font-medium">{msg.type === 'user' ? 'You: ' : 'AI: '}</span>
+                      <span className="font-medium">
+                        {msg.type === 'user' 
+                          ? `${msg.speaker || 'You'}${msg.language !== 'en' ? ` (${msg.language.toUpperCase()})` : ''}: `
+                          : 'AI: '
+                        }
+                      </span>
                       {msg.message}
                     </div>
                   ))}
@@ -551,7 +685,7 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
               
               {/* Status Indicators */}
               <div className="mt-3 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                   {isListening && (
                     <div className="flex items-center gap-1 text-red-400">
                       <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse" />
@@ -564,14 +698,21 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
                       Speaking...
                     </div>
                   )}
+                  {detectedSpeakers.size > 1 && (
+                    <div className="flex items-center gap-1 text-blue-400">
+                      <div className="w-2 h-2 bg-blue-400 rounded-full" />
+                      {detectedSpeakers.size} Speakers
+                    </div>
+                  )}
                 </div>
                 
-                {/* Debug Info */}
-                {process.env.NODE_ENV === 'development' && (
-                  <div className="text-white/40">
-                    Speech: {synthesis ? '✓' : '✗'} | Recognition: {recognition ? '✓' : '✗'}
-                  </div>
-                )}
+                {/* Language & Debug Info */}
+                <div className="flex items-center gap-3 text-white/40">
+                  <span>Lang: {selectedLanguage.toUpperCase()}</span>
+                  {process.env.NODE_ENV === 'development' && (
+                    <span>Speech: {synthesis ? '✓' : '✗'} | Rec: {recognition ? '✓' : '✗'}</span>
+                  )}
+                </div>
               </div>
             </div>
 
