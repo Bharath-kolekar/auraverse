@@ -3,6 +3,7 @@ import {
   content,
   projects,
   voiceCommands,
+  trainingConversations,
   type User,
   type UpsertUser,
   type Content,
@@ -11,6 +12,8 @@ import {
   type InsertProject,
   type VoiceCommand,
   type InsertVoiceCommand,
+  type TrainingConversation,
+  type InsertTrainingConversation,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, like } from "drizzle-orm";
@@ -39,6 +42,10 @@ export interface IStorage {
   // Voice command operations
   saveVoiceCommand(command: InsertVoiceCommand): Promise<VoiceCommand>;
   getVoiceCommandsByUser(userId: string): Promise<VoiceCommand[]>;
+  
+  // Training conversation operations
+  saveTrainingConversation(conversation: InsertTrainingConversation): Promise<TrainingConversation>;
+  getTrainingConversationsByUser(userId: string): Promise<TrainingConversation[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -167,6 +174,23 @@ export class DatabaseStorage implements IStorage {
       .from(voiceCommands)
       .where(eq(voiceCommands.userId, userId))
       .orderBy(desc(voiceCommands.createdAt));
+  }
+
+  // Training conversation operations
+  async saveTrainingConversation(conversationData: InsertTrainingConversation): Promise<TrainingConversation> {
+    const [newConversation] = await db
+      .insert(trainingConversations)
+      .values(conversationData)
+      .returning();
+    return newConversation;
+  }
+
+  async getTrainingConversationsByUser(userId: string): Promise<TrainingConversation[]> {
+    return await db
+      .select()
+      .from(trainingConversations)
+      .where(eq(trainingConversations.userId, userId))
+      .orderBy(desc(trainingConversations.createdAt));
   }
 }
 

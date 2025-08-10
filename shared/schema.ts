@@ -75,6 +75,18 @@ export const voiceCommands = pgTable("voice_commands", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Training conversations table for AI assistant interactions
+export const trainingConversations = pgTable("training_conversations", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  sessionId: varchar("session_id").notNull(),
+  userMessage: text("user_message").notNull(),
+  assistantResponse: text("assistant_response").notNull(),
+  context: varchar("context"), // 'user_training', 'voice_help', 'marketplace_guide'
+  currentPage: varchar("current_page"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Type exports
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -101,3 +113,10 @@ export const insertVoiceCommandSchema = createInsertSchema(voiceCommands).omit({
 });
 export type InsertVoiceCommand = z.infer<typeof insertVoiceCommandSchema>;
 export type VoiceCommand = typeof voiceCommands.$inferSelect;
+
+export const insertTrainingConversationSchema = createInsertSchema(trainingConversations).omit({
+  id: true,
+  createdAt: true,
+});
+export type InsertTrainingConversation = z.infer<typeof insertTrainingConversationSchema>;
+export type TrainingConversation = typeof trainingConversations.$inferSelect;

@@ -4,6 +4,7 @@ import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { aiServices } from "./services/aiServices";
+import { TrainingService } from "./services/trainingService";
 import { insertContentSchema, insertProjectSchema, insertVoiceCommandSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -162,6 +163,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error processing voice command:", error);
       res.status(500).json({ message: "Failed to process voice command" });
+    }
+  });
+
+  // Training assistant routes
+  app.post('/api/training/chat', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { message, currentPage, context } = req.body;
+      
+      const trainingService = new TrainingService();
+      const response = await trainingService.generateResponse({
+        userMessage: message,
+        currentPage,
+        context
+      });
+
+      // Save the conversation for learning
+      await storage.saveTrainingConversation({
+        userId,
+        sessionId: req.sessionID || 'anonymous',
+        userMessage: message,
+        assistantResponse: response.message,
+        context,
+        currentPage
+      });
+
+      res.json(response);
+    } catch (error) {
+      console.error("Error in training chat:", error);
+      res.status(500).json({ message: "Failed to process training request" });
+    }
+  });
+
+  app.get('/api/training/tips', isAuthenticated, async (req: any, res) => {
+    try {
+      const { page } = req.query;
+      const trainingService = new TrainingService();
+      const tips = trainingService.generateQuickTips(page);
+      res.json({ tips });
+    } catch (error) {
+      console.error("Error getting training tips:", error);
+      res.status(500).json({ message: "Failed to get training tips" });
     }
   });
 

@@ -18,20 +18,23 @@ Platform features: Multi-device recording capabilities from mobile phones and co
 - **Routing**: Wouter for client-side routing
 - **Authentication**: Session-based authentication with Replit Auth integration
 - **Voice Controls**: Web Speech API integration for voice command functionality
+- **AI Training Assistant**: Interactive floating assistant for user education and platform guidance
 
 ## Backend Architecture
 - **Framework**: Express.js with TypeScript running on Node.js
 - **API Design**: RESTful API with structured route handling
 - **Authentication**: Replit OpenID Connect (OIDC) with Passport.js strategy
 - **Session Management**: Express sessions stored in PostgreSQL with connect-pg-simple
-- **AI Services**: OpenAI integration for content generation (audio, video, text processing)
+- **AI Services**: OpenAI integration for content generation (audio, video, text processing) and training assistance
+- **Training Service**: AI-powered user training system for platform education
 - **File Structure**: Modular organization with separate routes, services, and storage layers
 
 ## Data Storage
 - **Database**: PostgreSQL with Neon serverless driver
 - **ORM**: Drizzle ORM for type-safe database operations
-- **Schema**: Well-structured tables for users, sessions, content, projects, and voice commands
+- **Schema**: Well-structured tables for users, sessions, content, projects, voice commands, and training conversations
 - **Migrations**: Database schema versioning with Drizzle Kit
+- **Training Data**: Conversation history storage for AI assistant learning and improvement
 
 ## Authentication & Authorization
 - **Provider**: Replit Auth using OpenID Connect protocol
