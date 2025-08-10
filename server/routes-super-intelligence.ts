@@ -190,8 +190,8 @@ export function registerSuperIntelligenceRoutes(app: Express): void {
         context: {
           userId: req.userContext?.userId || 'anonymous',
           language: req.userContext?.language || 'en',
-          domain: 'mixed',
-          quality: 'super',
+          domain: 'mixed' as const,
+          quality: 'super' as const,
           realtime: true
         },
         capabilities: {
@@ -239,8 +239,8 @@ export function registerSuperIntelligenceRoutes(app: Express): void {
         context: {
           userId: req.userContext?.userId || 'anonymous',
           language: req.userContext?.language || 'en',
-          domain: 'analytics',
-          quality: 'expert',
+          domain: 'mixed' as const,
+          quality: 'expert' as const,
           realtime: false
         },
         capabilities: {
@@ -330,12 +330,13 @@ export function registerSuperIntelligenceRoutes(app: Express): void {
   });
 
   // Voice Preferences Update Route (Protected)
-  enhancedRouterService.enhanceRoute(app, 'post', '/api/voice/preferences', async (req, res) => {
+  enhancedRouterService.enhanceRoute(app, 'post', '/api/voice/preferences', async (req, res): Promise<void> => {
     if (!req.isAuthenticated()) {
-      return res.status(401).json({
+      res.status(401).json({
         success: false,
         error: 'Authentication required to update voice preferences'
       });
+      return;
     }
 
     try {
@@ -343,10 +344,11 @@ export function registerSuperIntelligenceRoutes(app: Express): void {
       const preferences = req.body;
 
       if (!userId) {
-        return res.status(400).json({
+        res.status(400).json({
           success: false,
           error: 'User ID not found'
         });
+        return;
       }
 
       await voiceFirstService.updateUserPreferences(userId, preferences);
@@ -367,7 +369,7 @@ export function registerSuperIntelligenceRoutes(app: Express): void {
   });
 
   // Super Intelligence Health Check Route
-  enhancedRouterService.enhanceRoute(app, 'get', '/api/super-intelligence/health', async (req, res) => {
+  enhancedRouterService.enhanceRoute(app, 'get', '/api/super-intelligence/health', async (req, res): Promise<void> => {
     try {
       res.json({
         success: true,
@@ -419,8 +421,8 @@ export function registerSuperIntelligenceRoutes(app: Express): void {
         context: {
           userId: req.userContext?.userId || 'anonymous',
           language: req.userContext?.language || 'en',
-          domain: type || 'mixed',
-          quality: 'super',
+          domain: (type as 'video' | 'audio' | 'image' | 'text' | 'music' | 'mixed') || 'mixed',
+          quality: 'super' as const,
           realtime: true
         },
         capabilities: {

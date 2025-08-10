@@ -168,14 +168,16 @@ class EnhancedRouterService {
   private complianceMiddleware(req: EnhancedRequest, res: Response, next: NextFunction): void {
     if (!this.enhancement.complianceChecks) return next();
 
-    // Apply compliance headers
-    res.setHeader('X-Compliance-GDPR', 'enabled');
-    res.setHeader('X-Compliance-CCPA', 'enabled');
-    res.setHeader('X-Compliance-FERPA', 'enabled');
-    res.setHeader('X-Compliance-PCI-DSS', 'enabled');
-    res.setHeader('X-Compliance-ISO27001', 'enabled');
-    res.setHeader('X-Privacy-Policy', 'https://cognomega.com/privacy');
-    res.setHeader('X-Data-Protection', 'enforced');
+    // Apply compliance headers only if not already sent
+    if (!res.headersSent) {
+      res.setHeader('X-Compliance-GDPR', 'enabled');
+      res.setHeader('X-Compliance-CCPA', 'enabled');
+      res.setHeader('X-Compliance-FERPA', 'enabled');
+      res.setHeader('X-Compliance-PCI-DSS', 'enabled');
+      res.setHeader('X-Compliance-ISO27001', 'enabled');
+      res.setHeader('X-Privacy-Policy', 'https://cognomega.com/privacy');
+      res.setHeader('X-Data-Protection', 'enforced');
+    }
 
     next();
   }
@@ -197,11 +199,11 @@ class EnhancedRouterService {
           req.enhancedResponse = agentResponse;
         }
 
+        // Apply post-processing optimizations BEFORE handler execution
+        this.applyPostProcessingOptimizations(req, res);
+
         // Execute original handler with enhancements
         await handler(req, res);
-
-        // Apply post-processing optimizations
-        this.applyPostProcessingOptimizations(req, res);
 
       } catch (error) {
         // Self-healing error recovery
@@ -222,6 +224,11 @@ class EnhancedRouterService {
   ): Promise<void> {
     const route = `${req.method} ${req.path}`;
     console.error(`Route error in ${route}:`, error);
+
+    // Don't send response if already sent
+    if (res.headersSent) {
+      return;
+    }
 
     // Increment error count
     this.errorCounts.set(route, (this.errorCounts.get(route) || 0) + 1);
@@ -267,19 +274,22 @@ class EnhancedRouterService {
   }
 
   private applyPostProcessingOptimizations(req: EnhancedRequest, res: Response): void {
-    // Apply device-specific optimizations
-    if (req.userContext?.device === 'mobile') {
-      res.setHeader('X-Optimized-For', 'mobile');
-    }
+    // Only apply optimizations if headers haven't been sent
+    if (!res.headersSent) {
+      // Apply device-specific optimizations
+      if (req.userContext?.device === 'mobile') {
+        res.setHeader('X-Optimized-For', 'mobile');
+      }
 
-    // Apply network optimizations
-    if (req.userContext?.network === 'slow') {
-      res.setHeader('X-Compressed', 'true');
-    }
+      // Apply network optimizations
+      if (req.userContext?.network === 'slow') {
+        res.setHeader('X-Compressed', 'true');
+      }
 
-    // Apply accessibility optimizations
-    if (req.userContext?.accessibility.screenReader) {
-      res.setHeader('X-Accessibility', 'screen-reader-optimized');
+      // Apply accessibility optimizations
+      if (req.userContext?.accessibility.screenReader) {
+        res.setHeader('X-Accessibility', 'screen-reader-optimized');
+      }
     }
   }
 

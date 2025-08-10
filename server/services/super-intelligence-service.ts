@@ -366,7 +366,7 @@ class SuperIntelligenceService {
     };
   }
 
-  private async analyzeUserBehavior(request: SuperIntelligenceRequest): any {
+  private async analyzeUserBehavior(request: SuperIntelligenceRequest): Promise<any> {
     return {
       engagement_patterns: 'high_creativity_preference',
       preferred_domains: [request.context.domain],
@@ -389,7 +389,7 @@ class SuperIntelligenceService {
   private async fallbackToProductionIntelligence(request: SuperIntelligenceRequest): Promise<SuperIntelligenceResponse> {
     try {
       const productionRequest = {
-        type: request.type,
+        type: request.type === 'generation' ? 'creation' : request.type,
         input: JSON.stringify(request.input),
         context: request.context,
         quality: request.context.quality,
