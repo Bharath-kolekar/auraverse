@@ -360,11 +360,6 @@ export default function Landing() {
 
         {/* Floating Elements */}
         <motion.div
-          className="absolute top-32 left-20 w-24 h-24 rounded-full bg-gradient-to-r from-purple-600/20 to-pink-600/20 backdrop-blur-xl"
-          animate={{ y: [-30, 30, -30], rotate: [0, 180, 360] }}
-          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
           className="absolute bottom-40 right-16 w-20 h-20 rounded-full bg-gradient-to-r from-blue-600/20 to-cyan-600/20 backdrop-blur-xl"
           animate={{ y: [30, -30, 30], rotate: [360, 180, 0] }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
