@@ -10,7 +10,7 @@ interface NavigationProps {
 export function FixedNavigation({ currentPath = '/' }: NavigationProps) {
   const [location, setLocation] = useLocation();
 
-  const navigationItems = [
+  const allNavigationItems = [
     { path: '/', label: 'Home', icon: Home },
     { path: '/create', label: 'Create Studio', icon: Sparkles },
     { path: '/video-production', label: 'Video Production', icon: Video },
@@ -18,6 +18,11 @@ export function FixedNavigation({ currentPath = '/' }: NavigationProps) {
     { path: '/marketplace', label: 'Marketplace', icon: Globe },
     { path: '/intelligence', label: 'Intelligence', icon: Brain }
   ];
+
+  // Filter out Home button when on home page
+  const navigationItems = currentPath === '/' 
+    ? allNavigationItems.filter(item => item.path !== '/')
+    : allNavigationItems;
 
   const handleNavigation = (path: string, label: string) => {
     console.log(`Navigation clicked: ${label} -> ${path}`);

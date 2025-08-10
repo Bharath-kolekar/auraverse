@@ -7,6 +7,7 @@ import {
   Activity, ArrowUp, CheckCircle, Clock, AlertCircle,
   Home as HomeIcon, Star, Award, BarChart3
 } from 'lucide-react';
+import logoImage from '@assets/Image_1754850206646.png';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -186,14 +187,15 @@ export default function Home() {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <motion.div 
-                className="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl flex items-center justify-center"
-                animate={{ rotate: [0, 360] }}
-                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-              >
-                <Sparkles className="w-6 h-6 text-white" />
-              </motion.div>
-              <span className="text-lg font-semibold text-white">Infinite Intelligence</span>
+              <motion.img 
+                src={logoImage}
+                alt="COGNOMEGA"
+                className="h-10 w-auto object-contain"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+                whileHover={{ scale: 1.05 }}
+              />
             </div>
             
             <motion.div 
