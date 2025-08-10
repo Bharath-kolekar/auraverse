@@ -3,9 +3,23 @@ import { productionIntelligenceService } from './production-intelligence-service
 import OpenAI from 'openai';
 
 // Initialize OpenAI for advanced decision making
-const openai = process.env.OPENAI_API_KEY ? new OpenAI({
+// Smart OpenAI client with automatic fallback
+const openaiPrimary = process.env.OPENAI_API_KEY ? new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 }) : null;
+
+const openaiBackup = process.env.OPENAI_API_KEY_BACKUP ? new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY_BACKUP,
+}) : null;
+
+async function getWorkingOpenAI(): Promise<OpenAI | null> {
+  // Use backup directly since primary has quota issues
+  if (openaiBackup) {
+    console.log('Global AI Agent using backup OpenAI API key...');
+    return openaiBackup;
+  }
+  return openaiPrimary;
+}
 
 export interface GlobalAgentConfig {
   voiceFirst: boolean;
@@ -55,7 +69,7 @@ class GlobalAIAgent {
     this.initializeBackupAgents();
     this.startAutoOptimization();
     this.initializeLearningSystem();
-    this.startIntelligentMonitoring();
+    this.startIntelligentMonitoring().catch(console.error);
   }
 
   private initializeBackupAgents(): void {
@@ -91,8 +105,9 @@ class GlobalAIAgent {
     this.behaviorPatterns.set('performance_enhancements', []);
   }
 
-  private startIntelligentMonitoring(): void {
-    if (openai) {
+  private async startIntelligentMonitoring(): Promise<void> {
+    const activeOpenAI = await getWorkingOpenAI();
+    if (activeOpenAI) {
       setInterval(async () => {
         await this.performIntelligentAnalysis();
       }, 60000); // Analyze every minute
@@ -100,8 +115,9 @@ class GlobalAIAgent {
   }
 
   private async performIntelligentAnalysis(): Promise<void> {
+    const activeOpenAI = await getWorkingOpenAI();
     try {
-      if (!openai) return;
+      if (!activeOpenAI) return;
 
       const systemMetrics = {
         responseTime: this.getAverageResponseTime(),
@@ -125,7 +141,7 @@ Provide specific recommendations for:
 
 Return JSON with actionable insights.`;
 
-      const response = await openai.chat.completions.create({
+      const response = await activeOpenAI.chat.completions.create({
         model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
         messages: [{ role: "user", content: analysisPrompt }],
         response_format: { type: "json_object" }
@@ -156,7 +172,8 @@ Return JSON with actionable insights.`;
 
   async makeIntelligentDecision(context: any, options: any[]): Promise<any> {
     try {
-      if (!openai) {
+      const activeOpenAI = await getWorkingOpenAI();
+    if (!activeOpenAI) {
         return options[0]; // Fallback to first option
       }
 
@@ -175,7 +192,7 @@ Analyze and select the best option considering:
 
 Return JSON with selected option and reasoning.`;
 
-      const response = await openai.chat.completions.create({
+      const response = await activeOpenAI.chat.completions.create({
         model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
         messages: [{ role: "user", content: decisionPrompt }],
         response_format: { type: "json_object" }

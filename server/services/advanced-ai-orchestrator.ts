@@ -1,9 +1,36 @@
 import OpenAI from "openai";
 import { globalAIAgent } from './global-ai-agent';
 
-const openai = process.env.OPENAI_API_KEY ? new OpenAI({
+// Primary and backup OpenAI clients for robust service
+const openaiPrimary = process.env.OPENAI_API_KEY ? new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 }) : null;
+
+const openaiBackup = process.env.OPENAI_API_KEY_BACKUP ? new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY_BACKUP,
+}) : null;
+
+// Smart OpenAI client with automatic fallback
+async function getWorkingOpenAI(): Promise<OpenAI | null> {
+  // Use backup directly since primary has quota issues
+  if (openaiBackup) {
+    console.log('Using backup OpenAI API key...');
+    return openaiBackup;
+  }
+  
+  // Fallback to primary if backup not available
+  if (openaiPrimary) {
+    try {
+      await openaiPrimary.models.list();
+      return openaiPrimary;
+    } catch (error: any) {
+      console.log('Primary OpenAI API not available:', error.message);
+      return null;
+    }
+  }
+  
+  return null;
+}
 
 export interface AdvancedAIRequest {
   type: 'analyze' | 'optimize' | 'generate' | 'enhance' | 'predict';
@@ -32,6 +59,18 @@ class AdvancedAIOrchestrator {
     this.globalAgent = globalAIAgent;
   }
 
+  private async callOpenAI(prompt: string, options: any = {}) {
+    const activeOpenAI = await getWorkingOpenAI();
+    if (!activeOpenAI) throw new Error('OpenAI not available');
+    
+    return await activeOpenAI.chat.completions.create({
+      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+      messages: [{ role: "user", content: prompt }],
+      response_format: { type: "json_object" },
+      ...options
+    });
+  }
+
   static getInstance(): AdvancedAIOrchestrator {
     if (!AdvancedAIOrchestrator.instance) {
       AdvancedAIOrchestrator.instance = new AdvancedAIOrchestrator();
@@ -41,7 +80,8 @@ class AdvancedAIOrchestrator {
 
   async processAdvancedRequest(request: AdvancedAIRequest): Promise<AdvancedAIResponse> {
     try {
-      if (!openai) {
+      const activeOpenAI = await getWorkingOpenAI();
+    if (!activeOpenAI) {
         throw new Error('OpenAI not available');
       }
 
@@ -115,12 +155,7 @@ Provide comprehensive analysis including:
 
 Return detailed JSON analysis.`;
 
-    const response = await openai!.chat.completions.create({
-      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-      messages: [{ role: "user", content: prompt }],
-      response_format: { type: "json_object" }
-    });
-
+    const response = await this.callOpenAI(prompt);
     return JSON.parse(response.choices[0].message.content || '{}');
   }
 
@@ -141,12 +176,7 @@ Design optimal strategy including:
 
 Return comprehensive strategy in JSON format.`;
 
-    const response = await openai!.chat.completions.create({
-      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-      messages: [{ role: "user", content: prompt }],
-      response_format: { type: "json_object" }
-    });
-
+    const response = await this.callOpenAI(prompt);
     return JSON.parse(response.choices[0].message.content || '{}');
   }
 
@@ -184,13 +214,7 @@ Execute comprehensive analysis including:
 
 Return detailed analysis results in JSON format.`;
 
-    const response = await openai!.chat.completions.create({
-      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-      messages: [{ role: "user", content: prompt }],
-      response_format: { type: "json_object" },
-      max_tokens: 4000
-    });
-
+    const response = await this.callOpenAI(prompt, { max_tokens: 4000 });
     return JSON.parse(response.choices[0].message.content || '{}');
   }
 
