@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useLocation } from 'wouter';
 import { useEffect } from 'react';
+import { useVoiceNavigation } from '@/lib/navigationHelper';
 
 interface ActionResponse {
   success: boolean;
@@ -10,7 +11,7 @@ interface ActionResponse {
 }
 
 export function useVoiceActions() {
-  const [location, setLocation] = useLocation();
+  const { location, navigateWithRetry } = useVoiceNavigation();
   const [isProcessing, setIsProcessing] = useState(false);
   
   // Add debugging for location changes
@@ -48,10 +49,12 @@ export function useVoiceActions() {
       if ((lowerCommand.includes('falling') && (lowerCommand.includes('star') || lowerCommand.includes('meteor') || lowerCommand.includes('sky'))) ||
           (lowerCommand.includes('make') && lowerCommand.includes('falling') && lowerCommand.includes('stars'))) {
         console.log('Creating meteor VFX, navigating to Create Studio...');
-        // Use immediate SPA navigation only
-        console.log('Before navigation - current location check');
-        setLocation('/create');
-        console.log('After setLocation call to /create');
+        
+        // Use enhanced navigation with retry mechanism
+        navigateWithRetry('/create').then(result => {
+          console.log('Navigation result:', result.success ? 'SUCCESS' : 'FAILED', result.message);
+        });
+        
         return { 
           success: true, 
           message: "Creating spectacular falling star VFX! Opening Create Studio now and generating meteors with glowing trails, atmospheric entry effects, particle sparkles, and dramatic sky illumination.", 
@@ -152,8 +155,12 @@ export function useVoiceActions() {
       // Generic creation commands
       if (lowerCommand.includes('make') || lowerCommand.includes('create') || lowerCommand.includes('generate')) {
         console.log('Generic creation command detected, navigating to Create Studio...');
-        // Use immediate SPA navigation only
-        setLocation('/create');
+        
+        // Use enhanced navigation
+        navigateWithRetry('/create').then(result => {
+          console.log('Generic creation navigation result:', result.success ? 'SUCCESS' : 'FAILED', result.message);
+        });
+        
         return { 
           success: true, 
           message: "Starting creation process! Opening Create Studio now where I'll help you bring your vision to life with AI-powered tools.", 

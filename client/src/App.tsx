@@ -17,39 +17,30 @@ import NotFound from "@/pages/not-found";
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+        <div className="text-center text-white">
+          <div className="animate-spin w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+          Loading...
+        </div>
+      </div>
+    );
+  }
+
   return (
     <Switch>
-      {isLoading ? (
-        <Route path="*">
-          <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-            <div className="text-center text-white">
-              <div className="animate-spin w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-              Loading...
-            </div>
-          </div>
-        </Route>
-      ) : (
-        <>
-          {/* Create Studio accessible for all users */}
-          <Route path="/create" component={Create} />
-          
-          {/* Main routes for authenticated users */}
-          {isAuthenticated && (
-            <>
-              <Route path="/" component={Home} />
-              <Route path="/marketplace" component={Marketplace} />
-              <Route path="/gallery" component={Gallery} />
-              <Route path="/intelligence" component={Intelligence} />
-            </>
-          )}
-          
-          {/* Landing page for unauthenticated users */}
-          {!isAuthenticated && <Route path="/" component={Landing} />}
-          
-          {/* Fallback */}
-          <Route component={NotFound} />
-        </>
-      )}
+      {/* All routes accessible regardless of authentication status */}
+      <Route path="/create" component={Create} />
+      <Route path="/marketplace" component={Marketplace} />
+      <Route path="/gallery" component={Gallery} />
+      <Route path="/intelligence" component={Intelligence} />
+      
+      {/* Home/Landing based on authentication */}
+      <Route path="/" component={isAuthenticated ? Home : Landing} />
+      
+      {/* Fallback for any other route */}
+      <Route component={NotFound} />
     </Switch>
   );
 }

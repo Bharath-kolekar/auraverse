@@ -428,11 +428,21 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
     if (actionResult.success) {
       console.log('Executed action:', actionResult.action, actionResult.message);
       
-      // If there's a redirect, just show immediate visual feedback
+      // If there's a redirect, provide enhanced feedback and execute navigation
       if (actionResult.redirect) {
-        console.log('Navigation handled by voice action hook to:', actionResult.redirect);
-        // Show immediate visual feedback without forcing reload
+        console.log('Navigation command received for:', actionResult.redirect);
         setCurrentMessage(actionResult.message + ' - Create Studio opening now!');
+        
+        // Additional navigation verification
+        setTimeout(() => {
+          const currentPath = window.location.pathname;
+          console.log('Current browser path after navigation:', currentPath);
+          if (currentPath !== actionResult.redirect) {
+            console.log('Navigation may have failed, current path:', currentPath, 'expected:', actionResult.redirect);
+          } else {
+            console.log('Navigation successful to:', currentPath);
+          }
+        }, 1000);
       }
       
       return actionResult.message;
