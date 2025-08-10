@@ -38,13 +38,15 @@ export function useVoiceActions() {
         }
       }
       
-      // Falling star/meteor VFX
-      if (lowerCommand.includes('falling') && (lowerCommand.includes('star') || lowerCommand.includes('meteor') || lowerCommand.includes('sky'))) {
+      // Falling star/meteor VFX - also catches "make falling stars"
+      if ((lowerCommand.includes('falling') && (lowerCommand.includes('star') || lowerCommand.includes('meteor') || lowerCommand.includes('sky'))) ||
+          (lowerCommand.includes('make') && lowerCommand.includes('falling') && lowerCommand.includes('stars'))) {
         console.log('Creating meteor VFX, navigating to Create Studio...');
-        setLocation('/create');
+        // Force immediate navigation
+        setTimeout(() => setLocation('/create'), 100);
         return { 
           success: true, 
-          message: "Creating spectacular falling star VFX! Opening Create Studio and generating meteors with glowing trails, atmospheric entry effects, particle sparkles, and dramatic sky illumination.", 
+          message: "Creating spectacular falling star VFX! Opening Create Studio now and generating meteors with glowing trails, atmospheric entry effects, particle sparkles, and dramatic sky illumination.", 
           action: 'create_meteor_vfx',
           redirect: '/create'
         };
@@ -102,12 +104,14 @@ export function useVoiceActions() {
       // Video creation commands - more flexible matching
       if ((lowerCommand.includes('create') && (lowerCommand.includes('video') || lowerCommand.includes('movie') || lowerCommand.includes('film'))) || 
           lowerCommand.includes('cinematic video') ||
-          (lowerCommand.includes('would like to create') && lowerCommand.includes('video'))) {
+          (lowerCommand.includes('would like to create') && lowerCommand.includes('video')) ||
+          (lowerCommand.includes('want to create') && lowerCommand.includes('video'))) {
         console.log('Creating video, navigating to Create Studio...');
-        setLocation('/create?autostart=true&type=video');
+        // Force immediate navigation
+        setTimeout(() => setLocation('/create?autostart=true&type=video'), 100);
         return { 
           success: true, 
-          message: "Creating your cinematic video! Opening Create Studio and producing your video with bus scenes, VFX effects, background music, and professional editing.", 
+          message: "Creating your cinematic video! Opening Create Studio now and producing your video with train station scenes, VFX effects, background music, and professional editing.", 
           action: 'create_video',
           redirect: '/create'
         };
@@ -139,10 +143,12 @@ export function useVoiceActions() {
       
       // Generic creation commands
       if (lowerCommand.includes('make') || lowerCommand.includes('create') || lowerCommand.includes('generate')) {
-        setLocation('/create');
+        console.log('Generic creation command detected, navigating to Create Studio...');
+        // Force immediate navigation
+        setTimeout(() => setLocation('/create'), 100);
         return { 
           success: true, 
-          message: "Starting creation process! Opening Create Studio where I'll help you bring your vision to life with AI-powered tools.", 
+          message: "Starting creation process! Opening Create Studio now where I'll help you bring your vision to life with AI-powered tools.", 
           action: 'start_creation',
           redirect: '/create'
         };

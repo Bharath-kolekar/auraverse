@@ -427,6 +427,14 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
     const actionResult = await executeCommand(command);
     if (actionResult.success) {
       console.log('Executed action:', actionResult.action, actionResult.message);
+      
+      // If there's a redirect, ensure navigation happens
+      if (actionResult.redirect) {
+        console.log('Redirecting to:', actionResult.redirect);
+        // Show immediate visual feedback
+        setCurrentMessage(actionResult.message + ' Navigating now...');
+      }
+      
       return actionResult.message;
     }
     

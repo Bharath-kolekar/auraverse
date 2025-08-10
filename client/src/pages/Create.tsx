@@ -7,9 +7,10 @@ import {
 } from 'lucide-react';
 
 export default function Create() {
-  const [activeTab, setActiveTab] = useState('audio');
+  const [activeTab, setActiveTab] = useState('video'); // Default to video for voice commands
   const [isGenerating, setIsGenerating] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [voiceTriggered, setVoiceTriggered] = useState(false);
 
   const creationTools = [
     {
@@ -53,9 +54,44 @@ export default function Create() {
     { name: 'Whisper Large', power: 'Speech processing', status: 'active' }
   ];
 
+  // Check for voice-triggered navigation
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('autostart') === 'true') {
+      const type = params.get('type') || 'video';
+      setActiveTab(type);
+      setVoiceTriggered(true);
+      setIsGenerating(true);
+      setProgress(10);
+      
+      // Simulate generation
+      let currentProgress = 10;
+      const interval = setInterval(() => {
+        currentProgress += 15;
+        setProgress(currentProgress);
+        if (currentProgress >= 100) {
+          clearInterval(interval);
+          setIsGenerating(false);
+          setProgress(0);
+        }
+      }, 500);
+    }
+  }, []);
+
   return (
     <div className="min-h-screen relative overflow-hidden">
       <div className="particles-bg" />
+      
+      {/* Voice Command Success Banner */}
+      {voiceTriggered && (
+        <motion.div 
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-green-600/90 text-white px-6 py-3 rounded-xl backdrop-blur-sm border border-green-400/30"
+        >
+          ✓ Voice Command Executed Successfully! Create Studio is now open.
+        </motion.div>
+      )}
       
       {/* Header */}
       <motion.div 
