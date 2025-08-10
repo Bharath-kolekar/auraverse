@@ -1,6 +1,6 @@
 import React from 'react';
-import { TestCreatePage } from '@/components/ui/test-create-page';
+import { WorkingCreatePage } from '@/components/ui/working-create-page';
 
 export default function Create() {
-  return <TestCreatePage />;
+  return <WorkingCreatePage />;
 }
