@@ -465,23 +465,23 @@ export default function NeuralIntelligenceCore() {
       {showSkull && (
         <motion.div
           ref={coreRef}
-          className="fixed bottom-6 left-6 z-40"
-          initial={{ opacity: 0, scale: 0.8, x: -20 }}
+          className="fixed bottom-6 right-6 z-40 max-w-xs"
+          initial={{ opacity: 0, scale: 0.8, x: 20 }}
           animate={{ opacity: 1, scale: 1, x: 0 }}
-          exit={{ opacity: 0, scale: 0.8, x: -20 }}
+          exit={{ opacity: 0, scale: 0.8, x: 20 }}
           transition={{ duration: 0.4, type: "spring", damping: 15 }}
         >
-          <Card className="bg-gradient-to-br from-purple-900/95 via-indigo-900/95 to-blue-900/95 backdrop-blur-lg border border-purple-500/30 shadow-2xl overflow-hidden">
-            <CardContent className="p-4">
+          <Card className="bg-gradient-to-br from-purple-900/95 via-indigo-900/95 to-blue-900/95 backdrop-blur-lg border border-purple-500/30 shadow-2xl overflow-hidden w-full">
+            <CardContent className="p-3">
               {/* Neural Intelligence Core Header */}
-              <div className="flex items-center gap-3 mb-3">
+              <div className="flex items-center gap-2 mb-2">
                 <motion.div
                   className="relative"
                   animate={isActive ? { scale: [1, 1.1, 1] } : {}}
                   transition={{ duration: 2, repeat: isActive ? Infinity : 0 }}
                 >
                   <NeuralSkull 
-                    size={40} 
+                    size={32} 
                     isActive={isActive || isListening || isSpeaking} 
                     showMagic={isListening || isSpeaking}
                   />
@@ -494,19 +494,19 @@ export default function NeuralIntelligenceCore() {
                   )}
                 </motion.div>
                 
-                <div className="flex-1">
-                  <h3 className="text-white font-semibold text-sm">Neural Intelligence</h3>
-                  <div className="flex items-center gap-2">
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-white font-semibold text-xs truncate">Neural Intelligence</h3>
+                  <div className="flex items-center gap-1 flex-wrap">
                     <Badge 
                       variant="outline" 
                       className={`text-xs border-green-500 ${isActive ? 'text-green-400' : 'text-gray-400'}`}
                     >
-                      <Brain className="w-3 h-3 mr-1" />
+                      <Brain className="w-2 h-2 mr-1" />
                       {isActive ? 'Active' : 'Standby'}
                     </Badge>
                     {config.neuralProcessing && (
                       <Badge variant="outline" className="text-xs border-blue-500 text-blue-400">
-                        <Zap className="w-3 h-3 mr-1" />
+                        <Zap className="w-2 h-2 mr-1" />
                         Neural
                       </Badge>
                     )}
@@ -515,17 +515,17 @@ export default function NeuralIntelligenceCore() {
               </div>
 
               {/* Voice Controls */}
-              <div className="flex items-center gap-2 mb-3">
+              <div className="flex items-center gap-1 mb-2">
                 <Button
                   size="sm"
                   onClick={toggleListening}
                   disabled={!voiceContext.deviceCapabilities.speechRecognition}
-                  className={`flex-1 ${isListening 
+                  className={`flex-1 text-xs h-7 ${isListening 
                     ? 'bg-red-600 hover:bg-red-700' 
                     : 'bg-purple-600 hover:bg-purple-700'
                   } text-white`}
                 >
-                  {isListening ? <MicOff className="w-3 h-3 mr-1" /> : <Mic className="w-3 h-3 mr-1" />}
+                  {isListening ? <MicOff className="w-2 h-2 mr-1" /> : <Mic className="w-2 h-2 mr-1" />}
                   {isListening ? 'Stop' : 'Listen'}
                 </Button>
                 
@@ -533,20 +533,20 @@ export default function NeuralIntelligenceCore() {
                   size="sm"
                   onClick={stopSpeaking}
                   disabled={!isSpeaking}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  className="bg-blue-600 hover:bg-blue-700 text-white h-7 px-2"
                 >
-                  {isSpeaking ? <VolumeX className="w-3 h-3" /> : <Volume2 className="w-3 h-3" />}
+                  {isSpeaking ? <VolumeX className="w-2 h-2" /> : <Volume2 className="w-2 h-2" />}
                 </Button>
                 
                 <Button
                   size="sm"
                   onClick={() => setIsActive(!isActive)}
-                  className={`${isActive 
+                  className={`h-7 px-2 ${isActive 
                     ? 'bg-green-600 hover:bg-green-700' 
                     : 'bg-gray-600 hover:bg-gray-700'
                   } text-white`}
                 >
-                  <Star className="w-3 h-3" />
+                  <Star className="w-2 h-2" />
                 </Button>
               </div>
 
@@ -557,25 +557,26 @@ export default function NeuralIntelligenceCore() {
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
-                    className="bg-white/10 rounded-lg p-3 mb-3"
+                    className="bg-white/10 rounded-lg p-2 mb-2"
                   >
                     <div className="flex items-start gap-2">
-                      <MessageCircle className="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" />
-                      <p className="text-white text-xs leading-relaxed">{currentMessage}</p>
+                      <MessageCircle className="w-3 h-3 text-cyan-400 mt-0.5 flex-shrink-0" />
+                      <p className="text-white text-xs leading-relaxed break-words">{currentMessage}</p>
                     </div>
                   </motion.div>
                 )}
               </AnimatePresence>
 
               {/* Status Display */}
-              <div className="text-xs text-white/70 text-center">
-                {config.language.toUpperCase()} • {config.accent ? config.accent.toUpperCase() : 'Default'}
-                {isListening && <span className="ml-2 animate-pulse text-red-400">● Listening</span>}
-                {isSpeaking && <span className="ml-2 animate-pulse text-blue-400">🔊 Speaking</span>}
-              </div>
-              
-              <div className="text-xs text-white/50 text-center mt-1">
-                Ctrl+Shift+N to toggle • Ctrl+Shift+V for voice
+              <div className="text-xs text-white/70 text-center space-y-1">
+                <div className="truncate">
+                  {config.language.toUpperCase()} • {config.accent ? config.accent.toUpperCase() : 'Default'}
+                  {isListening && <span className="ml-1 animate-pulse text-red-400">● Listening</span>}
+                  {isSpeaking && <span className="ml-1 animate-pulse text-blue-400">🔊 Speaking</span>}
+                </div>
+                <div className="text-xs text-white/50 leading-tight">
+                  Ctrl+Shift+N to toggle • Ctrl+Shift+V for voice
+                </div>
               </div>
             </CardContent>
           </Card>

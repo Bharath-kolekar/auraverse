@@ -277,7 +277,7 @@ const SuperIntelligencePanel: React.FC = () => {
 
   return (
     <motion.div
-      className="fixed left-4 top-32 z-50 w-96"
+      className="fixed left-4 top-32 z-50 w-80 max-w-sm"
       initial={{ x: -100, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ type: "spring", damping: 20 }}
