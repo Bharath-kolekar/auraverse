@@ -4,6 +4,7 @@ import { Sparkles, Music, Video, Mic, Image, Download, Cpu, Zap, Loader2 } from 
 import { useAuth } from '@/hooks/useAuth';
 import { apiRequest } from '@/lib/queryClient';
 import { FixedNavigation } from './fixed-navigation';
+import { VideoPlayer } from './video-player';
 
 interface ContentGenerationRequest {
   type: 'video' | 'audio' | 'image' | 'voice' | 'vfx';
@@ -119,11 +120,21 @@ export function RealCreateStudio() {
       link.href = content.url;
       link.download = `voice_${content.id}.mp3`;
       link.click();
-    } else {
-      // Handle image URLs
+    } else if (content.type === 'video' && content.metadata?.downloadable) {
+      // Handle procedural video download - will be handled by VideoPlayer component
+      const event = new CustomEvent('downloadVideo', { detail: content });
+      window.dispatchEvent(event);
+    } else if (content.url.startsWith('data:image/svg+xml')) {
+      // Handle SVG downloads
       const link = document.createElement('a');
       link.href = content.url;
-      link.download = `${content.type}_${content.id}.${content.type === 'image' ? 'png' : 'mp4'}`;
+      link.download = `${content.type}_${content.id}.svg`;
+      link.click();
+    } else {
+      // Handle regular image URLs
+      const link = document.createElement('a');
+      link.href = content.url;
+      link.download = `${content.type}_${content.id}.${content.type === 'image' ? 'png' : 'jpg'}`;
       link.target = '_blank';
       link.click();
     }
@@ -386,12 +397,21 @@ export function RealCreateStudio() {
                     {/* Preview */}
                     <div className="bg-black/30 rounded-xl p-4">
                       {currentJob.type === 'voice' && currentJob.url.startsWith('data:audio') ? (
-                        <audio controls className="w-full">
+                        <audio controls autoPlay className="w-full">
                           <source src={currentJob.url} type="audio/mp3" />
                         </audio>
+                      ) : currentJob.type === 'video' && currentJob.metadata?.autoplay ? (
+                        <div className="space-y-4">
+                          <VideoPlayer 
+                            videoData={currentJob.url}
+                            thumbnail={currentJob.metadata.thumbnail}
+                            duration={currentJob.metadata.duration}
+                            prompt={currentJob.metadata.prompt}
+                          />
+                        </div>
                       ) : (
                         <img 
-                          src={currentJob.url} 
+                          src={currentJob.metadata?.thumbnail || currentJob.url} 
                           alt="Generated content"
                           className="w-full rounded-lg max-h-64 object-cover"
                         />
