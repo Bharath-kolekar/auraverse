@@ -6,6 +6,7 @@ import { setupAuth, isAuthenticated } from "./replitAuth";
 import { hybridAiService as aiService, type ContentGenerationRequest } from "./services/hybrid-ai-service";
 import { localAiServices } from "./services/localAiServices";
 import { localTrainingService } from "./services/localTrainingService";
+import { achievementService } from "./services/achievement-service";
 
 // Using local services to eliminate API costs
 // To switch back to external APIs: import { aiServices } and { TrainingService }
@@ -22,6 +23,9 @@ import { globalAIAgent } from "./services/global-ai-agent";
 export async function registerRoutes(app: Express): Promise<Server> {
   // Apply Global Development Rules enhancements
   enhancedRouterService.applyGlobalEnhancements(app);
+  
+  // Initialize achievements
+  await achievementService.initializeAchievements();
   
   // Auth middleware
   await setupAuth(app);
@@ -291,6 +295,73 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error getting training tips:", error);
       res.status(500).json({ message: "Failed to get training tips" });
+    }
+  });
+
+  // Achievement Routes
+  app.post('/api/achievements/track', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { type, metadata, points = 0 } = req.body;
+      
+      const unlockedAchievements = await achievementService.trackActivity(
+        userId,
+        type,
+        metadata,
+        points
+      );
+      
+      res.json({ unlockedAchievements });
+    } catch (error) {
+      console.error('Error tracking achievement activity:', error);
+      res.status(500).json({ message: 'Failed to track achievement activity' });
+    }
+  });
+
+  app.get('/api/achievements', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const achievements = await achievementService.getAllAchievementsWithProgress(userId);
+      res.json(achievements);
+    } catch (error) {
+      console.error('Error fetching achievements:', error);
+      res.status(500).json({ message: 'Failed to fetch achievements' });
+    }
+  });
+
+  app.get('/api/achievements/user', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const userAchievements = await achievementService.getUserAchievements(userId);
+      res.json(userAchievements);
+    } catch (error) {
+      console.error('Error fetching user achievements:', error);
+      res.status(500).json({ message: 'Failed to fetch user achievements' });
+    }
+  });
+
+  app.get('/api/achievements/stats', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const stats = await achievementService.getUserStats(userId);
+      res.json(stats);
+    } catch (error) {
+      console.error('Error fetching user stats:', error);
+      res.status(500).json({ message: 'Failed to fetch user stats' });
+    }
+  });
+
+  app.get('/api/achievements/leaderboard', isAuthenticated, async (req: any, res) => {
+    try {
+      const { period = 'all-time', limit = 10 } = req.query;
+      const leaderboard = await achievementService.getLeaderboard(
+        period as string,
+        parseInt(limit as string, 10)
+      );
+      res.json(leaderboard);
+    } catch (error) {
+      console.error('Error fetching leaderboard:', error);
+      res.status(500).json({ message: 'Failed to fetch leaderboard' });
     }
   });
 

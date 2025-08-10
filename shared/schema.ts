@@ -31,6 +31,11 @@ export const users = pgTable("users", {
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
+  level: integer("level").default(1).notNull(),
+  experience: integer("experience").default(0).notNull(),
+  totalPoints: integer("total_points").default(0).notNull(),
+  streak: integer("streak").default(0).notNull(),
+  lastActiveDate: timestamp("last_active_date").defaultNow(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -157,3 +162,70 @@ export const insertIntelligenceUsageSchema = createInsertSchema(intelligenceUsag
 });
 export type InsertIntelligenceUsage = z.infer<typeof insertIntelligenceUsageSchema>;
 export type IntelligenceUsage = typeof intelligenceUsage.$inferSelect;
+
+// Achievements table
+export const achievements = pgTable("achievements", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  code: varchar("code").unique().notNull(), // Unique identifier like 'first_content', 'voice_master'
+  name: varchar("name").notNull(),
+  description: text("description").notNull(),
+  category: varchar("category").notNull(), // 'content', 'social', 'exploration', 'mastery'
+  icon: varchar("icon").notNull(), // Icon name from lucide-react
+  rarity: varchar("rarity").notNull(), // 'common', 'rare', 'epic', 'legendary'
+  points: integer("points").default(10).notNull(),
+  requirement: jsonb("requirement").notNull(), // JSON with conditions to unlock
+  order: integer("order").default(0).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type Achievement = typeof achievements.$inferSelect;
+export type InsertAchievement = typeof achievements.$inferInsert;
+
+// User achievements junction table
+export const userAchievements = pgTable("user_achievements", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  achievementId: varchar("achievement_id").notNull().references(() => achievements.id),
+  unlockedAt: timestamp("unlocked_at").defaultNow().notNull(),
+  progress: integer("progress").default(0).notNull(), // For progressive achievements
+  maxProgress: integer("max_progress").default(1).notNull(),
+  claimed: boolean("claimed").default(false).notNull(), // If rewards have been claimed
+}, (table) => [
+  index("idx_user_achievements_user").on(table.userId),
+  index("idx_user_achievements_achievement").on(table.achievementId),
+]);
+
+export type UserAchievement = typeof userAchievements.$inferSelect;
+export type InsertUserAchievement = typeof userAchievements.$inferInsert;
+
+// User activity tracking
+export const userActivities = pgTable("user_activities", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  type: varchar("type").notNull(), // 'content_created', 'voice_command', 'login', etc.
+  metadata: jsonb("metadata"), // Additional data about the activity
+  points: integer("points").default(0).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("idx_user_activities_user").on(table.userId),
+  index("idx_user_activities_type").on(table.type),
+]);
+
+export type UserActivity = typeof userActivities.$inferSelect;
+export type InsertUserActivity = typeof userActivities.$inferInsert;
+
+// Leaderboard view
+export const leaderboard = pgTable("leaderboard", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  period: varchar("period").notNull(), // 'daily', 'weekly', 'monthly', 'all-time'
+  points: integer("points").default(0).notNull(),
+  rank: integer("rank"),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("idx_leaderboard_period").on(table.period),
+  index("idx_leaderboard_points").on(table.points),
+]);
+
+export type LeaderboardEntry = typeof leaderboard.$inferSelect;
+export type InsertLeaderboardEntry = typeof leaderboard.$inferInsert;

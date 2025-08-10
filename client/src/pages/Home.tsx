@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from "@/hooks/useAuth";
-import { Sparkles, Mic, Video, Music, Zap, Globe, BarChart3, Brain, Cpu, TrendingUp, Award, Calendar, Clock, Star, Settings, Bell, User, Plus, ArrowRight, Play, Pause, Palette } from "lucide-react";
+import { Sparkles, Mic, Video, Music, Zap, Globe, BarChart3, Brain, Cpu, TrendingUp, Award, Calendar, Clock, Star, Settings, Bell, User, Plus, ArrowRight, Play, Pause, Palette, Trophy } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { FixedNavigation } from '@/components/ui/fixed-navigation';
 import { ThemeCustomizer } from '@/components/ui/theme-customizer';
 import { useTheme } from '@/contexts/ThemeContext';
+import { AchievementPanel } from '@/components/achievements/AchievementPanel';
+import { useTrackActivity, useUserStats } from '@/hooks/useAchievements';
 
 export default function Home() {
   const { user } = useAuth();
@@ -14,7 +16,10 @@ export default function Home() {
   const [isRecording, setIsRecording] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [themeCustomizerOpen, setThemeCustomizerOpen] = useState(false);
+  const [achievementPanelOpen, setAchievementPanelOpen] = useState(false);
   const { currentTheme, themeName } = useTheme();
+  const trackActivity = useTrackActivity();
+  const { stats: userStats } = useUserStats();
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -90,6 +95,20 @@ export default function Home() {
                 <p className="font-semibold text-white">Creator</p>
               </div>
               <div className="flex items-center space-x-3">
+                <motion.button 
+                  className="p-3 glass-card rounded-xl hover:bg-white/10 transition-all duration-300 relative"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setAchievementPanelOpen(true)}
+                  title="Achievements"
+                >
+                  <Trophy className="w-5 h-5 text-white/70" />
+                  {userStats && userStats.level > 1 && (
+                    <span className="absolute -top-1 -right-1 bg-gradient-to-r from-yellow-400 to-orange-400 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                      {userStats.level}
+                    </span>
+                  )}
+                </motion.button>
                 <motion.button 
                   className="p-3 glass-card rounded-xl hover:bg-white/10 transition-all duration-300"
                   whileHover={{ scale: 1.05 }}
@@ -379,8 +398,43 @@ export default function Home() {
       {/* Theme Customizer */}
       <ThemeCustomizer 
         isOpen={themeCustomizerOpen}
-        onClose={() => setThemeCustomizerOpen(false)}
+        onClose={() => {
+          setThemeCustomizerOpen(false);
+          trackActivity({ type: 'theme_changed', points: 5 });
+        }}
       />
+      
+      {/* Achievement Panel Modal */}
+      <AnimatePresence>
+        {achievementPanelOpen && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => setAchievementPanelOpen(false)}
+            />
+            <motion.div
+              className="relative z-10 w-full max-w-5xl max-h-[90vh] overflow-auto"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            >
+              <AchievementPanel className="shadow-2xl" />
+              <button
+                onClick={() => setAchievementPanelOpen(false)}
+                className="absolute top-4 right-4 p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+              >
+                <span className="text-white text-xl">×</span>
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

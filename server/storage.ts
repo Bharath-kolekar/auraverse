@@ -65,7 +65,14 @@ export class DatabaseStorage implements IStorage {
   async upsertUser(userData: UpsertUser): Promise<User> {
     const [user] = await db
       .insert(users)
-      .values(userData)
+      .values({
+        ...userData,
+        level: 1,
+        experience: 0,
+        totalPoints: 0,
+        streak: 0,
+        lastActiveDate: new Date()
+      })
       .onConflictDoUpdate({
         target: users.id,
         set: {

@@ -1,0 +1,199 @@
+/* Achievement System Styles */
+
+/* Achievement Toast Notifications */
+.achievement-toast {
+  position: relative;
+  overflow: hidden;
+  animation: achievementPulse 0.5s ease-out;
+}
+
+.achievement-toast::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, currentColor, transparent);
+  animation: shimmer 2s infinite;
+}
+
+.achievement-common {
+  border-left: 4px solid #9CA3AF;
+}
+
+.achievement-rare {
+  border-left: 4px solid #3B82F6;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), transparent);
+}
+
+.achievement-epic {
+  border-left: 4px solid #A855F7;
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), transparent);
+}
+
+.achievement-legendary {
+  border-left: 4px solid #F59E0B;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(239, 68, 68, 0.1));
+  animation: legendaryGlow 2s ease-in-out infinite;
+}
+
+@keyframes achievementPulse {
+  0% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+@keyframes legendaryGlow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(245, 158, 11, 0.5), 0 0 40px rgba(239, 68, 68, 0.3);
+  }
+}
+
+/* Achievement Cards */
+.achievement-card-unlocked {
+  position: relative;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), transparent);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.achievement-card-locked {
+  filter: grayscale(100%);
+  opacity: 0.6;
+}
+
+/* Level Progress Bar */
+.level-progress-bar {
+  position: relative;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.level-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3B82F6, #A855F7, #EC4899);
+  border-radius: 4px;
+  transition: width 0.5s ease-out;
+  position: relative;
+}
+
+.level-progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: shimmer 2s infinite;
+}
+
+/* Leaderboard Ranks */
+.rank-gold {
+  background: linear-gradient(135deg, #FEF3C7, #FDE68A, #FCD34D);
+  color: #92400E;
+  font-weight: bold;
+}
+
+.rank-silver {
+  background: linear-gradient(135deg, #F3F4F6, #E5E7EB, #D1D5DB);
+  color: #374151;
+  font-weight: bold;
+}
+
+.rank-bronze {
+  background: linear-gradient(135deg, #FED7AA, #FDBA74, #FB923C);
+  color: #92400E;
+  font-weight: bold;
+}
+
+/* Achievement Panel Animations */
+.achievement-panel-enter {
+  animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Streak Fire Animation */
+.streak-fire {
+  animation: fireFlicker 1s ease-in-out infinite;
+}
+
+@keyframes fireFlicker {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    transform: scale(1.1) rotate(-5deg);
+  }
+  75% {
+    transform: scale(0.95) rotate(5deg);
+  }
+}
+
+/* Achievement Unlock Animation */
+.achievement-unlock {
+  animation: unlockBurst 0.6s ease-out;
+}
+
+@keyframes unlockBurst {
+  0% {
+    transform: scale(0) rotate(0deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(180deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(360deg);
+    opacity: 1;
+  }
+}
+
+/* Points Counter Animation */
+.points-add {
+  animation: pointsFloat 1s ease-out;
+}
+
+@keyframes pointsFloat {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-30px);
+    opacity: 0;
+  }
+}
