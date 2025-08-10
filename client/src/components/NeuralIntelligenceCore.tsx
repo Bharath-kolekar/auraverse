@@ -465,7 +465,7 @@ export default function NeuralIntelligenceCore() {
       {showSkull && (
         <motion.div
           ref={coreRef}
-          className="fixed bottom-2 right-2 z-40 max-w-xs w-72"
+          className="fixed bottom-4 right-4 z-[100] max-w-[280px] w-64"
           initial={{ opacity: 0, scale: 0.8, x: 20 }}
           animate={{ opacity: 1, scale: 1, x: 0 }}
           exit={{ opacity: 0, scale: 0.8, x: 20 }}

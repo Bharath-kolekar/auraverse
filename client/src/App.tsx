@@ -56,6 +56,7 @@ function AppContent() {
   return (
     <>
       <Router />
+      {/* AI Components positioned separately to avoid overlaps */}
       <NeuralIntelligenceCore />
       <SuperIntelligencePanel />
       <EnhancedVoiceAssistant />

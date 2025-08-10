@@ -6,6 +6,23 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Ensure main content doesn't get hidden behind fixed components */
+@layer utilities {
+  .main-content-padding {
+    padding-top: 5rem;
+    padding-left: 20rem;
+    padding-right: 20rem;
+  }
+  
+  @media (max-width: 768px) {
+    .main-content-padding {
+      padding-top: 4rem;
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+  }
+}
+
 :root {
   /* Enhanced Color Palette */
   --background: 220 15% 2%;

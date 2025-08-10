@@ -624,7 +624,7 @@ export default function EnhancedVoiceAssistant() {
       {isVisible && (
         <motion.div
           ref={assistantRef}
-          className="fixed top-20 right-2 z-50 max-w-xs"
+          className="fixed top-4 right-4 z-[101] max-w-[280px] w-64"
           initial={{ opacity: 0, scale: 0.8, x: 20 }}
           animate={{ opacity: 1, scale: 1, x: 0 }}
           exit={{ opacity: 0, scale: 0.8, x: 20 }}
