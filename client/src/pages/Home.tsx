@@ -89,35 +89,35 @@ export default function Home() {
               </div>
             </motion.div>
             
-            <div className="hidden md:flex items-center space-x-6">
-              <div className="text-right">
+            <div className="flex items-center space-x-3 md:space-x-6">
+              <div className="hidden md:block text-right">
                 <p className="text-sm text-white/60">Welcome back,</p>
                 <p className="font-semibold text-white">Creator</p>
               </div>
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-2 md:space-x-3">
                 <motion.button 
-                  className="p-3 glass-card rounded-xl hover:bg-white/10 transition-all duration-300 relative"
+                  className="p-2 md:p-3 glass-card rounded-xl hover:bg-white/10 transition-all duration-300 relative bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setAchievementPanelOpen(true)}
                   title="Achievements"
                 >
-                  <Trophy className="w-5 h-5 text-white/70" />
-                  {userStats && userStats.level > 1 && (
-                    <span className="absolute -top-1 -right-1 bg-gradient-to-r from-yellow-400 to-orange-400 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  <Trophy className="w-5 h-5 md:w-6 md:h-6 text-yellow-400" />
+                  {userStats && userStats.level >= 1 && (
+                    <span className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-400 to-orange-400 text-white text-xs font-bold rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center shadow-lg">
                       {userStats.level}
                     </span>
                   )}
                 </motion.button>
                 <motion.button 
-                  className="p-3 glass-card rounded-xl hover:bg-white/10 transition-all duration-300"
+                  className="hidden sm:block p-2 md:p-3 glass-card rounded-xl hover:bg-white/10 transition-all duration-300"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
                   <Bell className="w-5 h-5 text-white/70" />
                 </motion.button>
                 <motion.button 
-                  className="p-3 glass-card rounded-xl hover:bg-white/10 transition-all duration-300"
+                  className="p-2 md:p-3 glass-card rounded-xl hover:bg-white/10 transition-all duration-300"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setThemeCustomizerOpen(true)}
@@ -126,7 +126,7 @@ export default function Home() {
                   <Palette className="w-5 h-5 text-white/70" />
                 </motion.button>
                 <motion.button 
-                  className="p-3 glass-card rounded-xl hover:bg-white/10 transition-all duration-300"
+                  className="hidden sm:block p-2 md:p-3 glass-card rounded-xl hover:bg-white/10 transition-all duration-300"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -134,7 +134,7 @@ export default function Home() {
                 </motion.button>
                 <motion.a
                   href="/api/logout"
-                  className="p-3 glass-card rounded-xl hover:bg-white/10 transition-all duration-300 flex items-center gap-2"
+                  className="hidden md:flex p-3 glass-card rounded-xl hover:bg-white/10 transition-all duration-300 items-center gap-2"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
