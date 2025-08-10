@@ -361,11 +361,7 @@ export default function Landing() {
           animate={{ y: [30, -30, 30], rotate: [360, 180, 0] }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
         />
-        <motion.div
-          className="absolute top-1/2 left-10 w-16 h-16 rounded-full bg-gradient-to-r from-green-600/20 to-emerald-600/20 backdrop-blur-xl"
-          animate={{ x: [-20, 20, -20], y: [-10, 10, -10] }}
-          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-        />
+
       </section>
 
       {/* Features Section */}

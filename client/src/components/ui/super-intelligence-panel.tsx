@@ -277,171 +277,112 @@ const SuperIntelligencePanel: React.FC = () => {
 
   return (
     <motion.div
-      className="fixed right-4 top-32 z-50 w-80"
-      initial={{ x: 100, opacity: 0 }}
+      className="fixed left-4 top-32 z-50 w-96"
+      initial={{ x: -100, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ type: "spring", damping: 20 }}
     >
       <Card className="bg-gradient-to-br from-purple-900/95 via-blue-900/95 to-indigo-900/95 backdrop-blur-lg border border-purple-500/20 shadow-2xl">
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center justify-between text-white">
-            <div className="flex items-center gap-2">
-              <Brain className="w-5 h-5 text-purple-400" />
-              Super Intelligence
-            </div>
-            <div className="flex items-center gap-1">
-              {systemHealth?.status === 'operational' && (
-                <Badge variant="outline" className="border-green-500 text-green-400">
-                  <Zap className="w-3 h-3 mr-1" />
-                  Active
-                </Badge>
+        <CardContent className="p-4">
+          <div className="flex items-center gap-4">
+            {/* Left side - Content */}
+            <div className="flex-1 space-y-3">
+              {/* Header */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Brain className="w-4 h-4 text-purple-400" />
+                  <span className="text-white font-semibold text-sm">Super Intelligence</span>
+                </div>
+                {systemHealth?.status === 'operational' && (
+                  <Badge variant="outline" className="border-green-500 text-green-400 text-xs">
+                    <Zap className="w-2 h-2 mr-1" />
+                    Active
+                  </Badge>
+                )}
+              </div>
+              {/* Processing Status */}
+              <AnimatePresence>
+                {processingStatus && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="space-y-2"
+                  >
+                    <div className="flex items-center justify-between text-xs text-purple-200">
+                      <span>{processingStatus.stage}</span>
+                      <span>{processingStatus.progress}%</span>
+                    </div>
+                    <Progress value={processingStatus.progress} className="h-1" />
+                    <p className="text-xs text-purple-300">{processingStatus.message}</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Quick Actions */}
+              <div className="space-y-2">
+                <h4 className="text-xs font-medium text-purple-200">Quick Enhancements</h4>
+                <div className="grid grid-cols-2 gap-1">
+                  <Button
+                    size="sm"
+                    onClick={() => handleQuickEnhancement('quality')}
+                    disabled={isProcessing}
+                    className="bg-purple-600 hover:bg-purple-700 text-white text-xs h-7"
+                  >
+                    <Star className="w-2 h-2 mr-1" />
+                    Quality
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => handleQuickEnhancement('creativity')}
+                    disabled={isProcessing}
+                    className="bg-blue-600 hover:bg-blue-700 text-white text-xs h-7"
+                  >
+                    <Zap className="w-2 h-2 mr-1" />
+                    Creative
+                  </Button>
+                </div>
+              </div>
+
+              {/* System Status */}
+              {systemHealth && (
+                <div className="text-xs text-purple-300 pt-2 border-t border-purple-500/20">
+                  <div className="flex justify-between">
+                    <span>Status:</span>
+                    <span className={systemHealth.status === 'operational' ? 'text-green-400' : 'text-yellow-400'}>
+                      {systemHealth.status}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Version:</span>
+                    <span>{systemHealth.version}</span>
+                  </div>
+                </div>
               )}
             </div>
-          </CardTitle>
-        </CardHeader>
 
-        <CardContent className="space-y-4">
-          {/* Processing Status */}
-          <AnimatePresence>
-            {processingStatus && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="space-y-2"
-              >
-                <div className="flex items-center justify-between text-sm text-purple-200">
-                  <span>{processingStatus.stage}</span>
-                  <span>{processingStatus.progress}%</span>
-                </div>
-                <Progress value={processingStatus.progress} className="h-2" />
-                <p className="text-xs text-purple-300">{processingStatus.message}</p>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Quick Actions */}
-          <div className="space-y-2">
-            <h4 className="text-sm font-medium text-purple-200">Quick Enhancements</h4>
-            <div className="grid grid-cols-2 gap-2">
-              <Button
-                size="sm"
-                onClick={() => handleQuickEnhancement('quality')}
-                disabled={isProcessing}
-                className="bg-purple-600 hover:bg-purple-700 text-white"
-              >
-                <Star className="w-3 h-3 mr-1" />
-                Enhance Quality
-              </Button>
-              <Button
-                size="sm"
-                onClick={() => handleQuickEnhancement('creativity')}
-                disabled={isProcessing}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                <Zap className="w-3 h-3 mr-1" />
-                Boost Creativity
-              </Button>
-              <Button
-                size="sm"
-                onClick={() => handleQuickEnhancement('style')}
-                disabled={isProcessing}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white"
-              >
-                <Cpu className="w-3 h-3 mr-1" />
-                Style Transfer
-              </Button>
-              <Button
-                size="sm"
-                onClick={() => handleQuickEnhancement('optimization')}
-                disabled={isProcessing}
-                className="bg-violet-600 hover:bg-violet-700 text-white"
-              >
-                <Brain className="w-3 h-3 mr-1" />
-                Optimize
-              </Button>
-            </div>
-          </div>
-
-          {/* Content Generation */}
-          <div className="space-y-2">
-            <h4 className="text-sm font-medium text-purple-200">Intelligent Generation</h4>
-            <div className="grid grid-cols-1 gap-2">
-              <Button
-                size="sm"
-                onClick={() => handleIntelligentGeneration('video')}
-                disabled={isProcessing}
-                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
-              >
-                Generate Video with AI
-              </Button>
-              <Button
-                size="sm"
-                onClick={() => handleIntelligentGeneration('audio')}
-                disabled={isProcessing}
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
-              >
-                <Volume2 className="w-3 h-3 mr-1" />
-                Generate Audio
-              </Button>
-            </div>
-          </div>
-
-          {/* Capabilities Toggle */}
-          <div className="space-y-2">
-            <h4 className="text-sm font-medium text-purple-200">AI Capabilities</h4>
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              {Object.entries(capabilities).map(([key, enabled]) => (
-                <div
-                  key={key}
-                  onClick={() => toggleCapability(key as keyof SuperIntelligenceCapabilities)}
-                  className={`flex items-center gap-1 p-1 rounded cursor-pointer transition-colors ${
-                    enabled 
-                      ? 'bg-purple-600/30 text-purple-200' 
-                      : 'bg-gray-700/30 text-gray-400'
-                  }`}
-                >
-                  <div className={`w-2 h-2 rounded-full ${enabled ? 'bg-green-400' : 'bg-gray-500'}`} />
-                  <span className="text-xs">
-                    {key.replace(/([A-Z])/g, ' $1').toLowerCase()}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Voice Commands */}
-          <div className="pt-2 border-t border-purple-500/20">
-            <Button
-              size="sm"
-              onClick={() => setIsActive(!isActive)}
-              className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white"
+            {/* Right side - Motion.div */}
+            <motion.div
+              className="w-16 h-16 rounded-full bg-gradient-to-r from-purple-600/30 to-pink-600/30 backdrop-blur-xl flex items-center justify-center border border-purple-400/30"
+              animate={{ 
+                rotate: [0, 360],
+                scale: [1, 1.1, 1],
+                boxShadow: [
+                  "0 0 20px rgba(138, 43, 226, 0.3)",
+                  "0 0 40px rgba(138, 43, 226, 0.6)",
+                  "0 0 20px rgba(138, 43, 226, 0.3)"
+                ]
+              }}
+              transition={{ 
+                rotate: { duration: 20, repeat: Infinity, ease: "linear" },
+                scale: { duration: 2, repeat: Infinity },
+                boxShadow: { duration: 2, repeat: Infinity }
+              }}
+              whileHover={{ scale: 1.2 }}
             >
-              <Mic className="w-3 h-3 mr-1" />
-              Voice Commands
-              <Globe className="w-3 h-3 ml-1" />
-            </Button>
+              <Brain className="w-8 h-8 text-purple-300" />
+            </motion.div>
           </div>
-
-          {/* System Status */}
-          {systemHealth && (
-            <div className="text-xs text-purple-300 pt-2 border-t border-purple-500/20">
-              <div className="flex justify-between">
-                <span>Status:</span>
-                <span className={systemHealth.status === 'operational' ? 'text-green-400' : 'text-yellow-400'}>
-                  {systemHealth.status}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span>Version:</span>
-                <span>{systemHealth.version}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Neural Cores:</span>
-                <span className="text-green-400">All Active</span>
-              </div>
-            </div>
-          )}
         </CardContent>
       </Card>
     </motion.div>
