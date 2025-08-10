@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { Sparkles, Zap, Mic, Video, Music, Image, Cpu, Globe, Play, ArrowRight, Star, Award, TrendingUp } from 'lucide-react';
-import NeuralBackground from '@/components/NeuralBackground';
-import AIProcessingIcon from '@/components/AIProcessingIcon';
-import NeuralCard from '@/components/NeuralCard';
-import NeuralProcessingVisual from '@/components/NeuralProcessingVisual';
+import NeuralSkull from '@/components/NeuralSkull';
 
 export default function Landing() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -107,9 +104,8 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Dynamic Background */}
-      <div className="particles-bg" />
-      <NeuralBackground />
+      {/* Subtle Background */}
+      <div className="neural-bg-overlay" />
       
       {/* Mouse Follower */}
       <motion.div
@@ -144,7 +140,8 @@ export default function Landing() {
             >
               <Sparkles className="w-7 h-7 text-white" />
             </motion.div>
-            <h1 className="text-2xl font-bold holographic">
+            <h1 className="f500-h4 font-bold holographic flex items-center gap-2">
+              <NeuralSkull size={28} showMagic={true} />
               Infinite Intelligence
             </h1>
           </motion.div>
@@ -211,7 +208,7 @@ export default function Landing() {
                   >
                     <Sparkles className="w-6 h-6 text-purple-400" />
                   </motion.div>
-                  <span className="text-lg font-semibold text-white">
+                  <span className="f500-button font-semibold text-white">
                     Revolutionary Creative Intelligence Platform
                   </span>
                   <motion.div
@@ -222,7 +219,7 @@ export default function Landing() {
                 </motion.div>
 
                 <motion.p 
-                  className="text-xl md:text-3xl text-white/80 mb-16 max-w-5xl mx-auto leading-relaxed"
+                  className="f500-body text-white/80 mb-16 max-w-5xl mx-auto leading-relaxed"
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.6, duration: 0.8 }}
@@ -240,7 +237,7 @@ export default function Landing() {
                 >
                   <motion.a
                     href="/api/login"
-                    className="group relative btn-primary text-xl px-12 py-5 will-change-transform"
+                    className="group relative btn-primary f500-button px-8 py-4 will-change-transform"
                     whileHover={{ scale: 1.05, y: -2 }}
                     whileTap={{ scale: 0.98 }}
                   >
@@ -257,7 +254,7 @@ export default function Landing() {
                   </motion.a>
                   
                   <motion.button
-                    className="group neon-border text-white px-12 py-5 font-semibold text-xl will-change-transform"
+                    className="group neon-border text-white px-8 py-4 font-semibold f500-button will-change-transform"
                     whileHover={{ scale: 1.05, y: -2 }}
                     whileTap={{ scale: 0.98 }}
                   >
@@ -268,14 +265,17 @@ export default function Landing() {
                   </motion.button>
                 </motion.div>
 
-                {/* Neural Processing Visual */}
+                {/* AI Intelligence Indicator */}
                 <motion.div
-                  className="mb-16"
+                  className="mb-16 flex justify-center"
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 1, duration: 0.8 }}
                 >
-                  <NeuralProcessingVisual />
+                  <div className="flex items-center gap-4 glass-card px-6 py-3">
+                    <NeuralSkull size={24} isActive={true} showMagic={true} />
+                    <span className="f500-caption text-white/70">Neural Intelligence Processing</span>
+                  </div>
                 </motion.div>
 
                 {/* Enhanced Stats Bar */}
@@ -301,7 +301,7 @@ export default function Landing() {
                         >
                           {stat.icon}
                         </motion.div>
-                        <div className="text-4xl md:text-5xl font-bold text-gradient mb-3">
+                        <div className="f500-h3 font-bold text-gradient mb-3">
                           {stat.suffix === "$" && stat.suffix}
                           <motion.span
                             initial={{ opacity: 0 }}
@@ -312,7 +312,7 @@ export default function Landing() {
                           </motion.span>
                           {stat.suffix !== "$" && stat.suffix}
                         </div>
-                        <div className="text-white/60 font-medium text-lg">{stat.label}</div>
+                        <div className="text-white/60 font-medium f500-button">{stat.label}</div>
                       </motion.div>
                     ))}
                   </div>
@@ -355,7 +355,7 @@ export default function Landing() {
             transition={{ duration: 0.8 }}
           >
             <motion.h2 
-              className="text-6xl md:text-7xl font-bold text-white mb-8"
+              className="f500-h1 font-bold text-white mb-8"
               initial={{ opacity: 0, scale: 0.8 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
@@ -364,7 +364,7 @@ export default function Landing() {
               Unleash Your <span className="text-gradient">Creative Potential</span>
             </motion.h2>
             <motion.p 
-              className="text-2xl text-white/70 max-w-4xl mx-auto"
+              className="f500-body text-white/70 max-w-4xl mx-auto"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -377,52 +377,49 @@ export default function Landing() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
             {features.map((feature, index) => (
-              <NeuralCard
+              <motion.div
                 key={index}
-                className="feature-card group will-change-transform"
-                isActive={index === 0}
+                className="feature-card group will-change-transform relative overflow-hidden static-neural-pattern"
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: feature.delay, duration: 0.6 }}
+                whileHover={{ y: -8, scale: 1.02 }}
               >
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-white/5 to-transparent rounded-full -translate-y-16 translate-x-16" />
+                
                 <motion.div
-                  initial={{ opacity: 0, y: 50 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: feature.delay, duration: 0.6 }}
+                  className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-r ${feature.gradient} mb-6 shadow-xl relative`}
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  transition={{ type: "spring", stiffness: 300 }}
                 >
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-white/5 to-transparent rounded-full -translate-y-16 translate-x-16" />
-                  
-                  <motion.div
-                    className={`inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-r ${feature.gradient} mb-8 shadow-2xl relative`}
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                  >
-                    {feature.icon}
-                    <div className="absolute -top-2 -right-2">
-                      <AIProcessingIcon size={16} isProcessing={index === 0} />
-                    </div>
-                  </motion.div>
+                  {feature.icon}
+                  <div className="absolute -top-1 -right-1">
+                    <NeuralSkull size={12} isActive={index === 0} />
+                  </div>
+                </motion.div>
                 
                 <div className="mb-4">
-                  <span className="inline-block px-4 py-2 text-sm font-semibold text-purple-400 bg-purple-400/10 rounded-full mb-4">
+                  <span className="inline-block px-3 py-1 f500-caption font-semibold text-purple-400 bg-purple-400/10 rounded-full mb-4">
                     {feature.stats}
                   </span>
                 </div>
                 
-                <h3 className="text-3xl font-bold text-white mb-6 group-hover:text-gradient transition-all duration-500">
+                <h3 className="f500-h4 font-bold text-white mb-4 group-hover:text-gradient transition-all duration-500">
                   {feature.title}
                 </h3>
                 
-                <p className="text-white/70 text-lg leading-relaxed group-hover:text-white/90 transition-colors duration-500">
+                <p className="text-white/70 f500-button leading-relaxed group-hover:text-white/90 transition-colors duration-500">
                   {feature.description}
                 </p>
 
-                  <motion.div
-                    className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-                    initial={{ scaleX: 0 }}
-                    whileHover={{ scaleX: 1 }}
-                    transition={{ duration: 0.3 }}
-                  />
-                </motion.div>
-              </NeuralCard>
+                <motion.div
+                  className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                  initial={{ scaleX: 0 }}
+                  whileHover={{ scaleX: 1 }}
+                  transition={{ duration: 0.3 }}
+                />
+              </motion.div>
             ))}
           </div>
         </div>
@@ -444,10 +441,10 @@ export default function Landing() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-5xl md:text-6xl font-bold text-white mb-6">
+            <h2 className="f500-h2 font-bold text-white mb-6">
               Trusted by <span className="text-gradient">Creators Worldwide</span>
             </h2>
-            <p className="text-xl text-white/70 max-w-3xl mx-auto">
+            <p className="f500-body text-white/70 max-w-3xl mx-auto">
               Join thousands of professionals who've transformed their creative workflow
             </p>
           </motion.div>
@@ -468,7 +465,7 @@ export default function Landing() {
                     <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
                   ))}
                 </div>
-                <p className="text-white/80 text-lg mb-6 italic">
+                <p className="text-white/80 f500-button mb-6 italic">
                   "{testimonial.content}"
                 </p>
                 <div className="flex items-center">
@@ -505,16 +502,17 @@ export default function Landing() {
             <div className="absolute inset-0 bg-gradient-to-r from-purple-600/10 via-transparent to-pink-600/10" />
             
             <motion.h2
-              className="text-5xl md:text-6xl font-bold text-white mb-8"
+              className="f500-h2 font-bold text-white mb-8 flex items-center justify-center gap-3"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
+              <NeuralSkull size={36} showMagic={true} />
               Ready to Transform Your Creative Workflow?
             </motion.h2>
             
             <motion.p
-              className="text-2xl text-white/70 mb-12"
+              className="f500-body text-white/70 mb-12"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -533,7 +531,7 @@ export default function Landing() {
             >
               <motion.a
                 href="/api/login"
-                className="btn-primary text-xl px-12 py-5 inline-flex items-center gap-3"
+                className="btn-primary f500-button px-8 py-4 inline-flex items-center gap-3"
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -548,7 +546,7 @@ export default function Landing() {
               </motion.a>
               
               <motion.button
-                className="neon-border text-white px-12 py-5 font-semibold text-xl"
+                className="neon-border text-white px-8 py-4 font-semibold f500-button"
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.98 }}
               >
