@@ -8,6 +8,7 @@ Preferred communication style: Simple, everyday language.
 Custom domain: cognomega.com for production deployment.
 Application goal: Oscar-quality content generation with end-to-end automation.
 Platform features: Multi-device recording capabilities from mobile phones and computers.
+Cost optimization: Zero-cost local processing for unlimited testing and development.
 
 # System Architecture
 
@@ -25,16 +26,18 @@ Platform features: Multi-device recording capabilities from mobile phones and co
 - **API Design**: RESTful API with structured route handling
 - **Authentication**: Replit OpenID Connect (OIDC) with Passport.js strategy
 - **Session Management**: Express sessions stored in PostgreSQL with connect-pg-simple
-- **AI Services**: Open source integration using DeepSeek R1 for content generation and Kokoro TTS for voice synthesis
-- **Training Service**: DeepSeek R1-powered user training system for platform education with Maya's personality
+- **AI Services**: Local processing using browser APIs and template-based generation (zero cost alternative to external APIs)
+- **Training Service**: Local pattern-based training system with offline Maya assistant (zero cost)
+- **Storage**: In-memory storage system to eliminate database costs (with optional PostgreSQL for production)
 - **File Structure**: Modular organization with separate routes, services, and storage layers
 
 ## Data Storage
-- **Database**: PostgreSQL with Neon serverless driver
-- **ORM**: Drizzle ORM for type-safe database operations
-- **Schema**: Well-structured tables for users, sessions, content, projects, voice commands, and training conversations
-- **Migrations**: Database schema versioning with Drizzle Kit
-- **Training Data**: Conversation history storage for AI assistant learning and improvement
+- **Primary Storage**: In-memory storage for zero-cost operation
+- **Optional Database**: PostgreSQL with Neon serverless driver (for production scaling)
+- **ORM**: Drizzle ORM for type-safe database operations (when database is enabled)
+- **Schema**: Well-structured data models for users, content, projects, voice commands, and training conversations
+- **Local Persistence**: Browser localStorage/IndexedDB for client-side data persistence
+- **Cost Optimization**: Memory storage eliminates all database costs during development and testing
 
 ## Authentication & Authorization
 - **Provider**: Replit Auth using OpenID Connect protocol
@@ -44,10 +47,11 @@ Platform features: Multi-device recording capabilities from mobile phones and co
 
 # External Dependencies
 
-## AI Services (Open Source)
-- **DeepSeek R1**: Open source text generation model for content creation, video descriptions, VFX specifications, and voice command processing
-- **Kokoro TTS**: Open source text-to-speech synthesis for voice generation with 82M parameters and multi-language support
-- **Hugging Face Inference**: API for accessing open source AI models including DeepSeek R1 variants
+## AI Services (Zero Cost Local Processing)
+- **Local AI Services**: Template-based content generation using browser APIs and pattern matching (zero cost)
+- **Browser Speech Synthesis**: Native Web Speech API for voice generation (zero cost)
+- **Local Pattern Matching**: Command processing using local algorithms (zero cost)
+- **Optional External APIs**: DeepSeek R1 and Kokoro TTS available when budget allows (can be toggled)
 
 ## Authentication
 - **Replit Auth**: OpenID Connect provider for user authentication

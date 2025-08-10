@@ -3,8 +3,11 @@ import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { aiServices } from "./services/aiServices";
-import { TrainingService } from "./services/trainingService";
+import { localAiServices } from "./services/localAiServices";
+import { localTrainingService } from "./services/localTrainingService";
+
+// Using local services to eliminate API costs
+// To switch back to external APIs: import { aiServices } and { TrainingService }
 import { insertContentSchema, insertProjectSchema, insertVoiceCommandSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -115,37 +118,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // AI Content Generation routes
+  // Local AI Content Generation routes (zero cost)
   app.post('/api/ai/generate-audio', isAuthenticated, async (req: any, res) => {
     try {
       const { text, voice, type } = req.body;
-      const audioResult = await aiServices.generateAudio(text, voice, type);
+      const audioResult = await localAiServices.generateAudio(text, voice, type);
       res.json(audioResult);
     } catch (error) {
-      console.error("Error generating audio:", error);
-      res.status(500).json({ message: "Failed to generate audio" });
+      console.error("Error generating audio locally:", error);
+      res.status(500).json({ message: "Failed to generate audio locally" });
     }
   });
 
   app.post('/api/ai/generate-video', isAuthenticated, async (req: any, res) => {
     try {
       const { prompt, style, duration } = req.body;
-      const videoResult = await aiServices.generateVideo(prompt, style, duration);
+      const videoResult = await localAiServices.generateVideo(prompt, style, duration);
       res.json(videoResult);
     } catch (error) {
-      console.error("Error generating video:", error);
-      res.status(500).json({ message: "Failed to generate video" });
+      console.error("Error generating video locally:", error);
+      res.status(500).json({ message: "Failed to generate video locally" });
     }
   });
 
   app.post('/api/ai/generate-vfx', isAuthenticated, async (req: any, res) => {
     try {
       const { type, parameters } = req.body;
-      const vfxResult = await aiServices.generateVFX(type, parameters);
+      const vfxResult = await localAiServices.generateVFX(type, parameters);
       res.json(vfxResult);
     } catch (error) {
-      console.error("Error generating VFX:", error);
-      res.status(500).json({ message: "Failed to generate VFX" });
+      console.error("Error generating VFX locally:", error);
+      res.status(500).json({ message: "Failed to generate VFX locally" });
     }
   });
 
@@ -156,8 +159,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const commandData = insertVoiceCommandSchema.parse({ ...req.body, userId });
       const savedCommand = await storage.saveVoiceCommand(commandData);
       
-      // Process the voice command
-      const result = await aiServices.processVoiceCommand(req.body.command);
+      // Process the voice command locally
+      const result = await localAiServices.processVoiceCommand(req.body.command);
       
       res.json({ command: savedCommand, result });
     } catch (error) {
@@ -172,8 +175,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user.claims.sub;
       const { message, currentPage, context } = req.body;
       
-      const trainingService = new TrainingService();
-      const response = await trainingService.generateResponse({
+      const response = await localTrainingService.generateResponse({
         userMessage: message,
         currentPage,
         context
@@ -199,8 +201,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/training/tips', isAuthenticated, async (req: any, res) => {
     try {
       const { page } = req.query;
-      const trainingService = new TrainingService();
-      const tips = trainingService.generateQuickTips(page);
+      const tips = localTrainingService.generateQuickTips(page as string);
       res.json({ tips });
     } catch (error) {
       console.error("Error getting training tips:", error);

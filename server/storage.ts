@@ -194,4 +194,12 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-export const storage = new DatabaseStorage();
+import { MemoryStorage } from "./storage-memory";
+
+// Switch to memory storage to eliminate database costs
+// To switch back to database: import { DatabaseStorage } from "./storage" and use new DatabaseStorage()
+export const storage = new MemoryStorage();
+
+// For zero-cost operation, use MemoryStorage
+// For production with database needs, use DatabaseStorage
+// export const storage = new DatabaseStorage();
