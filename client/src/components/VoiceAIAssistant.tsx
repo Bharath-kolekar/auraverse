@@ -325,7 +325,7 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
       };
       
       // Configure recognition settings for better accuracy
-      recognition.lang = langToUse === 'zh' ? 'zh-CN' : langToUse === 'ja' ? 'ja-JP' : langToUse;
+      recognition.lang = selectedLanguage === 'zh' ? 'zh-CN' : selectedLanguage === 'ja' ? 'ja-JP' : selectedLanguage;
       recognition.continuous = false;
       recognition.interimResults = true;
       recognition.maxAlternatives = 3; // Get more alternatives for better matching
@@ -442,14 +442,14 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
       msg.message.toLowerCase().includes('fantasy')
     );
     
-    // Update NLP engine context
-    if (hasVFXContext) {
+    // Update NLP engine context (avoid duplicates)
+    if (hasVFXContext && !nlpEngine.conversationContext.userInterests.includes('VFX')) {
       nlpEngine.conversationContext.userInterests.push('VFX');
     }
-    if (hasChildContext) {
+    if (hasChildContext && !nlpEngine.conversationContext.userInterests.includes('child project')) {
       nlpEngine.conversationContext.userInterests.push('child project');
     }
-    if (hasFantasyContext) {
+    if (hasFantasyContext && !nlpEngine.conversationContext.userInterests.includes('fantasy')) {
       nlpEngine.conversationContext.userInterests.push('fantasy');
     }
     

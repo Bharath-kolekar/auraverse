@@ -4,6 +4,16 @@ import React from 'react';
 export class NLPConversationEngine {
   private selectedLanguage: string;
   
+  public conversationContext: {
+    lastIntent: string;
+    userInterests: string[];
+    conversationLength: number;
+  } = {
+    lastIntent: 'default',
+    userInterests: [] as string[],
+    conversationLength: 0
+  };
+  
   constructor(language: string = 'en') {
     this.selectedLanguage = language;
   }
