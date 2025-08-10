@@ -624,13 +624,13 @@ export default function EnhancedVoiceAssistant() {
       {isVisible && (
         <motion.div
           ref={assistantRef}
-          className="fixed top-1/2 right-4 transform -translate-y-1/2 z-[101] max-w-[280px] w-64"
+          className="fixed top-4 right-4 z-[201] w-48"
           initial={{ opacity: 0, scale: 0.8, x: 20 }}
           animate={{ opacity: 1, scale: 1, x: 0 }}
           exit={{ opacity: 0, scale: 0.8, x: 20 }}
           transition={{ duration: 0.3 }}
         >
-          <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-3 shadow-2xl border border-white/20 backdrop-blur-lg w-full">
+          <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-2 shadow-2xl border border-white/20 backdrop-blur-lg w-full">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2 min-w-0">
                 <motion.div

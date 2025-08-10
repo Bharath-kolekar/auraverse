@@ -277,13 +277,13 @@ const SuperIntelligencePanel: React.FC = () => {
 
   return (
     <motion.div
-      className="fixed left-4 top-20 z-[102] max-w-[280px] w-64"
+      className="fixed bottom-4 left-4 z-[200] w-48"
       initial={{ x: -100, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ type: "spring", damping: 20 }}
     >
       <Card className="bg-gradient-to-br from-purple-900/95 via-blue-900/95 to-indigo-900/95 backdrop-blur-lg border border-purple-500/20 shadow-2xl">
-        <CardContent className="p-3">
+        <CardContent className="p-2">
           <div className="flex items-start gap-3">
             {/* Left side - Content */}
             <div className="flex-1 space-y-2 min-w-0">

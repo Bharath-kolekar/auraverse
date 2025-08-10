@@ -465,14 +465,14 @@ export default function NeuralIntelligenceCore() {
       {showSkull && (
         <motion.div
           ref={coreRef}
-          className="fixed bottom-4 right-4 z-[100] max-w-[280px] w-64"
-          initial={{ opacity: 0, scale: 0.8, x: 20 }}
+          className="fixed top-4 left-4 z-[202] w-48"
+          initial={{ opacity: 0, scale: 0.8, x: -20 }}
           animate={{ opacity: 1, scale: 1, x: 0 }}
-          exit={{ opacity: 0, scale: 0.8, x: 20 }}
+          exit={{ opacity: 0, scale: 0.8, x: -20 }}
           transition={{ duration: 0.4, type: "spring", damping: 15 }}
         >
           <Card className="bg-gradient-to-br from-purple-900/95 via-indigo-900/95 to-blue-900/95 backdrop-blur-lg border border-purple-500/30 shadow-2xl overflow-hidden w-full">
-            <CardContent className="p-3">
+            <CardContent className="p-2">
               {/* Neural Intelligence Core Header */}
               <div className="flex items-center gap-2 mb-2">
                 <motion.div
