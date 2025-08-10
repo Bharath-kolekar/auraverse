@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Sparkles, Brain, Mic, Image, Video, Film, Music, Wand2, 
+  Zap, Target, Globe, TrendingUp, Code2, Layers, Send,
+  User, Settings, Bell, Play, Pause, Trophy, Palette,
+  Activity, ArrowUp, CheckCircle, Clock, AlertCircle,
+  Home as HomeIcon, Star, Award, BarChart3
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { useAuth } from "@/hooks/useAuth";
-import { Sparkles, Mic, Video, Music, Zap, Globe, BarChart3, Brain, Cpu, TrendingUp, Award, Calendar, Clock, Star, Settings, Bell, User, Plus, ArrowRight, Play, Pause, Palette, Trophy } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { FixedNavigation } from '@/components/ui/fixed-navigation';
 import { ThemeCustomizer } from '@/components/ui/theme-customizer';
@@ -12,7 +21,7 @@ import { useTrackActivity, useUserStats } from '@/hooks/useAchievements';
 export default function Home() {
   const { user } = useAuth();
   const [location, setLocation] = useLocation();
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeMetric, setActiveMetric] = useState('created');
   const [isRecording, setIsRecording] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [themeCustomizerOpen, setThemeCustomizerOpen] = useState(false);
@@ -26,191 +35,260 @@ export default function Home() {
     return () => clearInterval(timer);
   }, []);
 
-  const stats = [
-    { label: "Content Created", value: "1,247", icon: <Sparkles className="w-6 h-6" />, color: "text-purple-400", gradient: "from-purple-600 to-pink-600" },
-    { label: "Voice Commands", value: "3,429", icon: <Mic className="w-6 h-6" />, color: "text-blue-400", gradient: "from-blue-600 to-cyan-600" },
-    { label: "Time Saved", value: "456h", icon: <Zap className="w-6 h-6" />, color: "text-green-400", gradient: "from-green-600 to-emerald-600" },
-    { label: "Revenue", value: "$12,847", icon: <TrendingUp className="w-6 h-6" />, color: "text-yellow-400", gradient: "from-yellow-600 to-orange-600" }
-  ];
-
-  const recentProjects = [
-    { name: "Epic Orchestral Suite", type: "Music", duration: "3:42", status: "completed", color: "text-purple-400" },
-    { name: "Corporate Video Intro", type: "Video", duration: "0:30", status: "processing", color: "text-blue-400" },
-    { name: "Podcast Intro Voice", type: "Audio", duration: "0:15", status: "completed", color: "text-green-400" },
-    { name: "Product Demo VFX", type: "VFX", duration: "1:20", status: "rendering", color: "text-orange-400" }
-  ];
-
-  const voiceCommands = [
-    { category: "Music", command: "Create an epic orchestral soundtrack", description: "Generate cinematic music" },
-    { category: "Video", command: "Add explosion VFX to my video", description: "Advanced visual effects" },
-    { category: "Voice", command: "Generate Morgan Freeman narration", description: "Professional voiceovers" },
-    { category: "Export", command: "Export in 4K with surround sound", description: "High-quality output" },
-    { category: "Style", command: "Apply Marvel movie style", description: "Cinematic style transfer" },
-    { category: "Marketplace", command: "Upload to marketplace for $50", description: "Monetize your content" }
+  const performanceMetrics = [
+    {
+      id: 'created',
+      title: 'Content Created',
+      icon: <Sparkles className="w-6 h-6" />,
+      value: '1,247',
+      change: '+15%',
+      trend: 'up',
+      color: 'text-purple-400',
+      gradient: 'from-purple-600 to-pink-600'
+    },
+    {
+      id: 'voice',
+      title: 'Voice Commands',
+      icon: <Mic className="w-6 h-6" />,
+      value: '3,429',
+      change: '+23%',
+      trend: 'up',
+      color: 'text-blue-400',
+      gradient: 'from-blue-600 to-cyan-600'
+    },
+    {
+      id: 'saved',
+      title: 'Time Saved',
+      icon: <Zap className="w-6 h-6" />,
+      value: '456h',
+      change: '+38%',
+      trend: 'up',
+      color: 'text-green-400',
+      gradient: 'from-green-600 to-emerald-600'
+    },
+    {
+      id: 'revenue',
+      title: 'Revenue',
+      icon: <TrendingUp className="w-6 h-6" />,
+      value: '$12,847',
+      change: '+125%',
+      trend: 'up',
+      color: 'text-yellow-400',
+      gradient: 'from-yellow-600 to-orange-600'
+    }
   ];
 
   const quickActions = [
-    { title: "AI Music Studio", icon: <Music className="w-8 h-8" />, gradient: "from-purple-600 to-pink-600", description: "Create professional soundtracks" },
-    { title: "Video Production", icon: <Video className="w-8 h-8" />, gradient: "from-blue-600 to-cyan-600", description: "Cinematic video creation" },
-    { title: "Voice Synthesis", icon: <Mic className="w-8 h-8" />, gradient: "from-green-600 to-emerald-600", description: "Advanced speech generation" },
-    { title: "VFX Laboratory", icon: <Zap className="w-8 h-8" />, gradient: "from-orange-600 to-red-600", description: "Hollywood-grade effects" },
-    { title: "Intelligence Hub", icon: <Brain className="w-8 h-8" />, gradient: "from-indigo-600 to-purple-600", description: "AI model management" },
-    { title: "Global Marketplace", icon: <Globe className="w-8 h-8" />, gradient: "from-teal-600 to-blue-600", description: "Share and monetize" }
+    { 
+      title: "Generate Image", 
+      icon: <Image className="w-6 h-6" />, 
+      description: "AI-powered image creation",
+      gradient: "from-purple-600 to-pink-600",
+      status: 'active',
+      link: '/create'
+    },
+    { 
+      title: "Create Video", 
+      icon: <Video className="w-6 h-6" />, 
+      description: "Professional video production",
+      gradient: "from-blue-600 to-cyan-600",
+      status: 'active',
+      link: '/video'
+    },
+    { 
+      title: "Compose Audio", 
+      icon: <Music className="w-6 h-6" />, 
+      description: "Music and sound design",
+      gradient: "from-green-600 to-emerald-600",
+      status: 'active',
+      link: '/create'
+    },
+    { 
+      title: "VFX & Effects", 
+      icon: <Film className="w-6 h-6" />, 
+      description: "Visual effects and post-production",
+      gradient: "from-orange-600 to-red-600",
+      status: 'active',
+      link: '/create'
+    },
+    { 
+      title: "AI Assistant", 
+      icon: <Wand2 className="w-6 h-6" />, 
+      description: "Intelligent creative assistant",
+      gradient: "from-indigo-600 to-purple-600",
+      status: 'active',
+      link: '/intelligence'
+    },
+    { 
+      title: "Code Generation", 
+      icon: <Code2 className="w-6 h-6" />, 
+      description: "Generate code and scripts",
+      gradient: "from-gray-600 to-gray-800",
+      status: 'active',
+      link: '/intelligence'
+    }
   ];
+
+  const recentActivity = [
+    {
+      title: 'Epic Orchestral Suite',
+      type: 'Music',
+      time: '2 hours ago',
+      status: 'completed'
+    },
+    {
+      title: 'Corporate Video Intro',
+      type: 'Video',
+      time: '5 hours ago',
+      status: 'processing'
+    },
+    {
+      title: 'Podcast Intro Voice',
+      type: 'Audio',
+      time: '1 day ago',
+      status: 'completed'
+    },
+    {
+      title: 'Product Demo VFX',
+      type: 'VFX',
+      time: '2 days ago',
+      status: 'completed'
+    }
+  ];
+
+  const handleQuickAction = (action: any) => {
+    trackActivity('content_created', { type: action.title });
+    setLocation(action.link);
+  };
+
+  const handleRecordToggle = () => {
+    setIsRecording(!isRecording);
+    if (!isRecording) {
+      trackActivity('voice_command_used');
+      console.log("Starting voice recording...");
+    } else {
+      console.log("Stopping voice recording...");
+    }
+  };
 
   return (
     <div className="min-h-screen relative overflow-hidden">
       <div className="particles-bg" />
       <FixedNavigation currentPath="/" />
       
-      {/* Enhanced Header */}
-      <motion.header 
+      {/* Header */}
+      <motion.div 
         className="glass-morphism border-b border-white/10 sticky top-0 z-30"
-        initial={{ y: -100 }}
+        initial={{ y: -50 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <div className="container mx-auto px-6 py-4">
+        <div className="container mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
-            <motion.div 
-              className="flex items-center space-x-4"
-              whileHover={{ scale: 1.02 }}
-            >
-              <motion.div 
-                className="w-12 h-12 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl flex items-center justify-center"
-                animate={{ rotate: [0, 360] }}
-                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-              >
-                <Sparkles className="w-7 h-7 text-white" />
-              </motion.div>
-              <div>
-                <h1 className="text-2xl font-bold holographic">Infinite Intelligence</h1>
-                <p className="text-sm text-white/60">Creative Command Center</p>
-              </div>
-            </motion.div>
-            
-            <div className="flex items-center space-x-3 md:space-x-6">
-              <div className="hidden md:block text-right">
-                <p className="text-sm text-white/60">Welcome back,</p>
-                <p className="font-semibold text-white">Creator</p>
-              </div>
-              <div className="flex items-center space-x-2 md:space-x-3">
-                <motion.button 
-                  className="p-3 md:p-4 rounded-xl transition-all duration-300 relative bg-gradient-to-r from-yellow-400 to-orange-400 hover:from-yellow-500 hover:to-orange-500 shadow-lg hover:shadow-xl transform hover:scale-110"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setAchievementPanelOpen(true)}
-                  title="Click here for Achievements!"
-                  animate={{
-                    scale: [1, 1.1, 1],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                >
-                  <Trophy className="w-6 h-6 md:w-7 md:h-7 text-white" />
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full min-w-[24px] h-6 px-1 flex items-center justify-center shadow-lg animate-pulse">
-                    {userStats?.level || 1}
-                  </span>
-                  <span className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-yellow-400 font-bold whitespace-nowrap animate-pulse">
-                    Achievements
-                  </span>
-                </motion.button>
-                <motion.button 
-                  className="hidden sm:block p-2 md:p-3 glass-card rounded-xl hover:bg-white/10 transition-all duration-300"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Bell className="w-5 h-5 text-white/70" />
-                </motion.button>
-                <motion.button 
-                  className="p-2 md:p-3 glass-card rounded-xl hover:bg-white/10 transition-all duration-300"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setThemeCustomizerOpen(true)}
-                  title="Customize Theme"
-                >
-                  <Palette className="w-5 h-5 text-white/70" />
-                </motion.button>
-                <motion.button 
-                  className="hidden sm:block p-2 md:p-3 glass-card rounded-xl hover:bg-white/10 transition-all duration-300"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Settings className="w-5 h-5 text-white/70" />
-                </motion.button>
-                <motion.a
-                  href="/api/logout"
-                  className="hidden md:flex p-3 glass-card rounded-xl hover:bg-white/10 transition-all duration-300 items-center gap-2"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <User className="w-5 h-5 text-white/70" />
-                  <span className="text-sm text-white/70">Logout</span>
-                </motion.a>
-              </div>
+            <div>
+              <h1 className="text-4xl font-bold text-gradient mb-2">Creative Studio</h1>
+              <p className="text-white/70">Welcome back, {user?.email || 'Creator'}</p>
             </div>
+            
+            <motion.div 
+              className="flex items-center gap-4"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              {/* Achievement Trophy Button */}
+              <motion.button 
+                className="p-3 rounded-xl bg-gradient-to-r from-yellow-400 to-orange-400 hover:from-yellow-500 hover:to-orange-500 shadow-lg hover:shadow-xl"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setAchievementPanelOpen(true)}
+                title="Achievements"
+                animate={{
+                  scale: [1, 1.05, 1],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              >
+                <Trophy className="w-6 h-6 text-white" />
+                {userStats && userStats.level >= 1 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center shadow-lg">
+                    {userStats.level}
+                  </span>
+                )}
+              </motion.button>
+
+              <div className="glass-card px-4 py-2 flex items-center gap-2">
+                <Activity className="w-5 h-5 text-green-400" />
+                <span className="text-sm text-white">All Systems Active</span>
+              </div>
+              
+              <Button 
+                variant="outline" 
+                className="glass-card hover:bg-white/10"
+                onClick={() => setThemeCustomizerOpen(true)}
+              >
+                <Palette className="w-4 h-4 mr-2" />
+                Theme
+              </Button>
+
+              <a href="/api/logout">
+                <Button variant="outline" className="glass-card hover:bg-white/10">
+                  <User className="w-4 h-4 mr-2" />
+                  Logout
+                </Button>
+              </a>
+            </motion.div>
           </div>
         </div>
-      </motion.header>
+      </motion.div>
 
-      <main className="container mx-auto px-6 py-8">
-        {/* Hero Dashboard */}
+      <div className="container mx-auto px-6 py-8">
+        {/* Performance Metrics */}
         <motion.div 
           className="mb-12"
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-5xl font-bold text-gradient mb-4">Your Creative Command Center</h2>
-              <p className="text-xl text-white/70">
-                Generate professional content with voice commands and AI-powered tools.
-              </p>
-            </div>
-            <motion.div 
-              className="glass-card p-4 text-center"
-              whileHover={{ scale: 1.05 }}
-            >
-              <Clock className="w-6 h-6 text-purple-400 mx-auto mb-2" />
-              <div className="text-white font-semibold">
-                {currentTime.toLocaleTimeString()}
-              </div>
-              <div className="text-white/60 text-sm">
-                {currentTime.toLocaleDateString()}
-              </div>
-            </motion.div>
-          </div>
+          <h2 className="text-3xl font-bold text-white mb-8 flex items-center gap-3">
+            <Activity className="w-8 h-8 text-purple-400" />
+            Dashboard Overview
+          </h2>
           
-          {/* Enhanced Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {stats.map((stat, index) => (
+            {performanceMetrics.map((metric, index) => (
               <motion.div
-                key={index}
-                className="feature-card group cursor-pointer"
-                initial={{ opacity: 0, y: 30 }}
+                key={metric.id}
+                className={`feature-card cursor-pointer transition-all duration-300 ${
+                  activeMetric === metric.id ? 'ring-2 ring-purple-400' : ''
+                }`}
+                onClick={() => setActiveMetric(metric.id)}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1, duration: 0.6 }}
+                transition={{ delay: index * 0.1 }}
                 whileHover={{ y: -8, scale: 1.02 }}
               >
                 <div className="flex items-center justify-between mb-4">
                   <motion.div 
-                    className={`p-3 rounded-2xl bg-gradient-to-r ${stat.gradient} shadow-lg`}
+                    className={`p-3 rounded-2xl bg-gradient-to-r ${metric.gradient} shadow-lg`}
                     whileHover={{ scale: 1.1, rotate: 5 }}
                   >
-                    {stat.icon}
+                    {metric.icon}
                   </motion.div>
-                  <TrendingUp className="w-5 h-5 text-green-400" />
+                  <div className={`flex items-center gap-1 text-sm ${
+                    metric.trend === 'up' ? 'text-green-400' : 'text-red-400'
+                  }`}>
+                    {metric.trend === 'up' ? <ArrowUp className="w-4 h-4" /> : null}
+                    {metric.change}
+                  </div>
                 </div>
-                <div>
-                  <p className="text-white/60 text-sm mb-2">{stat.label}</p>
-                  <p className="text-3xl font-bold text-white group-hover:text-gradient transition-all duration-300">
-                    {stat.value}
-                  </p>
-                </div>
+                
+                <h3 className="text-white font-semibold mb-2">{metric.title}</h3>
+                <p className="text-3xl font-bold text-gradient mb-1">{metric.value}</p>
+                <p className="text-white/60 text-sm">Current performance</p>
               </motion.div>
             ))}
           </div>
@@ -223,225 +301,122 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 0.8 }}
         >
-          <h3 className="text-3xl font-bold text-white mb-8 flex items-center gap-3">
-            <Zap className="w-8 h-8 text-purple-400" />
+          <h2 className="text-3xl font-bold text-white mb-8 flex items-center gap-3">
+            <Sparkles className="w-8 h-8 text-blue-400" />
             Quick Actions
-          </h3>
+          </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {quickActions.map((action, index) => (
               <motion.div
                 key={index}
-                className="feature-card group cursor-pointer"
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 + index * 0.1, duration: 0.6 }}
-                whileHover={{ y: -12, scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => {
-                  console.log(`${action.title} clicked - navigating`);
-                  if (action.title === 'AI Music Studio') window.location.href = '/create?type=audio';
-                  else if (action.title === 'Video Production') window.location.href = '/create?type=video';
-                  else if (action.title === 'Voice Synthesis') window.location.href = '/create?type=voice';
-                  else if (action.title === 'VFX Laboratory') window.location.href = '/create?type=vfx';
-                  else if (action.title === 'Intelligence Hub') window.location.href = '/intelligence';
-                  else if (action.title === 'Global Marketplace') window.location.href = '/marketplace';
-                }}
+                className="glass-card p-6 hover:bg-white/5 transition-all duration-300 cursor-pointer"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: index * 0.05 }}
+                whileHover={{ y: -5, scale: 1.02 }}
+                onClick={() => handleQuickAction(action)}
               >
-                <motion.div
-                  className={`inline-flex items-center justify-center w-16 h-16 rounded-3xl bg-gradient-to-r ${action.gradient} mb-6 shadow-2xl`}
-                  whileHover={{ scale: 1.1, rotate: 5 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                >
-                  {action.icon}
-                </motion.div>
-                
-                <h4 className="text-2xl font-bold text-white mb-3 group-hover:text-gradient transition-all duration-500">
-                  {action.title}
-                </h4>
-                
-                <p className="text-white/70 mb-6 group-hover:text-white/90 transition-colors duration-500">
-                  {action.description}
-                </p>
-                
-                <motion.div 
-                  className="flex items-center justify-between"
-                  whileHover={{ x: 5 }}
-                >
-                  <span className="text-purple-400 font-semibold">Get Started</span>
-                  <ArrowRight className="w-5 h-5 text-purple-400" />
-                </motion.div>
+                <div className="flex items-start gap-4">
+                  <motion.div 
+                    className={`p-3 rounded-xl bg-gradient-to-r ${action.gradient} shadow-lg`}
+                    whileHover={{ rotate: 5, scale: 1.1 }}
+                  >
+                    {action.icon}
+                  </motion.div>
+                  <div className="flex-1">
+                    <h3 className="text-white font-semibold text-lg mb-1">{action.title}</h3>
+                    <p className="text-white/60 text-sm">{action.description}</p>
+                  </div>
+                  <CheckCircle className="w-5 h-5 text-green-400" />
+                </div>
               </motion.div>
             ))}
           </div>
         </motion.div>
 
-        {/* Voice Command Center */}
+        {/* Recent Activity */}
         <motion.div 
           className="mb-12"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8, duration: 0.8 }}
+          transition={{ delay: 0.6, duration: 0.8 }}
         >
-          <div className="glass-card p-8">
-            <div className="flex items-center justify-between mb-8">
-              <h3 className="text-3xl font-bold text-white flex items-center gap-3">
-                <motion.div
-                  animate={{ scale: isRecording ? [1, 1.2, 1] : 1 }}
-                  transition={{ duration: 0.5, repeat: isRecording ? Infinity : 0 }}
-                >
-                  <Mic className="w-8 h-8 text-purple-400" />
-                </motion.div>
-                Voice Command Center
-              </h3>
-              
-              <motion.button
-                className={`btn-primary px-8 py-4 ${isRecording ? 'bg-red-500 hover:bg-red-600' : ''}`}
-                onClick={() => {
-                  console.log('Voice control button clicked');
-                  setIsRecording(!isRecording);
-                }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {isRecording ? (
-                  <span className="flex items-center gap-2">
-                    <Pause className="w-5 h-5" />
-                    Stop Recording
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-2">
-                    <Play className="w-5 h-5" />
-                    Start Voice Control
-                  </span>
-                )}
-              </motion.button>
-            </div>
-            
-            <p className="text-white/70 text-lg mb-8">
-              Control your creative workflow with natural voice commands. Just speak to create professional content.
-            </p>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {voiceCommands.map((command, index) => (
+          <h2 className="text-3xl font-bold text-white mb-8 flex items-center gap-3">
+            <Clock className="w-8 h-8 text-green-400" />
+            Recent Activity
+          </h2>
+          
+          <div className="glass-card p-6">
+            <div className="space-y-4">
+              {recentActivity.map((activity, index) => (
                 <motion.div
                   key={index}
-                  className="glass-card p-6 hover:bg-white/5 transition-all duration-300"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 1 + index * 0.1 }}
-                  whileHover={{ scale: 1.02, y: -4 }}
+                  className="flex items-center justify-between p-4 rounded-lg hover:bg-white/5 transition-all duration-300"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{ x: 5 }}
                 >
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-3 h-3 bg-purple-400 rounded-full animate-pulse" />
-                    <span className="text-sm font-semibold text-purple-400 uppercase tracking-wide">
-                      {command.category}
-                    </span>
+                  <div className="flex items-center gap-4">
+                    <div className={`w-2 h-2 rounded-full ${
+                      activity.status === 'completed' ? 'bg-green-400' : 
+                      activity.status === 'processing' ? 'bg-yellow-400 animate-pulse' : 
+                      'bg-blue-400'
+                    }`} />
+                    <div>
+                      <h4 className="text-white font-medium">{activity.title}</h4>
+                      <p className="text-white/60 text-sm">{activity.type} • {activity.time}</p>
+                    </div>
                   </div>
-                  <p className="text-white font-medium mb-2">"{command.command}"</p>
-                  <p className="text-white/60 text-sm">{command.description}</p>
+                  <span className={`text-xs px-3 py-1 rounded-full ${
+                    activity.status === 'completed' ? 'bg-green-400/20 text-green-400' :
+                    activity.status === 'processing' ? 'bg-yellow-400/20 text-yellow-400' :
+                    'bg-blue-400/20 text-blue-400'
+                  }`}>
+                    {activity.status}
+                  </span>
                 </motion.div>
               ))}
             </div>
           </div>
         </motion.div>
 
-        {/* Recent Projects */}
+        {/* Voice Command Button */}
         <motion.div 
-          className="mb-12"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.2, duration: 0.8 }}
+          className="fixed bottom-8 right-8"
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 1, type: "spring", stiffness: 260, damping: 20 }}
         >
-          <div className="flex items-center justify-between mb-8">
-            <h3 className="text-3xl font-bold text-white flex items-center gap-3">
-              <BarChart3 className="w-8 h-8 text-blue-400" />
-              Recent Projects
-            </h3>
-            <motion.button 
-              className="text-blue-400 hover:text-blue-300 flex items-center gap-2"
-              whileHover={{ scale: 1.05 }}
-            >
-              View All <ArrowRight className="w-4 h-4" />
-            </motion.button>
-          </div>
-          
-          <div className="glass-card p-8">
-            <div className="space-y-4">
-              {recentProjects.map((project, index) => (
-                <motion.div
-                  key={index}
-                  className="flex items-center justify-between p-4 rounded-xl hover:bg-white/5 transition-all duration-300"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 1.4 + index * 0.1 }}
-                  whileHover={{ x: 5 }}
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl flex items-center justify-center">
-                      <span className="text-white font-bold">{project.name.charAt(0)}</span>
-                    </div>
-                    <div>
-                      <h4 className="text-white font-semibold">{project.name}</h4>
-                      <p className="text-white/60 text-sm">{project.type} • {project.duration}</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-3">
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                      project.status === 'completed' ? 'bg-green-500/20 text-green-400' :
-                      project.status === 'processing' ? 'bg-blue-500/20 text-blue-400' :
-                      'bg-orange-500/20 text-orange-400'
-                    }`}>
-                      {project.status}
-                    </span>
-                    <ArrowRight className="w-5 h-5 text-white/40" />
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
+          <motion.button
+            className={`p-6 rounded-full shadow-2xl transition-all duration-300 ${
+              isRecording 
+                ? 'bg-red-500 hover:bg-red-600' 
+                : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700'
+            }`}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleRecordToggle}
+            animate={isRecording ? { scale: [1, 1.1, 1] } : {}}
+            transition={isRecording ? { duration: 1, repeat: Infinity } : {}}
+          >
+            <Mic className="w-8 h-8 text-white" />
+          </motion.button>
         </motion.div>
-      </main>
-      
-      {/* Theme Customizer */}
-      <ThemeCustomizer 
-        isOpen={themeCustomizerOpen}
-        onClose={() => {
-          setThemeCustomizerOpen(false);
-          trackActivity({ type: 'theme_changed', points: 5 });
-        }}
-      />
-      
-      {/* Achievement Panel Modal */}
+      </div>
+
+      {/* Theme Customizer Modal */}
+      <AnimatePresence>
+        {themeCustomizerOpen && (
+          <ThemeCustomizer onClose={() => setThemeCustomizerOpen(false)} />
+        )}
+      </AnimatePresence>
+
+      {/* Achievement Panel */}
       <AnimatePresence>
         {achievementPanelOpen && (
-          <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <motion.div
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-              onClick={() => setAchievementPanelOpen(false)}
-            />
-            <motion.div
-              className="relative z-10 w-full max-w-5xl max-h-[90vh] overflow-auto"
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            >
-              <AchievementPanel className="shadow-2xl" />
-              <button
-                onClick={() => setAchievementPanelOpen(false)}
-                className="absolute top-4 right-4 p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
-              >
-                <span className="text-white text-xl">×</span>
-              </button>
-            </motion.div>
-          </motion.div>
+          <AchievementPanel onClose={() => setAchievementPanelOpen(false)} />
         )}
       </AnimatePresence>
     </div>
