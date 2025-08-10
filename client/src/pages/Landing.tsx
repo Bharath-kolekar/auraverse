@@ -216,25 +216,6 @@ export default function Landing() {
                   />
                 </motion.div>
 
-                <h1 className="text-7xl md:text-9xl font-black mb-8 leading-tight">
-                  <motion.span 
-                    className="text-white block"
-                    initial={{ opacity: 0, x: -50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2, duration: 0.8 }}
-                  >
-                    Gateway to
-                  </motion.span>
-                  <motion.span 
-                    className="holographic animate-glow-pulse block"
-                    initial={{ opacity: 0, x: 50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.4, duration: 0.8 }}
-                  >
-                    Infinite Intelligence
-                  </motion.span>
-                </h1>
-
                 <motion.p 
                   className="text-xl md:text-3xl text-white/80 mb-16 max-w-5xl mx-auto leading-relaxed"
                   initial={{ opacity: 0, y: 30 }}
