@@ -25,32 +25,32 @@ export default function Landing() {
   const features = [
     {
       icon: <Music className="w-8 h-8" />,
-      title: "AI Music Generation",
-      description: "Create professional soundtracks with neural composition and harmonic intelligence",
+      title: "Music Creation & Enhancement",
+      description: "Generate new soundtracks or enhance your existing audio with neural composition",
       gradient: "from-purple-600 to-pink-600",
       delay: 0.1,
       stats: "12 AI Models"
     },
     {
       icon: <Video className="w-8 h-8" />,
-      title: "Neural Video Creation", 
-      description: "Generate cinematic videos with advanced VFX and real-time rendering",
+      title: "Video Creation & Enhancement", 
+      description: "Create new videos or enhance your footage with advanced VFX and AI rendering",
       gradient: "from-blue-600 to-cyan-600",
       delay: 0.2,
       stats: "4K/8K Output"
     },
     {
       icon: <Image className="w-8 h-8" />,
-      title: "Professional Images",
-      description: "Ultra-high resolution image generation with artistic style transfer",
+      title: "Image Creation & Enhancement",
+      description: "Generate new images or enhance your photos with AI upscaling and style transfer",
       gradient: "from-green-600 to-emerald-600",
       delay: 0.3,
       stats: "Unlimited Generation"
     },
     {
       icon: <Mic className="w-8 h-8" />,
-      title: "Voice Intelligence",
-      description: "Advanced speech synthesis and voice cloning with emotional AI",
+      title: "Voice Creation & Enhancement",
+      description: "Generate realistic voices or enhance your recordings with AI audio processing",
       gradient: "from-orange-600 to-red-600",
       delay: 0.4,
       stats: "100+ Voices"
@@ -207,7 +207,7 @@ export default function Landing() {
                     <Sparkles className="w-6 h-6 text-purple-400" />
                   </motion.div>
                   <span className="text-lg font-semibold text-white">
-                    Revolutionary AI Content Platform
+                    Revolutionary Creative Intelligence Platform
                   </span>
                   <motion.div
                     className="w-3 h-3 bg-green-400 rounded-full status-online"
@@ -241,8 +241,8 @@ export default function Landing() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.6, duration: 0.8 }}
                 >
-                  Create <strong className="text-white">Oscar-quality</strong> content with 
-                  cutting-edge AI. Experience <strong className="text-gradient">10-1500x faster</strong> processing 
+                  Create and enhance <strong className="text-white">Oscar-quality</strong> content with 
+                  cutting-edge AI. Upload your media or generate from scratch. Experience <strong className="text-gradient">10-1500x faster</strong> processing 
                   with <strong className="text-green-400">affordable pay-per-use</strong> pricing.
                 </motion.p>
 
@@ -518,8 +518,8 @@ export default function Landing() {
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
             >
-              Join thousands of creators using the most advanced AI platform. 
-              Experience unlimited creativity with transparent pay-per-use pricing.
+              Join thousands of creators using the most advanced creative platform. 
+              Upload your content for AI enhancement or create entirely new media with transparent pay-per-use pricing.
             </motion.p>
             
             <motion.div

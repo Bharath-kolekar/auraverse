@@ -68,7 +68,7 @@ export default function Create() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-4xl font-bold text-gradient mb-2">Creative Studio</h1>
-              <p className="text-white/70">Professional content creation with AI intelligence</p>
+              <p className="text-white/70">Create from scratch or enhance your existing content with AI intelligence</p>
             </div>
             
             <motion.div 
