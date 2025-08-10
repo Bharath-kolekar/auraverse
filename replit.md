@@ -6,6 +6,7 @@ This is a full-stack web application called "Infinite Intelligence" that provide
 
 Preferred communication style: Simple, everyday language.
 Custom domain: cognomega.com and www.cognomega.com for production deployment.
+Logo preference: Text-based COGNOMEGA logo with Brain icon, no image logos.
 Application goal: Professional quality content generation with end-to-end automation.
 Platform features: Multi-device recording capabilities from mobile phones and computers.
 Monetization model: Pay-per-intelligence system where users purchase credits to access premium AI models.

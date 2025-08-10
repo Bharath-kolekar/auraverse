@@ -7,7 +7,6 @@ import {
   Activity, ArrowUp, CheckCircle, Clock, AlertCircle,
   Home as HomeIcon, Star, Award, BarChart3
 } from 'lucide-react';
-import logoImage from '@assets/Image_1754850206646.png';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -186,21 +185,20 @@ export default function Home() {
       >
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <motion.div 
-                className="bg-white rounded-lg p-2 shadow-lg"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
+                className="flex items-center gap-2"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5 }}
-                whileHover={{ scale: 1.05 }}
               >
-                <img 
-                  src={logoImage}
-                  alt="COGNOMEGA"
-                  className="h-12 w-auto object-contain"
-                />
+                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
+                  <Brain className="w-6 h-6 text-white" />
+                </div>
+                <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                  COGNOMEGA
+                </span>
               </motion.div>
-              <span className="text-2xl font-bold text-white hidden sm:inline">COGNOMEGA</span>
             </div>
             
             <motion.div 
