@@ -179,7 +179,7 @@ export default function Home() {
       
       {/* Top Header Bar */}
       <motion.div 
-        className="glass-morphism border-b border-white/10 sticky top-0 z-30"
+        className="glass-morphism border-b border-white/10 sticky top-0 z-40"
         initial={{ y: -50 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.6 }}
@@ -187,15 +187,20 @@ export default function Home() {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <motion.img 
-                src={logoImage}
-                alt="COGNOMEGA"
-                className="h-10 w-auto object-contain"
+              <motion.div 
+                className="bg-white rounded-lg p-2 shadow-lg"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
                 whileHover={{ scale: 1.05 }}
-              />
+              >
+                <img 
+                  src={logoImage}
+                  alt="COGNOMEGA"
+                  className="h-12 w-auto object-contain"
+                />
+              </motion.div>
+              <span className="text-2xl font-bold text-white hidden sm:inline">COGNOMEGA</span>
             </div>
             
             <motion.div 
@@ -243,7 +248,7 @@ export default function Home() {
                 Theme
               </Button>
 
-              <a href="/api/logout">
+              <a href="/api/logout" className="relative z-50">
                 <Button variant="outline" size="sm" className="glass-card hover:bg-white/10">
                   <User className="w-4 h-4 mr-1" />
                   Logout
@@ -257,16 +262,11 @@ export default function Home() {
       <div className="container mx-auto px-6 py-8">
         {/* Performance Metrics */}
         <motion.div 
-          className="mb-12"
+          className="mb-12 mt-8"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <h2 className="text-3xl font-bold text-white mb-8 flex items-center gap-3">
-            <Activity className="w-8 h-8 text-purple-400" />
-            Dashboard Overview
-          </h2>
-          
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {performanceMetrics.map((metric, index) => (
               <motion.div
@@ -351,7 +351,7 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6, duration: 0.8 }}
         >
-          <div className="glass-card p-8 text-center">
+          <div className="glass-card p-8 text-center relative">
             <motion.div 
               className="inline-flex items-center gap-4 mb-6"
               whileHover={{ scale: 1.05 }}
