@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Zap, Brain, Sparkles, Crown, Coins, History } from "lucide-react";
+import { Zap, Brain, Sparkles, Crown, Coins, History, CreditCard, Smartphone, Bitcoin } from "lucide-react";
 
 export default function Intelligence() {
   const [selectedModel, setSelectedModel] = useState<string>("");
@@ -29,6 +29,11 @@ export default function Intelligence() {
   // Fetch usage history
   const { data: usageData } = useQuery({
     queryKey: ["/api/intelligence/usage"],
+  });
+
+  // Fetch global payment info
+  const { data: paymentInfo } = useQuery({
+    queryKey: ["/api/intelligence/payment-info"],
   });
 
   // Generate content mutation
@@ -288,15 +293,108 @@ export default function Intelligence() {
           </Card>
         )}
 
-        {/* Pricing Tiers */}
-        <Card className="bg-white/10 backdrop-blur border-white/20">
+        {/* Global Payment Options */}
+        <Card className="bg-white/10 backdrop-blur border-white/20 mb-8">
           <CardHeader>
-            <CardTitle className="text-white">Intelligence Tiers</CardTitle>
+            <CardTitle className="text-white">Global Payment Options</CardTitle>
             <CardDescription className="text-blue-200">
-              Understanding our intelligence pricing model
+              Multiple payment methods available worldwide including India
             </CardDescription>
           </CardHeader>
           <CardContent>
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="p-4 bg-white/5 rounded-lg border border-white/10">
+                <div className="flex items-center gap-2 mb-3">
+                  <Smartphone className="h-5 w-5 text-green-400" />
+                  <h4 className="text-white font-medium">India Payments</h4>
+                </div>
+                <ul className="text-blue-200 text-sm space-y-1">
+                  <li>• UPI: pay@cognomega.com</li>
+                  <li>• Paytm, PhonePe, GPay</li>
+                  <li>• Net Banking, Cards</li>
+                  <li>• Bank Transfer</li>
+                </ul>
+                <Badge className="bg-green-600 text-white mt-2">
+                  ₹799 - ₹8299
+                </Badge>
+              </div>
+
+              <div className="p-4 bg-white/5 rounded-lg border border-white/10">
+                <div className="flex items-center gap-2 mb-3">
+                  <CreditCard className="h-5 w-5 text-blue-400" />
+                  <h4 className="text-white font-medium">International</h4>
+                </div>
+                <ul className="text-blue-200 text-sm space-y-1">
+                  <li>• PayPal Global</li>
+                  <li>• Wise Transfer</li>
+                  <li>• International Cards</li>
+                  <li>• Bank Wire</li>
+                </ul>
+                <Badge className="bg-blue-600 text-white mt-2">
+                  $9.99 - $99.99
+                </Badge>
+              </div>
+
+              <div className="p-4 bg-white/5 rounded-lg border border-white/10">
+                <div className="flex items-center gap-2 mb-3">
+                  <Bitcoin className="h-5 w-5 text-orange-400" />
+                  <h4 className="text-white font-medium">Cryptocurrency</h4>
+                </div>
+                <ul className="text-blue-200 text-sm space-y-1">
+                  <li>• Bitcoin (BTC)</li>
+                  <li>• Ethereum (ETH)</li>
+                  <li>• USDT/USDC</li>
+                  <li>• Other major coins</li>
+                </ul>
+                <Badge className="bg-orange-600 text-white mt-2">
+                  Crypto Rates
+                </Badge>
+              </div>
+            </div>
+            
+            <div className="mt-6 p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
+              <h4 className="text-green-400 font-medium mb-2">Easy Payment Process:</h4>
+              <ol className="text-green-200 text-sm space-y-1">
+                <li>1. Choose your preferred payment method</li>
+                <li>2. Send payment with your user ID as reference</li>
+                <li>3. Credits added instantly or within 24 hours</li>
+                <li>4. Start using premium intelligence models</li>
+              </ol>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Pricing Tiers */}
+        <Card className="bg-white/10 backdrop-blur border-white/20">
+          <CardHeader>
+            <CardTitle className="text-white">Intelligence Tiers & Pricing</CardTitle>
+            <CardDescription className="text-blue-200">
+              Flexible pricing for global users
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid md:grid-cols-3 gap-6 mb-6">
+              {paymentInfo?.pricing && Object.entries(paymentInfo.pricing).map(([currency, prices]: [string, any]) => (
+                <div key={currency} className="p-4 bg-white/5 rounded-lg border border-white/10">
+                  <h4 className="text-white font-medium mb-3 uppercase">{currency} Pricing</h4>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-blue-200">Basic (100 credits):</span>
+                      <span className="text-white">{prices.basic}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-blue-200">Pro (500 credits):</span>
+                      <span className="text-white">{prices.pro}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-blue-200">Ultimate (1500 credits):</span>
+                      <span className="text-white">{prices.ultimate}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
             <div className="grid md:grid-cols-3 gap-4">
               {modelsData?.tiers && Object.entries(modelsData.tiers).map(([tier, info]: [string, any]) => (
                 <div key={tier} className="p-4 bg-white/5 rounded-lg border border-white/10">

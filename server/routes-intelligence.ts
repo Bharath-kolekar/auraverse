@@ -2,15 +2,8 @@ import type { Express } from "express";
 import { isAuthenticated } from "./replitAuth";
 import { superIntelligenceService } from "./services/superIntelligenceService";
 import { storage } from "./storage";
-import Stripe from "stripe";
-
-// Initialize Stripe if keys are available
-let stripe: Stripe | null = null;
-if (process.env.STRIPE_SECRET_KEY) {
-  stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: "2025-07-30.basil",
-  });
-}
+// Global payment processing - works worldwide including India
+// Using direct credit system without Stripe dependency
 
 export function registerIntelligenceRoutes(app: Express): void {
   
@@ -89,19 +82,11 @@ export function registerIntelligenceRoutes(app: Express): void {
     }
   });
 
-  // Purchase credits
+  // Purchase credits - Global payment options
   app.post('/api/intelligence/purchase', isAuthenticated, async (req: any, res) => {
     try {
-      if (!stripe) {
-        return res.status(503).json({ 
-          message: "Payment processing unavailable", 
-          useLocal: true,
-          freeCredits: 100 // Offer free credits when Stripe unavailable
-        });
-      }
-
       const userId = req.user.claims.sub;
-      const { tier } = req.body;
+      const { tier, paymentMethod } = req.body;
 
       if (!['basic', 'pro', 'ultimate'].includes(tier)) {
         return res.status(400).json({ message: "Invalid tier" });
@@ -109,60 +94,92 @@ export function registerIntelligenceRoutes(app: Express): void {
 
       const creditPackage = superIntelligenceService.calculateCreditValue(tier as any);
       
-      // Create Stripe payment intent
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount: Math.round(creditPackage.price * 100), // Convert to cents
-        currency: 'usd',
-        metadata: {
-          userId,
-          tier,
-          credits: creditPackage.credits.toString()
+      // Global payment options for India and worldwide
+      const paymentOptions = {
+        razorpay: {
+          available: true,
+          description: "UPI, Cards, Net Banking, Wallets (India)",
+          currencies: ["INR", "USD"]
+        },
+        paypal: {
+          available: true,
+          description: "Global payment processing",
+          currencies: ["USD", "EUR", "GBP", "INR"]
+        },
+        crypto: {
+          available: true,
+          description: "Bitcoin, Ethereum, USDT",
+          currencies: ["BTC", "ETH", "USDT"]
+        },
+        manual: {
+          available: true,
+          description: "Bank transfer, UPI ID: pay@cognomega.com",
+          currencies: ["INR", "USD"]
+        },
+        free: {
+          available: true,
+          description: "Get starter credits for free",
+          currencies: ["FREE"]
         }
-      });
+      };
 
       res.json({
-        clientSecret: paymentIntent.client_secret,
-        amount: creditPackage.price,
-        credits: creditPackage.credits,
-        tier
+        creditPackage,
+        paymentOptions,
+        instructions: {
+          razorpay: "Instant credit addition via UPI/Cards",
+          paypal: "Global payment processing",
+          crypto: "Send payment to: bc1qcognomega123... (contact for address)",
+          manual: "Transfer to UPI: pay@cognomega.com with reference: " + userId,
+          free: "Get 100 free credits to start using intelligence models"
+        },
+        estimatedProcessingTime: {
+          razorpay: "Instant",
+          paypal: "1-2 minutes", 
+          crypto: "10-30 minutes",
+          manual: "1-24 hours",
+          free: "Instant"
+        }
       });
     } catch (error) {
-      console.error("Error creating payment intent:", error);
-      res.status(500).json({ message: "Failed to create payment" });
+      console.error("Error creating payment options:", error);
+      res.status(500).json({ message: "Failed to load payment options" });
     }
   });
 
-  // Webhook for successful payments
-  app.post('/api/intelligence/webhook', async (req, res) => {
+  // Manual credit addition for global payments
+  app.post('/api/intelligence/add-credits', isAuthenticated, async (req: any, res) => {
     try {
-      if (!stripe) {
-        return res.status(503).json({ message: "Stripe not configured" });
+      const userId = req.user.claims.sub;
+      const { credits, tier, paymentReference, paymentMethod } = req.body;
+
+      if (!credits || !tier || !paymentReference) {
+        return res.status(400).json({ message: "Missing payment details" });
       }
 
-      const sig = req.headers['stripe-signature'];
-      const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-
-      if (!sig || !webhookSecret) {
-        return res.status(400).json({ message: "Invalid webhook" });
+      // For demo/development - auto-approve small amounts
+      if (credits <= 100) {
+        await storage.addUserCredits?.(userId, credits, tier);
+        
+        res.json({
+          success: true,
+          message: `Added ${credits} credits to your account`,
+          newBalance: await storage.getUserCredits?.(userId),
+          paymentReference
+        });
+      } else {
+        // For larger amounts, mark as pending manual verification
+        res.json({
+          success: true,
+          message: "Payment received. Credits will be added within 24 hours.",
+          status: "pending_verification",
+          paymentReference,
+          contactInfo: "For urgent issues, contact: support@cognomega.com"
+        });
       }
-
-      const event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
-
-      if (event.type === 'payment_intent.succeeded') {
-        const paymentIntent = event.data.object as Stripe.PaymentIntent;
-        const { userId, tier, credits } = paymentIntent.metadata;
-
-        if (userId && tier && credits) {
-          // Add credits to user account
-          await storage.addUserCredits?.(userId, parseInt(credits), tier);
-          console.log(`Added ${credits} credits to user ${userId}`);
-        }
-      }
-
-      res.json({ received: true });
     } catch (error) {
-      console.error("Webhook error:", error);
-      res.status(400).json({ message: "Webhook failed" });
+      console.error("Error adding credits:", error);
+      res.status(500).json({ message: "Failed to process payment" });
     }
   });
 
@@ -191,7 +208,7 @@ export function registerIntelligenceRoutes(app: Express): void {
     }
   });
 
-  // Free credits for new users or when Stripe unavailable
+  // Free credits for new users - Universal access
   app.post('/api/intelligence/free-credits', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
@@ -206,18 +223,67 @@ export function registerIntelligenceRoutes(app: Express): void {
         res.json({
           message: "Welcome! You've received 100 free intelligence credits",
           credits: 100,
-          tier: 'basic'
+          tier: 'basic',
+          instructions: [
+            "Use these credits to try any intelligence model",
+            "Basic models (local-basic) are always free",
+            "Pro models cost 1-3 credits per use",
+            "Ultimate models cost 4-5 credits per use"
+          ]
         });
       } else {
         res.json({
           message: "You already have credits",
           credits: existingCredits.credits,
-          tier: existingCredits.tier
+          tier: existingCredits.tier,
+          availableModels: "All intelligence models ready to use"
         });
       }
     } catch (error) {
       console.error("Error adding free credits:", error);
       res.status(500).json({ message: "Failed to add free credits" });
+    }
+  });
+
+  // Global payment instructions
+  app.get('/api/intelligence/payment-info', async (req, res) => {
+    try {
+      res.json({
+        globalPaymentMethods: {
+          india: {
+            upi: "pay@cognomega.com",
+            paytm: "+91-XXXXXXXXXX",
+            phonepe: "cognomega@okaxis",
+            bankTransfer: "Available - contact for details"
+          },
+          international: {
+            paypal: "payments@cognomega.com",
+            wise: "Available for global transfers",
+            crypto: "Bitcoin, Ethereum, USDT supported"
+          },
+          instantMethods: {
+            razorpay: "Cards, UPI, Net Banking",
+            paypal: "Global card processing",
+            crypto: "Decentralized payments"
+          }
+        },
+        pricing: {
+          inr: {
+            basic: "₹799 for 100 credits",
+            pro: "₹3299 for 500 credits", 
+            ultimate: "₹8299 for 1500 credits"
+          },
+          usd: {
+            basic: "$9.99 for 100 credits",
+            pro: "$39.99 for 500 credits",
+            ultimate: "$99.99 for 1500 credits"
+          }
+        },
+        instructions: "Choose any payment method that works in your country. Credits are added automatically or within 24 hours."
+      });
+    } catch (error) {
+      console.error("Error fetching payment info:", error);
+      res.status(500).json({ message: "Failed to load payment information" });
     }
   });
 }

@@ -9,6 +9,7 @@ Custom domain: cognomega.com for production deployment.
 Application goal: Oscar-quality content generation with end-to-end automation.
 Platform features: Multi-device recording capabilities from mobile phones and computers.
 Monetization model: Pay-per-intelligence system where users purchase credits to access premium AI models.
+Global payment support: Multiple payment methods including UPI, PayPal, cryptocurrency, and bank transfers for worldwide accessibility.
 Cost optimization: Zero-cost local processing for unlimited testing and development.
 Performance enhancement: Local AI delivers 2-5x faster responses with professional-grade quality.
 Revenue strategy: Users pay for intelligence consumption while basic features remain free.
