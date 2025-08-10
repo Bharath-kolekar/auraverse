@@ -34,7 +34,7 @@ export function FixedNavigation({ currentPath = '/' }: NavigationProps) {
   };
 
   return (
-    <nav className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50">
+    <nav className="fixed top-20 left-1/2 transform -translate-x-1/2 z-[55]">
       <motion.div
         className="flex items-center gap-2 glass-morphism px-4 py-3 rounded-2xl border border-white/10"
         initial={{ opacity: 0, y: -50 }}

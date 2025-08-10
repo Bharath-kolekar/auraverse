@@ -178,7 +178,7 @@ export default function Home() {
       
       {/* Top Header Bar */}
       <motion.div 
-        className="glass-morphism border-b border-white/10 sticky top-0 z-40"
+        className="glass-morphism border-b border-white/10 sticky top-0 z-[60]"
         initial={{ y: -50 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.6 }}
@@ -246,7 +246,7 @@ export default function Home() {
                 Theme
               </Button>
 
-              <a href="/api/logout" className="relative z-50">
+              <a href="/api/logout">
                 <Button variant="outline" size="sm" className="glass-card hover:bg-white/10">
                   <User className="w-4 h-4 mr-1" />
                   Logout
@@ -257,10 +257,10 @@ export default function Home() {
         </div>
       </motion.div>
 
-      <div className="container mx-auto px-6 py-8">
+      <div className="container mx-auto px-6 py-8 mt-16">
         {/* Performance Metrics */}
         <motion.div 
-          className="mb-12 mt-8"
+          className="mb-12"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -441,7 +441,7 @@ export default function Home() {
 
         {/* Voice Command Button */}
         <motion.div 
-          className="fixed bottom-8 right-8"
+          className="fixed bottom-8 right-8 z-[45]"
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ delay: 1, type: "spring", stiffness: 260, damping: 20 }}
@@ -466,14 +466,18 @@ export default function Home() {
       {/* Theme Customizer Modal */}
       <AnimatePresence>
         {themeCustomizerOpen && (
-          <ThemeCustomizer isOpen={themeCustomizerOpen} onClose={() => setThemeCustomizerOpen(false)} />
+          <div className="fixed inset-0 z-[100]">
+            <ThemeCustomizer isOpen={themeCustomizerOpen} onClose={() => setThemeCustomizerOpen(false)} />
+          </div>
         )}
       </AnimatePresence>
 
       {/* Achievement Panel */}
       <AnimatePresence>
         {achievementPanelOpen && (
-          <AchievementPanel />
+          <div className="fixed inset-0 z-[100]">
+            <AchievementPanel />
+          </div>
         )}
       </AnimatePresence>
     </div>
