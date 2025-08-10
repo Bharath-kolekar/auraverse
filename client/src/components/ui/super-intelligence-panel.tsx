@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
+import { useSmartPosition } from '@/contexts/PlacementContext';
 
 interface SuperIntelligenceCapabilities {
   multiModal: boolean;
@@ -275,12 +276,13 @@ const SuperIntelligencePanel: React.FC = () => {
     }));
   };
 
-  // Temporarily hide to fix overlapping
-  return null;
+  // Use intelligent placement for positioning
+  const { style: placementStyle } = useSmartPosition('super-intelligence', { width: 192, height: 300 }, 80);
   
   return (
     <motion.div
-      className="fixed bottom-4 left-4 z-[200] w-48"
+      style={placementStyle}
+      className="w-48"
       initial={{ x: -100, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ type: "spring", damping: 20 }}

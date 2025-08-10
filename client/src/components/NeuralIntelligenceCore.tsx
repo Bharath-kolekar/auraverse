@@ -6,6 +6,7 @@ import NeuralSkull from './NeuralSkull';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { useSmartPosition } from '@/contexts/PlacementContext';
 
 // Global speech recognition types
 declare global {
@@ -460,15 +461,16 @@ export default function NeuralIntelligenceCore() {
     document.removeEventListener('keydown', () => {});
   };
 
-  // Temporarily hide to fix overlapping
-  return null;
+  // Use intelligent placement for positioning
+  const { style: placementStyle } = useSmartPosition('neural-intelligence', { width: 192, height: 250 }, 100);
   
   return (
     <AnimatePresence>
       {showSkull && (
         <motion.div
           ref={coreRef}
-          className="fixed top-4 left-4 z-[202] w-48"
+          style={placementStyle}
+          className="w-48"
           initial={{ opacity: 0, scale: 0.8, x: -20 }}
           animate={{ opacity: 1, scale: 1, x: 0 }}
           exit={{ opacity: 0, scale: 0.8, x: -20 }}

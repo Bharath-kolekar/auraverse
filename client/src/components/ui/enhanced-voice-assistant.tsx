@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mic, MicOff, Volume2, VolumeX, Languages, Settings, Sparkles } from 'lucide-react';
+import { useSmartPosition } from '@/contexts/PlacementContext';
 
 // Global speech recognition types
 declare global {
@@ -622,15 +623,16 @@ export default function EnhancedVoiceAssistant() {
     return messages[language]?.[page] || messages[language]?.['default'] || messages['en']['default'];
   };
 
-  // Temporarily hide to fix overlapping
-  return null;
+  // Use intelligent placement for positioning
+  const { style: placementStyle } = useSmartPosition('voice-assistant', { width: 192, height: 200 }, 90);
   
   return (
     <AnimatePresence>
       {isVisible && (
         <motion.div
           ref={assistantRef}
-          className="fixed top-4 right-4 z-[201] w-48"
+          style={placementStyle}
+          className="w-48"
           initial={{ opacity: 0, scale: 0.8, x: 20 }}
           animate={{ opacity: 1, scale: 1, x: 0 }}
           exit={{ opacity: 0, scale: 0.8, x: 20 }}
