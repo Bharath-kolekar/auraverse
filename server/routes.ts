@@ -212,6 +212,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Register intelligence routes for pay-per-use model
   registerIntelligenceRoutes(app);
+  
+  // Import enhanced routes
+  const { registerEnhancedIntelligenceRoutes } = await import("./routes-intelligence-enhanced");
+  registerEnhancedIntelligenceRoutes(app);
 
   const httpServer = createServer(app);
 

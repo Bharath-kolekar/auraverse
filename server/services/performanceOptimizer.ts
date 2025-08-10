@@ -18,8 +18,8 @@ export class PerformanceOptimizer {
     // Performance monitoring
     this.setupPerformanceMonitoring();
     
-    // User behavior analysis
-    this.setupBehaviorTracking();
+    // User behavior analysis  
+    this.setupUserBehaviorTracking();
     
     // Dynamic optimization rules
     this.setupOptimizationRules();
@@ -99,10 +99,21 @@ export class PerformanceOptimizer {
   private calculateSimilarity(words1: string[], words2: string[]): number {
     const set1 = new Set(words1);
     const set2 = new Set(words2);
-    const intersection = new Set([...set1].filter(x => set2.has(x)));
-    const union = new Set([...set1, ...set2]);
+    const intersection = new Set(Array.from(set1).filter(x => set2.has(x)));
+    const union = new Set([...Array.from(set1), ...Array.from(set2)]);
     
     return intersection.size / union.size;
+  }
+
+  // USER BEHAVIOR TRACKING
+  private setupUserBehaviorTracking() {
+    this.userBehaviorPatterns.set('defaultUser', {
+      preferredQuality: 'high',
+      commonAspectRatio: '16:9',
+      favoriteStyles: ['professional', 'modern'],
+      avgSessionTime: 0,
+      mostUsedFeatures: []
+    });
   }
 
   // USER BEHAVIOR OPTIMIZATION
@@ -162,6 +173,8 @@ export class PerformanceOptimizer {
   }
 
   private updateOptimizationRules(metric: string, history: number[]) {
+    if (history.length === 0) return;
+    
     const avg = history.reduce((a, b) => a + b, 0) / history.length;
     const trend = this.calculateTrend(history);
     
@@ -177,7 +190,9 @@ export class PerformanceOptimizer {
     if (data.length < 10) return 'insufficient_data';
     
     const recent = data.slice(-10);
-    const older = data.slice(-20, -10);
+    const older = data.length >= 20 ? data.slice(-20, -10) : data.slice(0, -10);
+    
+    if (older.length === 0) return 'insufficient_data';
     
     const recentAvg = recent.reduce((a, b) => a + b, 0) / recent.length;
     const olderAvg = older.reduce((a, b) => a + b, 0) / older.length;
