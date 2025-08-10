@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { Sparkles, Zap, Mic, Video, Music, Image, Cpu, Globe, Play, ArrowRight, Star, Award, TrendingUp } from 'lucide-react';
+import { Link } from 'wouter';
 import NeuralSkull from '@/components/NeuralSkull';
 import VoiceAIAssistant from '@/components/VoiceAIAssistant';
 
@@ -133,27 +134,38 @@ export default function Landing() {
           </motion.div>
           
           <div className="hidden md:flex items-center space-x-8">
-            <motion.a 
-              href="#features" 
-              className="text-white/70 hover:text-white transition-colors duration-300 font-medium"
-              whileHover={{ scale: 1.05 }}
-            >
-              Features
-            </motion.a>
-            <motion.a 
-              href="#testimonials" 
-              className="text-white/70 hover:text-white transition-colors duration-300 font-medium"
-              whileHover={{ scale: 1.05 }}
-            >
-              Reviews
-            </motion.a>
-            <motion.a 
-              href="#pricing" 
-              className="text-white/70 hover:text-white transition-colors duration-300 font-medium"
-              whileHover={{ scale: 1.05 }}
-            >
-              Pricing
-            </motion.a>
+            <Link href="/create">
+              <motion.span 
+                className="text-white/70 hover:text-white transition-colors duration-300 font-medium cursor-pointer"
+                whileHover={{ scale: 1.05 }}
+              >
+                Create
+              </motion.span>
+            </Link>
+            <Link href="/gallery">
+              <motion.span 
+                className="text-white/70 hover:text-white transition-colors duration-300 font-medium cursor-pointer"
+                whileHover={{ scale: 1.05 }}
+              >
+                Gallery
+              </motion.span>
+            </Link>
+            <Link href="/marketplace">
+              <motion.span 
+                className="text-white/70 hover:text-white transition-colors duration-300 font-medium cursor-pointer"
+                whileHover={{ scale: 1.05 }}
+              >
+                Marketplace
+              </motion.span>
+            </Link>
+            <Link href="/intelligence">
+              <motion.span 
+                className="text-white/70 hover:text-white transition-colors duration-300 font-medium cursor-pointer"
+                whileHover={{ scale: 1.05 }}
+              >
+                Intelligence
+              </motion.span>
+            </Link>
           </div>
           
           <motion.a

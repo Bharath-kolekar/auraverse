@@ -55,14 +55,14 @@ function AppContent() {
   const { isAuthenticated } = useAuth();
 
   return (
-    <PlacementProvider>
+    <>
       <Router />
-      {/* AI Components with intelligent placement to prevent overlaps */}
-      <NeuralIntelligenceCore />
-      <SuperIntelligencePanel />
-      <EnhancedVoiceAssistant />
+      {/* AI Components temporarily disabled until proper positioning is implemented */}
+      {/* <NeuralIntelligenceCore /> */}
+      {/* <SuperIntelligencePanel /> */}
+      {/* <EnhancedVoiceAssistant /> */}
       {isAuthenticated && <TrainingAssistantButton />}
-    </PlacementProvider>
+    </>
   );
 }
 

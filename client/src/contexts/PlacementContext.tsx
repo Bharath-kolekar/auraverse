@@ -102,27 +102,27 @@ export function useSmartPosition(
     return () => {
       unregisterComponent(componentId);
     };
-  }, [componentId, registerComponent, unregisterComponent, priority]);
+  }, []); // Only run on mount/unmount
 
-  // Update dimensions if they change
+  // Update dimensions if they change (but not on every render)
   useEffect(() => {
     updateDimensions(componentId, {
       width: defaultDimensions.width,
       height: defaultDimensions.height
     });
-  }, [componentId, defaultDimensions.width, defaultDimensions.height, updateDimensions]);
+  }, [defaultDimensions.width, defaultDimensions.height]); // Only when dimensions actually change
 
   // Get position updates
   useEffect(() => {
     const interval = setInterval(() => {
       const pos = getPosition(componentId);
-      if (pos) {
+      if (pos && (!position || pos.x !== position.x || pos.y !== position.y)) {
         setPosition(pos);
       }
-    }, 100);
+    }, 500); // Reduced frequency to avoid excessive updates
 
     return () => clearInterval(interval);
-  }, [componentId, getPosition]);
+  }, [componentId]); // Only depend on componentId
 
   return {
     position,

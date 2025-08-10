@@ -22,8 +22,8 @@ export function FixedNavigation({ currentPath = '/' }: NavigationProps) {
   const handleNavigation = (path: string, label: string) => {
     console.log(`Navigation clicked: ${label} -> ${path}`);
     
-    // Force immediate page navigation with reload
-    window.location.href = path;
+    // Use wouter's setLocation for proper client-side routing
+    setLocation(path);
     
     console.log(`Navigation initiated to: ${path}`);
   };
