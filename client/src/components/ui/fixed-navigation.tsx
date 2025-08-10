@@ -21,14 +21,10 @@ export function FixedNavigation({ currentPath = '/' }: NavigationProps) {
   const handleNavigation = (path: string, label: string) => {
     console.log(`Navigation clicked: ${label} -> ${path}`);
     
-    // Force immediate navigation
-    window.history.pushState(null, '', path);
-    setLocation(path);
-    
-    // Also update the current page location
+    // Force immediate page navigation with reload
     window.location.href = path;
     
-    console.log(`Navigation completed to: ${path}`);
+    console.log(`Navigation initiated to: ${path}`);
   };
 
   return (

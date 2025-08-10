@@ -64,12 +64,7 @@ export function useVoiceActions() {
       // VFX Creation commands
       if (lowerCommand.includes('create') && (lowerCommand.includes('vfx') || lowerCommand.includes('visual effects'))) {
         if (lowerCommand.includes('ship') || lowerCommand.includes('sea') || lowerCommand.includes('ocean')) {
-          setLocation('/create');
-          // Simulate VFX creation process
-          setTimeout(() => {
-            // This would trigger actual VFX generation
-            console.log('Starting ship VFX generation...');
-          }, 1000);
+          window.location.href = '/create';
           return { 
             success: true, 
             message: "Creating your ship and sea VFX scene! Opening Create Studio and starting the generation process with cinematic ocean waves, realistic ship movement, and dramatic lighting.", 
@@ -78,7 +73,7 @@ export function useVoiceActions() {
           };
         }
         if (lowerCommand.includes('fantasy')) {
-          setLocation('/create');
+          window.location.href = '/create';
           return { 
             success: true, 
             message: "Creating fantasy VFX! Generating magical effects including glowing waters, mystical creatures, enchanted storms, and luminous atmospheric effects.", 
@@ -90,7 +85,7 @@ export function useVoiceActions() {
       
       // Audio creation commands
       if (lowerCommand.includes('create') && (lowerCommand.includes('music') || lowerCommand.includes('audio') || lowerCommand.includes('sound'))) {
-        setLocation('/create');
+        window.location.href = '/create';
         return { 
           success: true, 
           message: "Creating epic background music for your VFX scene! Generating cinematic orchestral score with ocean themes and adventure elements.", 
@@ -101,7 +96,7 @@ export function useVoiceActions() {
       
       // Image generation commands
       if (lowerCommand.includes('create') && (lowerCommand.includes('image') || lowerCommand.includes('picture') || lowerCommand.includes('artwork'))) {
-        setLocation('/create');
+        window.location.href = '/create';
         return { 
           success: true, 
           message: "Generating stunning concept art for your ship scene! Creating high-resolution images with photorealistic detail and cinematic composition.", 
@@ -116,8 +111,8 @@ export function useVoiceActions() {
           (lowerCommand.includes('would like to create') && lowerCommand.includes('video')) ||
           (lowerCommand.includes('want to create') && lowerCommand.includes('video'))) {
         console.log('Creating video, navigating to Create Studio...');
-        // Use immediate SPA navigation only
-        setLocation('/create?autostart=true&type=video');
+        // Force page navigation
+        window.location.href = '/create?autostart=true&type=video';
         return { 
           success: true, 
           message: "Creating your cinematic video! Opening Create Studio now and producing your video with train station scenes, VFX effects, background music, and professional editing.", 
@@ -129,7 +124,7 @@ export function useVoiceActions() {
       // Demonstration commands
       if (lowerCommand.includes('show me') || lowerCommand.includes('demonstrate')) {
         if (lowerCommand.includes('vfx') || lowerCommand.includes('effects')) {
-          setLocation('/create');
+          window.location.href = '/create';
           return { 
             success: true, 
             message: "Demonstrating VFX creation! Watch as I generate realistic water physics, particle effects, and lighting in real-time.", 
@@ -141,7 +136,7 @@ export function useVoiceActions() {
       
       // Start/Begin commands
       if (lowerCommand.includes('start') || lowerCommand.includes('begin') || lowerCommand.includes('let\'s go')) {
-        setLocation('/create');
+        window.location.href = '/create';
         return { 
           success: true, 
           message: "Starting your creative journey! Opening Create Studio where you can bring your ship and fantasy VFX vision to life.", 
@@ -154,10 +149,8 @@ export function useVoiceActions() {
       if (lowerCommand.includes('make') || lowerCommand.includes('create') || lowerCommand.includes('generate')) {
         console.log('Generic creation command detected, navigating to Create Studio...');
         
-        // Use enhanced navigation
-        navigateWithRetry('/create').then(result => {
-          console.log('Generic creation navigation result:', result.success ? 'SUCCESS' : 'FAILED', result.message);
-        });
+        // Force navigation to Create Studio
+        window.location.href = '/create';
         
         return { 
           success: true, 

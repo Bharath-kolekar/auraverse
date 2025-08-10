@@ -197,6 +197,15 @@ export default function Home() {
                 transition={{ delay: 0.6 + index * 0.1, duration: 0.6 }}
                 whileHover={{ y: -12, scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
+                onClick={() => {
+                  console.log(`${action.title} clicked - navigating`);
+                  if (action.title === 'AI Music Studio') window.location.href = '/create?type=audio';
+                  else if (action.title === 'Video Production') window.location.href = '/create?type=video';
+                  else if (action.title === 'Voice Synthesis') window.location.href = '/create?type=voice';
+                  else if (action.title === 'VFX Laboratory') window.location.href = '/create?type=vfx';
+                  else if (action.title === 'Intelligence Hub') window.location.href = '/intelligence';
+                  else if (action.title === 'Global Marketplace') window.location.href = '/marketplace';
+                }}
               >
                 <motion.div
                   className={`inline-flex items-center justify-center w-16 h-16 rounded-3xl bg-gradient-to-r ${action.gradient} mb-6 shadow-2xl`}
@@ -247,7 +256,10 @@ export default function Home() {
               
               <motion.button
                 className={`btn-primary px-8 py-4 ${isRecording ? 'bg-red-500 hover:bg-red-600' : ''}`}
-                onClick={() => setIsRecording(!isRecording)}
+                onClick={() => {
+                  console.log('Voice control button clicked');
+                  setIsRecording(!isRecording);
+                }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
