@@ -20,6 +20,7 @@ export function useVoiceActions() {
       // Navigation commands
       if (lowerCommand.includes('go to') || lowerCommand.includes('open') || lowerCommand.includes('show me')) {
         if (lowerCommand.includes('create') || lowerCommand.includes('creation')) {
+          console.log('Navigating to Create Studio...');
           setLocation('/create');
           return { success: true, message: "Opening Create Studio - where you can generate VFX, audio, video, and images.", action: 'navigate', redirect: '/create' };
         }
@@ -39,10 +40,11 @@ export function useVoiceActions() {
       
       // Falling star/meteor VFX
       if (lowerCommand.includes('falling') && (lowerCommand.includes('star') || lowerCommand.includes('meteor') || lowerCommand.includes('sky'))) {
+        console.log('Creating meteor VFX, navigating to Create Studio...');
         setLocation('/create');
         return { 
           success: true, 
-          message: "Creating spectacular falling star VFX! Generating meteors with glowing trails, atmospheric entry effects, particle sparkles, and dramatic sky illumination.", 
+          message: "Creating spectacular falling star VFX! Opening Create Studio and generating meteors with glowing trails, atmospheric entry effects, particle sparkles, and dramatic sky illumination.", 
           action: 'create_meteor_vfx',
           redirect: '/create'
         };
@@ -97,12 +99,15 @@ export function useVoiceActions() {
         };
       }
       
-      // Video creation commands
-      if (lowerCommand.includes('create') && (lowerCommand.includes('video') || lowerCommand.includes('movie') || lowerCommand.includes('film'))) {
-        setLocation('/create');
+      // Video creation commands - more flexible matching
+      if ((lowerCommand.includes('create') && (lowerCommand.includes('video') || lowerCommand.includes('movie') || lowerCommand.includes('film'))) || 
+          lowerCommand.includes('cinematic video') ||
+          (lowerCommand.includes('would like to create') && lowerCommand.includes('video'))) {
+        console.log('Creating video, navigating to Create Studio...');
+        setLocation('/create?autostart=true&type=video');
         return { 
           success: true, 
-          message: "Producing your VFX video! Combining ship scenes with fantasy elements, background music, and cinematic effects into a complete movie.", 
+          message: "Creating your cinematic video! Opening Create Studio and producing your video with bus scenes, VFX effects, background music, and professional editing.", 
           action: 'create_video',
           redirect: '/create'
         };
