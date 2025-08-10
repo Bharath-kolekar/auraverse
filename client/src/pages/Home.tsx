@@ -157,14 +157,14 @@ export default function Home() {
   ];
 
   const handleQuickAction = (action: any) => {
-    trackActivity('content_created', { type: action.title });
+    trackActivity({ type: 'content_created', metadata: { contentType: action.title } });
     setLocation(action.link);
   };
 
   const handleRecordToggle = () => {
     setIsRecording(!isRecording);
     if (!isRecording) {
-      trackActivity('voice_command_used');
+      trackActivity({ type: 'voice_command_used' });
       console.log("Starting voice recording...");
     } else {
       console.log("Stopping voice recording...");
@@ -176,29 +176,35 @@ export default function Home() {
       <div className="particles-bg" />
       <FixedNavigation currentPath="/" />
       
-      {/* Header */}
+      {/* Top Header Bar */}
       <motion.div 
         className="glass-morphism border-b border-white/10 sticky top-0 z-30"
         initial={{ y: -50 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <div className="container mx-auto px-6 py-6">
+        <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl font-bold text-gradient mb-2">Creative Studio</h1>
-              <p className="text-white/70">Welcome back, {user?.email || 'Creator'}</p>
+            <div className="flex items-center gap-4">
+              <motion.div 
+                className="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl flex items-center justify-center"
+                animate={{ rotate: [0, 360] }}
+                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+              >
+                <Sparkles className="w-6 h-6 text-white" />
+              </motion.div>
+              <span className="text-lg font-semibold text-white">Infinite Intelligence</span>
             </div>
             
             <motion.div 
-              className="flex items-center gap-4"
+              className="flex items-center gap-3"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
             >
               {/* Achievement Trophy Button */}
               <motion.button 
-                className="p-3 rounded-xl bg-gradient-to-r from-yellow-400 to-orange-400 hover:from-yellow-500 hover:to-orange-500 shadow-lg hover:shadow-xl"
+                className="p-2.5 rounded-xl bg-gradient-to-r from-yellow-400 to-orange-400 hover:from-yellow-500 hover:to-orange-500 shadow-lg hover:shadow-xl"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setAchievementPanelOpen(true)}
@@ -212,31 +218,32 @@ export default function Home() {
                   ease: "easeInOut"
                 }}
               >
-                <Trophy className="w-6 h-6 text-white" />
+                <Trophy className="w-5 h-5 text-white" />
                 {userStats && userStats.level >= 1 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center shadow-lg">
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full min-w-[18px] h-4 px-1 flex items-center justify-center shadow-lg">
                     {userStats.level}
                   </span>
                 )}
               </motion.button>
 
-              <div className="glass-card px-4 py-2 flex items-center gap-2">
-                <Activity className="w-5 h-5 text-green-400" />
-                <span className="text-sm text-white">All Systems Active</span>
+              <div className="glass-card px-3 py-1.5 flex items-center gap-2">
+                <Activity className="w-4 h-4 text-green-400" />
+                <span className="text-xs text-white">Active</span>
               </div>
               
               <Button 
                 variant="outline" 
+                size="sm"
                 className="glass-card hover:bg-white/10"
                 onClick={() => setThemeCustomizerOpen(true)}
               >
-                <Palette className="w-4 h-4 mr-2" />
+                <Palette className="w-4 h-4 mr-1" />
                 Theme
               </Button>
 
               <a href="/api/logout">
-                <Button variant="outline" className="glass-card hover:bg-white/10">
-                  <User className="w-4 h-4 mr-2" />
+                <Button variant="outline" size="sm" className="glass-card hover:bg-white/10">
+                  <User className="w-4 h-4 mr-1" />
                   Logout
                 </Button>
               </a>
@@ -335,12 +342,62 @@ export default function Home() {
           </div>
         </motion.div>
 
-        {/* Recent Activity */}
+        {/* Creative Studio Section */}
         <motion.div 
           className="mb-12"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6, duration: 0.8 }}
+        >
+          <div className="glass-card p-8 text-center">
+            <motion.div 
+              className="inline-flex items-center gap-4 mb-6"
+              whileHover={{ scale: 1.05 }}
+            >
+              <motion.div 
+                className="w-16 h-16 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl flex items-center justify-center"
+                animate={{ rotate: [0, 360] }}
+                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+              >
+                <Sparkles className="w-10 h-10 text-white" />
+              </motion.div>
+              <div className="text-left">
+                <h1 className="text-5xl font-bold text-gradient">Creative Studio</h1>
+                <p className="text-xl text-white/70 mt-2">Welcome back, {(user as any)?.email || 'Creator'}</p>
+              </div>
+            </motion.div>
+            
+            <p className="text-white/60 max-w-2xl mx-auto mb-8">
+              Your AI-powered creative command center. Generate professional content with voice commands, 
+              create stunning visuals, and compose award-winning audio—all with intelligent optimization.
+            </p>
+            
+            <div className="flex justify-center gap-4">
+              <Button 
+                size="lg"
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                onClick={() => setLocation('/create')}
+              >
+                Start Creating
+              </Button>
+              <Button 
+                size="lg"
+                variant="outline"
+                className="glass-card hover:bg-white/10"
+                onClick={() => setLocation('/marketplace')}
+              >
+                Browse Marketplace
+              </Button>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Recent Activity */}
+        <motion.div 
+          className="mb-12"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8, duration: 0.8 }}
         >
           <h2 className="text-3xl font-bold text-white mb-8 flex items-center gap-3">
             <Clock className="w-8 h-8 text-green-400" />
@@ -409,14 +466,14 @@ export default function Home() {
       {/* Theme Customizer Modal */}
       <AnimatePresence>
         {themeCustomizerOpen && (
-          <ThemeCustomizer onClose={() => setThemeCustomizerOpen(false)} />
+          <ThemeCustomizer isOpen={themeCustomizerOpen} onClose={() => setThemeCustomizerOpen(false)} />
         )}
       </AnimatePresence>
 
       {/* Achievement Panel */}
       <AnimatePresence>
         {achievementPanelOpen && (
-          <AchievementPanel onClose={() => setAchievementPanelOpen(false)} />
+          <AchievementPanel />
         )}
       </AnimatePresence>
     </div>
