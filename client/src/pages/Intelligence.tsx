@@ -97,7 +97,7 @@ export default function Intelligence() {
     {
       title: 'Optimized Cost Structure',
       description: 'Advanced local processing reduces operational expenses',
-      impact: 'Pay-per-intelligence model with transparent pricing',
+      impact: 'Pay-per-use model with transparent pricing',
       status: 'success'
     },
     {
@@ -109,7 +109,7 @@ export default function Intelligence() {
     {
       title: 'Revenue Maximization',
       description: 'Dynamic pricing and optimization increase profit margins',
-      impact: '99.8% profit margin achieved through efficient pay-per-use model',
+      impact: '99.8% profit margin achieved through efficient credit system',
       status: 'success'
     },
     {

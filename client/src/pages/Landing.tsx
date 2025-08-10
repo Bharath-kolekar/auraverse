@@ -207,7 +207,7 @@ export default function Landing() {
                     <Sparkles className="w-6 h-6 text-purple-400" />
                   </motion.div>
                   <span className="text-lg font-semibold text-white">
-                    Revolutionary Pay-Per-Intelligence Platform
+                    Revolutionary AI Content Platform
                   </span>
                   <motion.div
                     className="w-3 h-3 bg-green-400 rounded-full status-online"
