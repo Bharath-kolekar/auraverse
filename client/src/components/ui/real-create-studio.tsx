@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { apiRequest } from '@/lib/queryClient';
 import { FixedNavigation } from './fixed-navigation';
 import { VideoPlayer } from './video-player';
+import { OscarQualityPanel } from './oscar-quality-panel';
 
 interface ContentGenerationRequest {
   type: 'video' | 'audio' | 'image' | 'voice' | 'vfx';
@@ -217,6 +218,9 @@ export function RealCreateStudio() {
             </div>
           </div>
         </motion.div>
+
+        {/* Oscar Quality Standards Panel */}
+        <OscarQualityPanel />
 
         {/* Content Type Selection */}
         <motion.div 

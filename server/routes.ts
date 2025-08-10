@@ -12,6 +12,7 @@ import { localTrainingService } from "./services/localTrainingService";
 import { insertContentSchema, insertProjectSchema, insertVoiceCommandSchema } from "@shared/schema";
 import { registerIntelligenceRoutes } from "./routes-intelligence";
 import { registerVideoRoutes } from "./routes-video";
+import { oscarStandardsService } from "./services/oscar-standards-service";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
@@ -281,6 +282,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Register video processing routes
   registerVideoRoutes(app);
+
+  // Oscar Standards API routes
+  app.get('/api/oscar/standards/:category', async (req, res) => {
+    try {
+      const { category } = req.params;
+      const standards = oscarStandardsService.getStandardsForCategory(category);
+      
+      if (!standards) {
+        return res.status(404).json({ error: 'Category not found' });
+      }
+      
+      res.json(standards);
+    } catch (error) {
+      console.error('Error fetching Oscar standards:', error);
+      res.status(500).json({ error: 'Failed to fetch standards' });
+    }
+  });
+
+  app.post('/api/oscar/validate', async (req, res) => {
+    try {
+      const { category, content } = req.body;
+      const validation = oscarStandardsService.validateContentAgainstStandards(category, content);
+      res.json(validation);
+    } catch (error) {
+      console.error('Error validating content:', error);
+      res.status(500).json({ error: 'Failed to validate content' });
+    }
+  });
+
+  app.get('/api/oscar/categories', async (req, res) => {
+    try {
+      const categories = oscarStandardsService.getAllCategories();
+      res.json({ categories });
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      res.status(500).json({ error: 'Failed to fetch categories' });
+    }
+  });
   
   // Import enhanced routes
   const { registerEnhancedIntelligenceRoutes } = await import("./routes-intelligence-enhanced");
