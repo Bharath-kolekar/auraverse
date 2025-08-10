@@ -96,18 +96,27 @@ export default function Home() {
               </div>
               <div className="flex items-center space-x-2 md:space-x-3">
                 <motion.button 
-                  className="p-2 md:p-3 glass-card rounded-xl hover:bg-white/10 transition-all duration-300 relative bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30"
-                  whileHover={{ scale: 1.05 }}
+                  className="p-3 md:p-4 rounded-xl transition-all duration-300 relative bg-gradient-to-r from-yellow-400 to-orange-400 hover:from-yellow-500 hover:to-orange-500 shadow-lg hover:shadow-xl transform hover:scale-110"
+                  whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setAchievementPanelOpen(true)}
-                  title="Achievements"
+                  title="Click here for Achievements!"
+                  animate={{
+                    scale: [1, 1.1, 1],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
                 >
-                  <Trophy className="w-5 h-5 md:w-6 md:h-6 text-yellow-400" />
-                  {userStats && userStats.level >= 1 && (
-                    <span className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-400 to-orange-400 text-white text-xs font-bold rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center shadow-lg">
-                      {userStats.level}
-                    </span>
-                  )}
+                  <Trophy className="w-6 h-6 md:w-7 md:h-7 text-white" />
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full min-w-[24px] h-6 px-1 flex items-center justify-center shadow-lg animate-pulse">
+                    {userStats?.level || 1}
+                  </span>
+                  <span className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-yellow-400 font-bold whitespace-nowrap animate-pulse">
+                    Achievements
+                  </span>
                 </motion.button>
                 <motion.button 
                   className="hidden sm:block p-2 md:p-3 glass-card rounded-xl hover:bg-white/10 transition-all duration-300"
