@@ -3,22 +3,17 @@ import { productionIntelligenceService } from './production-intelligence-service
 import OpenAI from 'openai';
 
 // Initialize OpenAI for advanced decision making
-// Smart OpenAI client with automatic fallback
-const openaiPrimary = process.env.OPENAI_API_KEY ? new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-}) : null;
-
-const openaiBackup = process.env.OPENAI_API_KEY_BACKUP ? new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY_BACKUP,
+const openaiClient = (process.env.OPENAI_API_KEY_NEW || process.env.OPENAI_API_KEY) ? new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY_NEW || process.env.OPENAI_API_KEY,
 }) : null;
 
 async function getWorkingOpenAI(): Promise<OpenAI | null> {
-  // Use backup directly since primary has quota issues
-  if (openaiBackup) {
-    console.log('Global AI Agent using backup OpenAI API key...');
-    return openaiBackup;
+  if (openaiClient) {
+    console.log('Global AI Agent using OpenAI API key...');
+    return openaiClient;
   }
-  return openaiPrimary;
+  console.log('No OpenAI API key available');
+  return null;
 }
 
 export interface GlobalAgentConfig {

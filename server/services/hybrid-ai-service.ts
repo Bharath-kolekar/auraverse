@@ -1,8 +1,8 @@
 import OpenAI from "openai";
 import { oscarStandardsService } from './oscar-standards-service';
 
-const openai = process.env.OPENAI_API_KEY ? new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+const openai = (process.env.OPENAI_API_KEY_NEW || process.env.OPENAI_API_KEY) ? new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY_NEW || process.env.OPENAI_API_KEY,
 }) : null;
 
 export interface ContentGenerationRequest {

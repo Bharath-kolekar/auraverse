@@ -4,9 +4,9 @@ import { productionIntelligenceService } from './production-intelligence-service
 import OpenAI from 'openai';
 
 // Initialize OpenAI with API key
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const openai = (process.env.OPENAI_API_KEY_NEW || process.env.OPENAI_API_KEY) ? new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY_NEW || process.env.OPENAI_API_KEY,
+}) : null;
 
 export interface SuperIntelligenceRequest {
   type: 'analysis' | 'enhancement' | 'generation' | 'optimization' | 'prediction';

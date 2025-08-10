@@ -1,12 +1,10 @@
 import OpenAI from "openai";
 
-if (!process.env.OPENAI_API_KEY) {
-  throw new Error("Missing OPENAI_API_KEY environment variable");
-}
+const apiKey = process.env.OPENAI_API_KEY_NEW || process.env.OPENAI_API_KEY;
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const openai = apiKey ? new OpenAI({
+  apiKey: apiKey,
+}) : null;
 
 // Advanced AI Decision Engine
 class AdvancedAIEngine {

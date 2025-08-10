@@ -2,29 +2,19 @@ import OpenAI from "openai";
 import { globalAIAgent } from './global-ai-agent';
 
 // Primary and backup OpenAI clients for robust service
-const openaiPrimary = process.env.OPENAI_API_KEY ? new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+const openaiClient = (process.env.OPENAI_API_KEY_NEW || process.env.OPENAI_API_KEY) ? new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY_NEW || process.env.OPENAI_API_KEY,
 }) : null;
 
-const openaiBackup = process.env.OPENAI_API_KEY_BACKUP ? new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY_BACKUP,
-}) : null;
-
-// Smart OpenAI client with automatic fallback
+// Smart OpenAI client
 async function getWorkingOpenAI(): Promise<OpenAI | null> {
-  // Use backup directly since primary has quota issues
-  if (openaiBackup) {
-    console.log('Using backup OpenAI API key...');
-    return openaiBackup;
-  }
-  
-  // Fallback to primary if backup not available
-  if (openaiPrimary) {
+  if (openaiClient) {
     try {
-      await openaiPrimary.models.list();
-      return openaiPrimary;
+      await openaiClient.models.list();
+      console.log('Using OpenAI API key...');
+      return openaiClient;
     } catch (error: any) {
-      console.log('Primary OpenAI API not available:', error.message);
+      console.log('OpenAI API not available:', error.message);
       return null;
     }
   }
