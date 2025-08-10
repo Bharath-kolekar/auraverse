@@ -68,18 +68,56 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
   const [proactiveTriggered, setProactiveTriggered] = useState<Set<string>>(new Set());
   
   useEffect(() => {
-    // Initialize Speech Recognition
-    if (typeof window !== 'undefined' && 'webkitSpeechRecognition' in window) {
-      const speechRecognition = new (window as any).webkitSpeechRecognition();
-      speechRecognition.continuous = true;
-      speechRecognition.interimResults = true;
-      speechRecognition.lang = selectedLanguage === 'zh' ? 'zh-CN' : selectedLanguage;
-      setRecognition(speechRecognition);
-    }
-    
-    // Initialize Speech Synthesis
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      setSynthesis(window.speechSynthesis);
+    const initializeSpeech = () => {
+      console.log('Initializing speech services...');
+      
+      // Initialize Speech Recognition
+      if (typeof window !== 'undefined') {
+        if ('webkitSpeechRecognition' in window) {
+          try {
+            const speechRecognition = new (window as any).webkitSpeechRecognition();
+            speechRecognition.continuous = false; // Changed to false for better control
+            speechRecognition.interimResults = true;
+            speechRecognition.lang = selectedLanguage === 'zh' ? 'zh-CN' : selectedLanguage;
+            speechRecognition.maxAlternatives = 1;
+            setRecognition(speechRecognition);
+            console.log('Speech recognition initialized');
+          } catch (error) {
+            console.error('Failed to initialize speech recognition:', error);
+          }
+        } else {
+          console.warn('webkitSpeechRecognition not supported');
+        }
+        
+        // Initialize Speech Synthesis
+        if ('speechSynthesis' in window) {
+          const synth = window.speechSynthesis;
+          setSynthesis(synth);
+          
+          // Load voices
+          const loadVoices = () => {
+            const voices = synth.getVoices();
+            console.log('Available voices:', voices.length);
+          };
+          
+          if (synth.onvoiceschanged !== undefined) {
+            synth.onvoiceschanged = loadVoices;
+          }
+          loadVoices();
+          
+          console.log('Speech synthesis initialized');
+        } else {
+          console.warn('speechSynthesis not supported');
+        }
+      }
+    };
+
+    // Initialize immediately if document is ready, otherwise wait
+    if (typeof window !== 'undefined' && document.readyState === 'complete') {
+      initializeSpeech();
+    } else if (typeof window !== 'undefined') {
+      window.addEventListener('load', initializeSpeech);
+      return () => window.removeEventListener('load', initializeSpeech);
     }
   }, [selectedLanguage]);
 
@@ -137,39 +175,77 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
   };
 
   const speakMessage = (message: string) => {
-    if (synthesis) {
+    console.log('Attempting to speak:', message);
+    if (synthesis && message) {
       synthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(message);
       utterance.lang = selectedLanguage === 'zh' ? 'zh-CN' : selectedLanguage;
       utterance.rate = 0.9;
       utterance.pitch = 1.1;
+      utterance.volume = 1;
       
-      utterance.onstart = () => setIsSpeaking(true);
-      utterance.onend = () => setIsSpeaking(false);
+      utterance.onstart = () => {
+        console.log('Speech started');
+        setIsSpeaking(true);
+      };
+      utterance.onend = () => {
+        console.log('Speech ended');
+        setIsSpeaking(false);
+      };
+      utterance.onerror = (error) => {
+        console.error('Speech error:', error);
+        setIsSpeaking(false);
+      };
       
-      synthesis.speak(utterance);
+      // Ensure voices are loaded
+      const voices = synthesis.getVoices();
+      if (voices.length === 0) {
+        synthesis.onvoiceschanged = () => {
+          synthesis.speak(utterance);
+        };
+      } else {
+        synthesis.speak(utterance);
+      }
+    } else {
+      console.error('Speech synthesis not available or message empty');
     }
   };
 
   const startListening = () => {
+    console.log('Attempting to start listening');
     if (recognition) {
-      setIsListening(true);
-      recognition.start();
-      
-      recognition.onresult = (event: any) => {
-        const transcript = event.results[event.results.length - 1][0].transcript;
-        if (event.results[event.results.length - 1].isFinal) {
-          handleVoiceCommand(transcript);
-        }
-      };
-      
-      recognition.onerror = () => {
+      try {
+        setIsListening(true);
+        recognition.start();
+        
+        recognition.onresult = (event: any) => {
+          console.log('Speech recognition result:', event);
+          const transcript = event.results[event.results.length - 1][0].transcript;
+          console.log('Transcript:', transcript);
+          if (event.results[event.results.length - 1].isFinal) {
+            handleVoiceCommand(transcript);
+          }
+        };
+        
+        recognition.onerror = (error: any) => {
+          console.error('Speech recognition error:', error);
+          setIsListening(false);
+        };
+        
+        recognition.onend = () => {
+          console.log('Speech recognition ended');
+          setIsListening(false);
+        };
+        
+        recognition.onstart = () => {
+          console.log('Speech recognition started');
+        };
+      } catch (error) {
+        console.error('Error starting recognition:', error);
         setIsListening(false);
-      };
-      
-      recognition.onend = () => {
-        setIsListening(false);
-      };
+      }
+    } else {
+      console.error('Speech recognition not available');
     }
   };
 
@@ -235,21 +311,27 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
   };
 
   const toggleAssistant = () => {
+    console.log('Toggling assistant, current state:', isOpen);
     const newState = !isOpen;
     setIsOpen(newState);
     onToggle?.(newState);
     
     if (newState) {
       const welcomeMessage = selectedLanguage === 'en' 
-        ? 'Hello! I\'m your AI assistant. How can I help you create amazing content today?'
+        ? 'Hello! I am your AI assistant. How can I help you create amazing content today?'
         : selectedLanguage === 'es'
         ? '¡Hola! Soy tu asistente de IA. ¿Cómo puedo ayudarte a crear contenido increíble hoy?'
         : selectedLanguage === 'fr'
         ? 'Bonjour! Je suis votre assistant IA. Comment puis-je vous aider à créer du contenu incroyable aujourd\'hui?'
-        : 'Hello! I\'m your AI assistant. How can I help you create amazing content today?';
+        : 'Hello! I am your AI assistant. How can I help you create amazing content today?';
       
+      console.log('Setting welcome message:', welcomeMessage);
       setCurrentMessage(welcomeMessage);
-      speakMessage(welcomeMessage);
+      
+      // Add a small delay to ensure the panel is visible before speaking
+      setTimeout(() => {
+        speakMessage(welcomeMessage);
+      }, 100);
     } else {
       stopSpeaking();
       stopListening();
@@ -371,8 +453,16 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
             {/* Message Area */}
             <div className="p-4 min-h-32 max-h-48 overflow-y-auto">
               <div className="f500-caption text-white/80 leading-relaxed">
-                {currentMessage || 'Hello! I\'m your AI assistant. How can I help you today?'}
+                {currentMessage || 'Hello! I am your AI assistant. Click the microphone to start speaking, or I can help you with features, pricing, or getting started.'}
               </div>
+              
+              {/* Debug Info */}
+              {process.env.NODE_ENV === 'development' && (
+                <div className="mt-2 text-xs text-white/40">
+                  Speech: {synthesis ? 'Available' : 'Not Available'} | 
+                  Recognition: {recognition ? 'Available' : 'Not Available'}
+                </div>
+              )}
             </div>
 
             {/* Controls */}
@@ -388,13 +478,14 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   disabled={!recognition}
+                  title={isListening ? 'Stop Listening' : 'Start Voice Input'}
                 >
                   {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
                   {isListening ? 'Stop' : 'Speak'}
                 </motion.button>
                 
                 <motion.button
-                  onClick={isSpeaking ? stopSpeaking : () => speakMessage(currentMessage)}
+                  onClick={isSpeaking ? stopSpeaking : () => speakMessage(currentMessage || 'Hello! I am your AI assistant ready to help.')}
                   className={`p-2 rounded-lg transition-colors ${
                     isSpeaking 
                       ? 'bg-red-600 text-white' 
@@ -403,14 +494,27 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   disabled={!synthesis}
+                  title={isSpeaking ? 'Stop Speaking' : 'Speak Message'}
                 >
                   {isSpeaking ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
                 </motion.button>
               </div>
 
-              <div className="flex items-center gap-1 text-white/40 f500-caption">
-                <MessageCircle className="w-3 h-3" />
-                Voice AI
+              <div className="flex items-center gap-2">
+                {/* Test Speech Button */}
+                <motion.button
+                  onClick={() => speakMessage('Testing speech synthesis. Hello world!')}
+                  className="px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  Test
+                </motion.button>
+                
+                <div className="flex items-center gap-1 text-white/40 f500-caption">
+                  <MessageCircle className="w-3 h-3" />
+                  Voice AI
+                </div>
               </div>
             </div>
           </motion.div>
