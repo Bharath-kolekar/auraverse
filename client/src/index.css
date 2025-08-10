@@ -58,6 +58,196 @@
   --neon-purple: hsl(271 91% 65%);
   --cyber-gray: hsl(0 0% 16.5%);
   --glow-blue: hsl(217 91% 60%);
+  --maya-gold: hsl(45 100% 60%);
+  --jadoo-cyan: hsl(180 100% 50%);
+  --neural-pink: hsl(320 100% 65%);
+}
+
+/* Neural VFX Animations */
+@keyframes neuralPulse {
+  0%, 100% { 
+    transform: scale(1) rotate(0deg);
+    filter: hue-rotate(0deg) brightness(1);
+  }
+  25% { 
+    transform: scale(1.1) rotate(90deg);
+    filter: hue-rotate(90deg) brightness(1.2);
+  }
+  50% { 
+    transform: scale(1.2) rotate(180deg);
+    filter: hue-rotate(180deg) brightness(1.5);
+  }
+  75% { 
+    transform: scale(1.1) rotate(270deg);
+    filter: hue-rotate(270deg) brightness(1.2);
+  }
+}
+
+@keyframes magicShimmer {
+  0% { 
+    background-position: -200% 0;
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(0%) scale(1.1);
+  }
+  100% { 
+    background-position: 200% 0;
+    transform: translateX(100%);
+  }
+}
+
+@keyframes mayaPortal {
+  0% {
+    border-radius: 50%;
+    transform: rotate(0deg) scale(0.8);
+    box-shadow: 0 0 20px var(--maya-gold);
+  }
+  33% {
+    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+    transform: rotate(120deg) scale(1.1);
+    box-shadow: 0 0 40px var(--electric-blue);
+  }
+  66% {
+    border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%;
+    transform: rotate(240deg) scale(0.9);
+    box-shadow: 0 0 60px var(--neon-purple);
+  }
+  100% {
+    border-radius: 50%;
+    transform: rotate(360deg) scale(0.8);
+    box-shadow: 0 0 20px var(--maya-gold);
+  }
+}
+
+@keyframes jadooWave {
+  0% {
+    transform: translateY(0) rotateX(0deg);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-20px) rotateX(180deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) rotateX(360deg);
+    opacity: 0.8;
+  }
+}
+
+@keyframes holographicGlitch {
+  0%, 100% {
+    transform: translate(0);
+    filter: hue-rotate(0deg);
+  }
+  10% {
+    transform: translate(-2px, 2px);
+    filter: hue-rotate(90deg);
+  }
+  20% {
+    transform: translate(-8px, 0px);
+    filter: hue-rotate(180deg);
+  }
+  30% {
+    transform: translate(8px, -2px);
+    filter: hue-rotate(270deg);
+  }
+  40% {
+    transform: translate(-2px, -4px);
+    filter: hue-rotate(360deg);
+  }
+  50% {
+    transform: translate(2px, 4px);
+    filter: hue-rotate(45deg);
+  }
+  60% {
+    transform: translate(-2px, 0px);
+    filter: hue-rotate(135deg);
+  }
+  70% {
+    transform: translate(4px, 2px);
+    filter: hue-rotate(225deg);
+  }
+  80% {
+    transform: translate(-2px, -2px);
+    filter: hue-rotate(315deg);
+  }
+  90% {
+    transform: translate(1px, 1px);
+    filter: hue-rotate(405deg);
+  }
+}
+
+/* Neural Classes */
+.neural-pulse {
+  animation: neuralPulse 3s ease-in-out infinite;
+}
+
+.magic-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: magicShimmer 2s ease-in-out infinite;
+}
+
+.maya-portal {
+  animation: mayaPortal 8s ease-in-out infinite;
+}
+
+.jadoo-wave {
+  animation: jadooWave 4s ease-in-out infinite;
+}
+
+.holographic-glitch {
+  animation: holographicGlitch 0.3s ease-in-out infinite alternate;
+}
+
+/* Magic Gradient Backgrounds */
+.magic-ai-gradient {
+  background: linear-gradient(135deg, 
+    hsl(271 91% 65% / 0.3), 
+    hsl(195 100% 50% / 0.3), 
+    hsl(45 100% 60% / 0.3),
+    hsl(320 100% 65% / 0.3)
+  );
+  background-size: 400% 400%;
+  animation: gradientShift 8s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Enhanced Cinematic Effects */
+.cinematic-gradient {
+  background: radial-gradient(circle at 20% 80%, 
+    hsl(271 91% 65% / 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, 
+    hsl(195 100% 50% / 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, 
+    hsl(45 100% 60% / 0.2) 0%, transparent 50%),
+    linear-gradient(135deg, var(--space-black), var(--deep-black));
+}
+
+/* 3D Floating Effect */
+.floating-3d {
+  transform-style: preserve-3d;
+  animation: float3D 6s ease-in-out infinite;
+}
+
+@keyframes float3D {
+  0%, 100% {
+    transform: translateY(0px) rotateX(0deg) rotateY(0deg);
+  }
+  25% {
+    transform: translateY(-10px) rotateX(5deg) rotateY(5deg);
+  }
+  50% {
+    transform: translateY(-20px) rotateX(0deg) rotateY(10deg);
+  }
+  75% {
+    transform: translateY(-10px) rotateX(-5deg) rotateY(5deg);
+  }
 }
 
 .dark {
