@@ -1,5 +1,6 @@
 // Super Intelligence Service using open-source models and advanced local processing
 import { HfInference } from '@huggingface/inference';
+import { intelligenceEnhancer } from './intelligenceEnhancer';
 
 export interface IntelligenceCredit {
   id: string;
@@ -26,23 +27,50 @@ export class SuperIntelligenceService {
   constructor() {
     // Initialize Hugging Face inference for open-source models
     this.hf = new HfInference(process.env.HUGGINGFACE_API_KEY || '');
+    
+    // Initialize zero-cost intelligence enhancement systems
+    this.initializeEnhancementSystems();
   }
 
-  // Intelligence pricing tiers
+  private initializeEnhancementSystems() {
+    // Smart caching for repeated patterns
+    this.enhancementCache.set('music_patterns', new Map());
+    this.enhancementCache.set('image_styles', new Map());
+    this.enhancementCache.set('video_templates', new Map());
+    this.enhancementCache.set('code_snippets', new Map());
+    
+    // Learning patterns from user interactions
+    this.intelligencePatterns.set('popular_prompts', []);
+    this.intelligencePatterns.set('successful_combinations', []);
+    this.intelligencePatterns.set('optimization_history', []);
+    
+    // Performance metrics tracking
+    this.optimizationMetrics.set('cache_hit_rate', 0);
+    this.optimizationMetrics.set('generation_speed', 0);
+    this.optimizationMetrics.set('quality_score', 0);
+  }
+
+  // Enhanced Intelligence pricing tiers with optimization
   private intelligencePricing = {
-    'local-basic': { credits: 0, description: 'Local AI processing' },
-    'deepseek-r1': { credits: 1, description: 'Advanced reasoning and analysis' },
-    'llama-vision': { credits: 2, description: 'Visual understanding and analysis' },
-    'stable-diffusion': { credits: 3, description: 'Professional image generation' },
-    'whisper-large': { credits: 2, description: 'Advanced speech recognition' },
-    'musicgen-large': { credits: 4, description: 'Professional music generation' },
-    'video-generation': { credits: 5, description: 'AI video creation' },
-    'code-generation': { credits: 2, description: 'Advanced code generation' },
-    'neural-style': { credits: 3, description: 'Artistic style transfer' },
-    'super-resolution': { credits: 2, description: '4K image enhancement' },
-    'motion-capture': { credits: 4, description: 'Advanced motion analysis' },
-    'voice-cloning': { credits: 5, description: 'Custom voice synthesis' }
+    'local-basic': { credits: 0, description: 'Enhanced local AI with neural optimization' },
+    'deepseek-r1': { credits: 1, description: 'Advanced reasoning with intelligent caching' },
+    'llama-vision': { credits: 2, description: 'Visual understanding with edge optimization' },
+    'stable-diffusion': { credits: 3, description: 'Professional image generation with progressive enhancement' },
+    'whisper-large': { credits: 2, description: 'Advanced speech recognition with browser acceleration' },
+    'musicgen-large': { credits: 4, description: 'Professional music with harmonic intelligence' },
+    'video-generation': { credits: 5, description: 'AI video creation with predictive rendering' },
+    'code-generation': { credits: 2, description: 'Advanced code generation with pattern learning' },
+    'neural-style': { credits: 3, description: 'Artistic style transfer with GPU optimization' },
+    'super-resolution': { credits: 2, description: '4K enhancement with intelligent upscaling' },
+    'motion-capture': { credits: 4, description: 'Motion analysis with prediction algorithms' },
+    'voice-cloning': { credits: 5, description: 'Voice synthesis with emotional intelligence' }
   };
+
+  // Zero-cost optimization systems
+  private enhancementCache = new Map<string, any>();
+  private intelligencePatterns = new Map<string, any>();
+  private optimizationMetrics = new Map<string, number>();
+  private learningDatabase = new Map<string, any[]>();
 
   async generateWithIntelligence(
     userId: string, 
@@ -85,7 +113,7 @@ export class SuperIntelligenceService {
           break;
 
         case 'stable-diffusion':
-          result = await this.generateStableDiffusion(prompt, parameters);
+          result = await intelligenceEnhancer.enhanceImageGeneration(prompt, parameters);
           tier = 'pro';
           break;
 
@@ -95,17 +123,17 @@ export class SuperIntelligenceService {
           break;
 
         case 'musicgen-large':
-          result = await this.generateMusicGenLarge(prompt, parameters);
+          result = await intelligenceEnhancer.enhanceMusicGeneration(prompt, parameters);
           tier = 'ultimate';
           break;
 
         case 'video-generation':
-          result = await this.generateVideoAI(prompt, parameters);
+          result = await intelligenceEnhancer.enhanceVideoGeneration(prompt, parameters);
           tier = 'ultimate';
           break;
 
         case 'code-generation':
-          result = await this.generateCodeAI(prompt, parameters);
+          result = await intelligenceEnhancer.enhanceCodeGeneration(prompt, parameters);
           tier = 'pro';
           break;
 
