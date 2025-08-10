@@ -42,8 +42,12 @@ export function useVoiceActions() {
       if ((lowerCommand.includes('falling') && (lowerCommand.includes('star') || lowerCommand.includes('meteor') || lowerCommand.includes('sky'))) ||
           (lowerCommand.includes('make') && lowerCommand.includes('falling') && lowerCommand.includes('stars'))) {
         console.log('Creating meteor VFX, navigating to Create Studio...');
-        // Force immediate navigation
-        setTimeout(() => setLocation('/create'), 100);
+        // Use both methods to ensure navigation works
+        setLocation('/create');
+        setTimeout(() => {
+          console.log('Backup navigation attempt to /create');
+          window.location.href = '/create';
+        }, 500);
         return { 
           success: true, 
           message: "Creating spectacular falling star VFX! Opening Create Studio now and generating meteors with glowing trails, atmospheric entry effects, particle sparkles, and dramatic sky illumination.", 
@@ -107,8 +111,12 @@ export function useVoiceActions() {
           (lowerCommand.includes('would like to create') && lowerCommand.includes('video')) ||
           (lowerCommand.includes('want to create') && lowerCommand.includes('video'))) {
         console.log('Creating video, navigating to Create Studio...');
-        // Force immediate navigation
-        setTimeout(() => setLocation('/create?autostart=true&type=video'), 100);
+        // Use both methods to ensure navigation works
+        setLocation('/create?autostart=true&type=video');
+        setTimeout(() => {
+          console.log('Backup navigation attempt to /create for video');
+          window.location.href = '/create?autostart=true&type=video';
+        }, 500);
         return { 
           success: true, 
           message: "Creating your cinematic video! Opening Create Studio now and producing your video with train station scenes, VFX effects, background music, and professional editing.", 
@@ -144,8 +152,12 @@ export function useVoiceActions() {
       // Generic creation commands
       if (lowerCommand.includes('make') || lowerCommand.includes('create') || lowerCommand.includes('generate')) {
         console.log('Generic creation command detected, navigating to Create Studio...');
-        // Force immediate navigation
-        setTimeout(() => setLocation('/create'), 100);
+        // Use both methods to ensure navigation works
+        setLocation('/create');
+        setTimeout(() => {
+          console.log('Backup navigation attempt to /create');
+          window.location.href = '/create';
+        }, 500);
         return { 
           success: true, 
           message: "Starting creation process! Opening Create Studio now where I'll help you bring your vision to life with AI-powered tools.", 

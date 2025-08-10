@@ -428,11 +428,17 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
     if (actionResult.success) {
       console.log('Executed action:', actionResult.action, actionResult.message);
       
-      // If there's a redirect, ensure navigation happens
+      // If there's a redirect, ensure navigation happens immediately
       if (actionResult.redirect) {
         console.log('Redirecting to:', actionResult.redirect);
         // Show immediate visual feedback
         setCurrentMessage(actionResult.message + ' Navigating now...');
+        
+        // Force navigation using window.location for reliability
+        setTimeout(() => {
+          console.log('Forcing navigation to:', actionResult.redirect);
+          window.location.href = actionResult.redirect;
+        }, 1000);
       }
       
       return actionResult.message;
