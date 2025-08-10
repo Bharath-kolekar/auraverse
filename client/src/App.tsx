@@ -24,6 +24,7 @@ const routeTransitions = {
   '/': 'curtain',           // Dramatic curtain opening for home
   '/create': 'wipe',         // Professional wipe for creation page
   '/video-production': 'diagonal',  // Diagonal wipe for video
+  '/video': 'diagonal',      // Same diagonal wipe for video route
   '/marketplace': 'wave',    // Wave effect for marketplace
   '/gallery': 'flip',        // 3D flip for gallery
   '/intelligence': 'rotate', // Rotate perspective for intelligence
@@ -60,6 +61,7 @@ function Router() {
         {/* All routes accessible regardless of authentication status */}
         <Route path="/create" component={Create} />
         <Route path="/video-production" component={CreateSimple} />
+        <Route path="/video" component={CreateSimple} />
         <Route path="/marketplace" component={Marketplace} />
         <Route path="/gallery" component={Gallery} />
         <Route path="/intelligence" component={Intelligence} />
