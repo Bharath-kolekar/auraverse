@@ -22,6 +22,11 @@ class AdvancedAIEngine {
 
   async analyzeUserIntent(request: ContentGenerationRequest): Promise<any> {
     try {
+      if (!openai) {
+        console.log('OpenAI not available, using fallback');
+        return { intent: 'basic_creation', recommendations: [] };
+      }
+      
       const prompt = `Analyze this user request for content creation and provide strategic recommendations:
 
 Request: ${JSON.stringify(request)}
@@ -52,6 +57,11 @@ Return a JSON response with detailed analysis and recommendations.`;
 
   async optimizePrompt(prompt: string, type: string, userHistory?: any): Promise<string> {
     try {
+      if (!openai) {
+        console.log('OpenAI not available, using original prompt');
+        return prompt;
+      }
+      
       const optimizationPrompt = `As an advanced AI prompt engineer, optimize this content creation prompt:
 
 Original: "${prompt}"
