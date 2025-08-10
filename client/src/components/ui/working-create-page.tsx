@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, Music, Video, Mic, Image, Play, Download, Settings, Eye, Cpu, Zap, ArrowLeft } from 'lucide-react';
-import { Link } from 'wouter';
+import { Link, useLocation } from 'wouter';
+import { FixedNavigation } from './fixed-navigation';
 
 export function WorkingCreatePage() {
+  const [location, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState('video'); // Default to video for voice commands
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
@@ -86,6 +88,7 @@ export function WorkingCreatePage() {
   return (
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       <div className="particles-bg" />
+      <FixedNavigation currentPath="/create" />
       
       {/* Voice Command Success Banner */}
       {showSuccess && (
@@ -377,35 +380,41 @@ export function WorkingCreatePage() {
           </motion.div>
         </div>
 
-        {/* Navigation Links */}
+        {/* Quick Navigation */}
         <div className="mt-8 flex justify-center gap-4">
-          <Link href="/gallery">
-            <motion.button
-              className="glass-card px-6 py-3 text-white hover:bg-white/10 transition-all duration-300"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Gallery
-            </motion.button>
-          </Link>
-          <Link href="/marketplace">
-            <motion.button
-              className="glass-card px-6 py-3 text-white hover:bg-white/10 transition-all duration-300"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Marketplace
-            </motion.button>
-          </Link>
-          <Link href="/intelligence">
-            <motion.button
-              className="glass-card px-6 py-3 text-white hover:bg-white/10 transition-all duration-300"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Intelligence
-            </motion.button>
-          </Link>
+          <motion.button
+            className="glass-card px-6 py-3 text-white hover:bg-white/10 transition-all duration-300"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => {
+              console.log('Gallery navigation clicked');
+              window.location.href = '/gallery';
+            }}
+          >
+            Gallery
+          </motion.button>
+          <motion.button
+            className="glass-card px-6 py-3 text-white hover:bg-white/10 transition-all duration-300"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => {
+              console.log('Marketplace navigation clicked');
+              window.location.href = '/marketplace';
+            }}
+          >
+            Marketplace
+          </motion.button>
+          <motion.button
+            className="glass-card px-6 py-3 text-white hover:bg-white/10 transition-all duration-300"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => {
+              console.log('Intelligence navigation clicked');
+              window.location.href = '/intelligence';
+            }}
+          >
+            Intelligence
+          </motion.button>
         </div>
       </div>
     </div>

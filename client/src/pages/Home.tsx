@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from "@/hooks/useAuth";
 import { Sparkles, Mic, Video, Music, Zap, Globe, BarChart3, Brain, Cpu, TrendingUp, Award, Calendar, Clock, Star, Settings, Bell, User, Plus, ArrowRight, Play, Pause } from "lucide-react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
+import { FixedNavigation } from '@/components/ui/fixed-navigation';
 
 export default function Home() {
   const { user } = useAuth();
+  const [location, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState('overview');
   const [isRecording, setIsRecording] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -50,6 +52,7 @@ export default function Home() {
   return (
     <div className="min-h-screen relative overflow-hidden">
       <div className="particles-bg" />
+      <FixedNavigation currentPath="/" />
       
       {/* Enhanced Header */}
       <motion.header 

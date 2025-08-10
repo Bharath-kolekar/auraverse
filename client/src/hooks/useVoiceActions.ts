@@ -24,23 +24,23 @@ export function useVoiceActions() {
     const lowerCommand = command.toLowerCase().trim();
     
     try {
-      // Navigation commands
+      // Navigation commands - using window.location.href for reliable navigation
       if (lowerCommand.includes('go to') || lowerCommand.includes('open') || lowerCommand.includes('show me')) {
         if (lowerCommand.includes('create') || lowerCommand.includes('creation')) {
           console.log('Navigating to Create Studio...');
-          setLocation('/create');
+          window.location.href = '/create';
           return { success: true, message: "Opening Create Studio - where you can generate VFX, audio, video, and images.", action: 'navigate', redirect: '/create' };
         }
         if (lowerCommand.includes('gallery') || lowerCommand.includes('my content')) {
-          setLocation('/gallery');
+          window.location.href = '/gallery';
           return { success: true, message: "Opening your Gallery - showcasing all your created content.", action: 'navigate', redirect: '/gallery' };
         }
         if (lowerCommand.includes('marketplace')) {
-          setLocation('/marketplace');
+          window.location.href = '/marketplace';
           return { success: true, message: "Opening Marketplace - where you can buy, sell, and discover amazing AI-generated content.", action: 'navigate', redirect: '/marketplace' };
         }
         if (lowerCommand.includes('home')) {
-          setLocation('/');
+          window.location.href = '/';
           return { success: true, message: "Taking you to the home page.", action: 'navigate', redirect: '/' };
         }
       }
@@ -50,10 +50,8 @@ export function useVoiceActions() {
           (lowerCommand.includes('make') && lowerCommand.includes('falling') && lowerCommand.includes('stars'))) {
         console.log('Creating meteor VFX, navigating to Create Studio...');
         
-        // Use enhanced navigation with retry mechanism
-        navigateWithRetry('/create').then(result => {
-          console.log('Navigation result:', result.success ? 'SUCCESS' : 'FAILED', result.message);
-        });
+        // Force navigation to Create Studio
+        window.location.href = '/create';
         
         return { 
           success: true, 
