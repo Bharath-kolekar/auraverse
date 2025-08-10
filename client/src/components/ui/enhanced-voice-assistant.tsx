@@ -64,7 +64,7 @@ export default function EnhancedVoiceAssistant() {
     }
   });
 
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const recognitionRef = useRef<any>(null);
   const synthesisRef = useRef<SpeechSynthesis | null>(null);
   const assistantRef = useRef<HTMLDivElement>(null);
 

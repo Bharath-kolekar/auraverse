@@ -1,0 +1,41 @@
+1. Always prioritize user experience with zero tolerance for user-facing errors.
+2. Support device-based, language-based, and network-based customization automatically across all modules.
+3. Integrate voice-first, multi-language, assistant-led UX in every feature and workflow.
+4. Apply upgrades to every router, service, module, and UI component.
+5. Implement AI self-healing, fault tolerance, and fallback logic at every layer.
+6. Ensure all components are globally scalable and optimized for low-latency performance.
+7. continuous optimization of automation, ensuring no user impact due to automation limits.
+8. Ensure all modules follow industry-best development and deployment practices (CI/CD, DevOps, SRE, etc.).
+9. Integrate redundancy and failover for critical services to ensure uninterrupted operation.
+
+development standards
+iteration improvement model for all code modules (Enhancements, Optimizations, Automations, UX Improvements, Validations, Error Handling, Error Corrections).
+• Ensure modular, reusable, and maintainable code using DRY (Don't Repeat Yourself) and SOLID principles.
+• Enforce consistent coding style across frontend, backend, and AI modules with linters and formatters.
+• Include automated unit tests, integration tests, and end-to-end tests with >90% coverage.
+• Implement CI/CD pipelines with automated build, test, and deployment workflows.
+• Enable cross-platform compatibility (desktop, mobile, PWA) with responsive and adaptive UI design.
+• Support multilingual and multi-device optimization automatically.
+• Integrate detailed logging and telemetry for debugging and monitoring.
+
+compliance
+• Adhere to GDPR, CCPA, FERPA, and country-specific data protection laws.
+• Comply with WCAG 2.1/2.2 for accessibility and inclusive design.
+• Implement secure authentication with SSO, MFA, and OAuth2 standards.
+• Encrypt data at rest and in transit using AES-256 and TLS 1.3.
+• Maintain PCI-DSS compliance for payment handling.
+• Apply ISO 27001, SOC 2, and OWASP best practices for security hardening.
+• Conduct regular penetration testing and vulnerability scanning.
+• Maintain detailed audit logs for security and compliance reporting.
+
+Integrate continuous compliance checks for GDPR, FERPA, CCPA, and all education-related standards with automated alerting and remediation.
+All deployments must pass automated performance benchmarks before going live, with minimum thresholds for response time, concurrency, and fault tolerance.
+Embed AI-driven anomaly detection in backend logs to proactively detect suspicious activity or performance degradation.
+Implement layered caching strategies (client-side, CDN, edge, server-side) to ensure sub-second load times globally.
+Mandate automated accessibility testing (WCAG 2.1/2.2 AA compliance) before frontend deployments.
+Ensure zero downtime deployments with blue-green or canary strategies in all environments.
+Use multi-region, multi-cloud redundancy for critical services to prevent regional outages from affecting global users.
+Apply AI-assisted translation memory for multilingual UI, ensuring cultural adaptation and linguistic accuracy.
+All voice assistant interactions must support contextual memory and personalization across sessions.
+Incorporate blockchain-based audit trails for sensitive data actions, ensuring immutability and transparency.
+

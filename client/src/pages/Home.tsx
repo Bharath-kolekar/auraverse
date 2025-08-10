@@ -83,7 +83,7 @@ export default function Home() {
             <div className="hidden md:flex items-center space-x-6">
               <div className="text-right">
                 <p className="text-sm text-white/60">Welcome back,</p>
-                <p className="font-semibold text-white">{user?.firstName || user?.email || 'Creator'}</p>
+                <p className="font-semibold text-white">Creator</p>
               </div>
               <div className="flex items-center space-x-3">
                 <motion.button 

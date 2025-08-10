@@ -2,7 +2,7 @@ import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-import EnhancedVoiceAssistant from "@/components/ui/enhanced-voice-assistant";
+import NeuralIntelligenceCore from "@/components/NeuralIntelligenceCore";
 import SuperIntelligencePanel from "@/components/ui/super-intelligence-panel";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { TrainingAssistantButton } from "@/components/ui/training-assistant-button";
@@ -55,7 +55,7 @@ function AppContent() {
   return (
     <>
       <Router />
-      <EnhancedVoiceAssistant />
+      <NeuralIntelligenceCore />
       <SuperIntelligencePanel />
       {isAuthenticated && <TrainingAssistantButton />}
     </>
