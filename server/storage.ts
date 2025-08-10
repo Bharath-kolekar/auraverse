@@ -67,16 +67,20 @@ export class DatabaseStorage implements IStorage {
       .insert(users)
       .values({
         ...userData,
-        level: 1,
-        experience: 0,
-        totalPoints: 0,
-        streak: 0,
+        level: userData.level ?? 1,
+        experience: userData.experience ?? 0,
+        totalPoints: userData.totalPoints ?? 0,
+        streak: userData.streak ?? 0,
         lastActiveDate: new Date()
       })
       .onConflictDoUpdate({
         target: users.id,
         set: {
-          ...userData,
+          email: userData.email,
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          profileImageUrl: userData.profileImageUrl,
+          lastActiveDate: new Date(),
           updatedAt: new Date(),
         },
       })
