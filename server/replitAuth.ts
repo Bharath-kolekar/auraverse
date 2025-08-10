@@ -23,7 +23,7 @@ const getOidcConfig = memoize(
 );
 
 export function getSession() {
-  const sessionTtl = 7 * 24 * 60 * 60 * 1000; // 1 week
+  const sessionTtl = 30 * 24 * 60 * 60 * 1000; // 30 days for longer sessions
   const pgStore = connectPg(session);
   const sessionStore = new pgStore({
     conString: process.env.DATABASE_URL,
@@ -36,10 +36,12 @@ export function getSession() {
     store: sessionStore,
     resave: false,
     saveUninitialized: false,
+    rolling: true, // Reset expiry on each request
     cookie: {
       httpOnly: true,
-      secure: true,
+      secure: false, // Allow non-HTTPS for development
       maxAge: sessionTtl,
+      sameSite: 'lax'
     },
   });
 }
@@ -103,7 +105,7 @@ export async function setupAuth(app: Express) {
 
   app.get("/api/login", (req, res, next) => {
     passport.authenticate(`replitauth:${req.hostname}`, {
-      prompt: "login consent",
+      prompt: "none",
       scope: ["openid", "email", "profile", "offline_access"],
     })(req, res, next);
   });

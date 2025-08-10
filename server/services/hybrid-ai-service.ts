@@ -520,10 +520,10 @@ class HybridAIService {
           <!-- Sun for yellow sky -->
           ${request.prompt.toLowerCase().includes('yellow') && request.prompt.toLowerCase().includes('sky') ? `<circle cx="${20 + Math.sin(time * 0.1) * 10}%" cy="15%" r="60" fill="url(#sun${frame})"/>` : ''}
           
-          <!-- Main content -->
-          <text x="50%" y="30%" font-family="Arial Black" font-size="48" fill="white" text-anchor="middle" filter="url(#glow)" stroke="#000" stroke-width="2">
+          <!-- Hidden prompt text for reference only -->
+          <!-- <text x="50%" y="30%" font-family="Arial Black" font-size="48" fill="white" text-anchor="middle" filter="url(#glow)" stroke="#000" stroke-width="2">
             ${request.prompt}
-          </text>
+          </text> -->
           
           <!-- Dynamic elements based on prompt -->
           ${this.generatePromptBasedElements(request.prompt, time, width, height)}
@@ -653,9 +653,9 @@ class HybridAIService {
       return `
         <linearGradient id="videoGrad${frame}" x1="0%" y1="0%" x2="0%" y2="100%">
           <stop offset="0%" style="stop-color:hsl(${45 + Math.sin(time * 0.2) * 10}, 90%, 75%);stop-opacity:1" />
-          <stop offset="30%" style="stop-color:hsl(${50 + Math.cos(time * 0.15) * 5}, 85%, 70%);stop-opacity:1" />
-          <stop offset="70%" style="stop-color:hsl(${55 + Math.sin(time * 0.3) * 8}, 80%, 65%);stop-opacity:1" />
-          <stop offset="100%" style="stop-color:hsl(${60 + Math.cos(time * 0.1) * 5}, 75%, 60%);stop-opacity:1" />
+          <stop offset="40%" style="stop-color:hsl(${50 + Math.cos(time * 0.15) * 5}, 85%, 70%);stop-opacity:1" />
+          <stop offset="60%" style="stop-color:hsl(${120 + Math.sin(time * 0.1) * 10}, 60%, 50%);stop-opacity:1" />
+          <stop offset="100%" style="stop-color:hsl(${80 + Math.cos(time * 0.1) * 5}, 70%, 40%);stop-opacity:1" />
         </linearGradient>
         <radialGradient id="sun${frame}" cx="${sunPosition}%" cy="15%">
           <stop offset="0%" style="stop-color:#FFE55C;stop-opacity:1" />
