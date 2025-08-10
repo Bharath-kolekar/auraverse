@@ -56,10 +56,10 @@ function AppContent() {
   return (
     <>
       <Router />
-      {/* AI Components positioned separately to avoid overlaps */}
-      <NeuralIntelligenceCore />
-      <SuperIntelligencePanel />
-      <EnhancedVoiceAssistant />
+      {/* AI Components temporarily disabled to fix overlapping issues */}
+      {/* <NeuralIntelligenceCore /> */}
+      {/* <SuperIntelligencePanel /> */}
+      {/* <EnhancedVoiceAssistant /> */}
       {isAuthenticated && <TrainingAssistantButton />}
     </>
   );
