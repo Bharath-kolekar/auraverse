@@ -97,15 +97,15 @@ export function OscarQualityPanel() {
       <div className="flex items-center gap-3 mb-6">
         <Trophy className="w-8 h-8 text-yellow-400" />
         <div>
-          <h3 className="text-2xl font-bold text-white">Oscar Quality Standards</h3>
-          <p className="text-yellow-200">Professional film industry benchmarks</p>
+          <h3 className="text-2xl font-bold text-white">Professional Quality Standards</h3>
+          <p className="text-yellow-200">Industry-leading film production benchmarks</p>
         </div>
       </div>
 
       {/* Category Selection */}
       <div className="mb-6">
         <label className="block text-sm font-medium text-yellow-200 mb-2">
-          Award Category
+          Content Category
         </label>
         <select
           value={selectedCategory}
@@ -223,7 +223,7 @@ export function OscarQualityPanel() {
               <AlertCircle className="w-6 h-6 text-red-400" />
             )}
             <h4 className="text-lg font-semibold text-white">
-              {validation.meets ? 'Meets Oscar Standards' : 'Standards Not Met'}
+              {validation.meets ? 'Meets Professional Standards' : 'Standards Not Met'}
             </h4>
           </div>
 
@@ -262,7 +262,7 @@ export function OscarQualityPanel() {
       {/* Action Button */}
       <motion.button
         onClick={() => validateContent({
-          duration: 30,
+          duration: 60,
           resolution: '1920x1080',
           format: 'Digital Cinema'
         })}
@@ -270,7 +270,7 @@ export function OscarQualityPanel() {
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >
-        Validate Current Project Against Oscar Standards
+        Validate Current Project Against Professional Standards
       </motion.button>
     </motion.div>
   );
