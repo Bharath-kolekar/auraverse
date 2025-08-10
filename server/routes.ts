@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
+import { aiService, type ContentGenerationRequest } from "./services/ai-service";
 import { localAiServices } from "./services/localAiServices";
 import { localTrainingService } from "./services/localTrainingService";
 
@@ -24,6 +25,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  // Production AI Content Generation Routes
+  app.post('/api/ai/generate', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const request: ContentGenerationRequest = {
+        ...req.body,
+        userId
+      };
+      
+      let result;
+      switch (request.type) {
+        case 'image':
+          result = await aiService.generateImage(request);
+          break;
+        case 'video':
+          result = await aiService.generateVideo(request);
+          break;
+        case 'audio':
+          result = await aiService.generateAudio(request);
+          break;
+        case 'voice':
+          result = await aiService.generateVoice(request);
+          break;
+        case 'vfx':
+          result = await aiService.generateVFX(request);
+          break;
+        default:
+          return res.status(400).json({ message: "Invalid content type" });
+      }
+      
+      res.json(result);
+    } catch (error) {
+      console.error("Error generating content:", error);
+      res.status(500).json({ message: "Failed to generate content", error: error instanceof Error ? error.message : 'Unknown error' });
+    }
+  });
+
+  app.get('/api/ai/status/:jobId', isAuthenticated, async (req: any, res) => {
+    try {
+      const { jobId } = req.params;
+      const status = aiService.getJobStatus(jobId);
+      
+      if (!status) {
+        return res.status(404).json({ message: "Job not found" });
+      }
+      
+      res.json(status);
+    } catch (error) {
+      console.error("Error fetching job status:", error);
+      res.status(500).json({ message: "Failed to fetch job status" });
+    }
+  });
+
+  app.get('/api/ai/jobs', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const jobs = aiService.getAllJobs(userId);
+      res.json(jobs);
+    } catch (error) {
+      console.error("Error fetching jobs:", error);
+      res.status(500).json({ message: "Failed to fetch jobs" });
     }
   });
 

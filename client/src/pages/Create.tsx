@@ -1,6 +1,6 @@
 import React from 'react';
-import { WorkingCreatePage } from '@/components/ui/working-create-page';
+import { RealCreateStudio } from '@/components/ui/real-create-studio';
 
 export default function Create() {
-  return <WorkingCreatePage />;
+  return <RealCreateStudio />;
 }

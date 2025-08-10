@@ -111,11 +111,11 @@ export function useVoiceActions() {
           (lowerCommand.includes('would like to create') && lowerCommand.includes('video')) ||
           (lowerCommand.includes('want to create') && lowerCommand.includes('video'))) {
         console.log('Creating video, navigating to Create Studio...');
-        // Force page navigation
-        window.location.href = '/create?autostart=true&type=video';
+        // Force page navigation with video mode
+        window.location.href = '/create?type=video&prompt=' + encodeURIComponent(command);
         return { 
           success: true, 
-          message: "Creating your cinematic video! Opening Create Studio now and producing your video with train station scenes, VFX effects, background music, and professional editing.", 
+          message: "Opening AI Create Studio for video generation! Using real OpenAI models to create your cinematic video with professional quality.", 
           action: 'create_video',
           redirect: '/create'
         };
