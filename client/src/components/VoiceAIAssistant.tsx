@@ -25,36 +25,36 @@ const supportedLanguages = [
 const proactiveMessages = [
   { 
     trigger: 'idle_5s',
-    message: 'Need help getting started? I can guide you through creating your first AI-powered content.',
-    languages: {
-      es: '¿Necesitas ayuda para empezar? Puedo guiarte para crear tu primer contenido con IA.',
-      fr: 'Besoin d\'aide pour commencer? Je peux vous guider pour créer votre premier contenu IA.',
-      de: 'Brauchen Sie Hilfe beim Einstieg? Ich kann Sie bei der Erstellung Ihres ersten KI-Inhalts unterstützen.',
-      zh: '需要帮助开始吗？我可以指导您创建第一个AI内容。',
-      ja: 'スタートのお手伝いが必要ですか？初めてのAIコンテンツ作成をガイドできます。'
-    }
+    messages: [
+      'How can I assist you today with AI content creation?',
+      'Would you like to explore our voice command features?',
+      'I can help you create professional quality content. What would you like to make?',
+      'Looking for something specific? Just ask!',
+      'I\'m here to help. You can ask me anything about the platform.'
+    ],
+    cooldown: 60000 // 1 minute cooldown
   },
   {
     trigger: 'scroll_features',
-    message: 'I see you\'re exploring our features! Would you like me to explain how our neural processing works?',
-    languages: {
-      es: '¡Veo que estás explorando nuestras funciones! ¿Te gustaría que te explique cómo funciona nuestro procesamiento neural?',
-      fr: 'Je vois que vous explorez nos fonctionnalités! Voulez-vous que j\'explique comment fonctionne notre traitement neural?',
-      de: 'Ich sehe, Sie erkunden unsere Funktionen! Soll ich erklären, wie unsere neurale Verarbeitung funktioniert?',
-      zh: '我看到您正在浏览我们的功能！您想让我解释神经处理是如何工作的吗？',
-      ja: '機能をご覧いただいているようですね！ニューラル処理の仕組みを説明しましょうか？'
-    }
+    messages: [
+      'I notice you\'re exploring our features. Any questions?',
+      'Would you like to learn more about what you\'re viewing?',
+      'I can explain any feature in detail. Just ask!',
+      'Curious about something? I\'m here to help.',
+      'Feel free to ask about any feature that interests you.'
+    ],
+    cooldown: 45000 // 45 seconds cooldown
   },
   {
     trigger: 'hover_cta',
-    message: 'Ready to create something amazing? I can walk you through the signup process and help you choose the right plan.',
-    languages: {
-      es: '¿Listo para crear algo increíble? Puedo guiarte a través del proceso de registro y ayudarte a elegir el plan adecuado.',
-      fr: 'Prêt à créer quelque chose d\'incroyable? Je peux vous accompagner dans le processus d\'inscription.',
-      de: 'Bereit, etwas Großartiges zu schaffen? Ich kann Sie durch die Anmeldung führen.',
-      zh: '准备创造令人惊叹的内容了吗？我可以引导您完成注册过程。',
-      ja: '素晴らしいものを作る準備はできていますか？サインアップをサポートできます。'
-    }
+    messages: [
+      'I can help you get started whenever you\'re ready.',
+      'Questions about getting started? I\'m here to help.',
+      'Would you like to know more about our platform?',
+      'I can guide you through any of our features.',
+      'Feel free to ask me anything about the platform.'
+    ],
+    cooldown: 90000 // 1.5 minute cooldown
   }
 ];
 
@@ -68,6 +68,8 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
   const [recognition, setRecognition] = useState<any | null>(null);
   const [synthesis, setSynthesis] = useState<SpeechSynthesis | null>(null);
   const [proactiveTriggered, setProactiveTriggered] = useState<Set<string>>(new Set());
+  const [messageCooldowns, setMessageCooldowns] = useState<Map<string, number>>(new Map());
+  const [messageIndex, setMessageIndex] = useState<Map<string, number>>(new Map());
   const [nlpEngine] = useState(() => new NLPConversationEngine(selectedLanguage));
   const { executeCommand, isProcessing } = useVoiceActions();
   const [conversationHistory, setConversationHistory] = useState<Array<{type: 'user' | 'ai', message: string, timestamp: Date, language?: string, speaker?: string}>>([]);
@@ -172,14 +174,33 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
   }, [proactiveTriggered]);
 
   const showProactiveMessage = (trigger: string) => {
+    // Check cooldown
+    const lastShown = messageCooldowns.get(trigger);
+    const now = Date.now();
+    
     const messageData = proactiveMessages.find(msg => msg.trigger === trigger);
-    if (messageData) {
-      const message = (messageData.languages as any)[selectedLanguage] || messageData.message;
-      setCurrentMessage(message);
-      setIsOpen(true);
-      speakMessage(message);
-      setProactiveTriggered(prev => new Set(Array.from(prev).concat([trigger])));
+    if (!messageData) return;
+    
+    // Check if message is on cooldown
+    if (lastShown && (now - lastShown) < messageData.cooldown) {
+      console.log(`Message ${trigger} on cooldown for ${(messageData.cooldown - (now - lastShown)) / 1000}s`);
+      return;
     }
+    
+    // Get the next message in rotation
+    const currentIndex = messageIndex.get(trigger) || 0;
+    const message = messageData.messages[currentIndex % messageData.messages.length];
+    
+    // Update index for next time
+    setMessageIndex(prev => new Map(prev).set(trigger, currentIndex + 1));
+    
+    // Update cooldown
+    setMessageCooldowns(prev => new Map(prev).set(trigger, now));
+    
+    setCurrentMessage(message);
+    setIsOpen(true);
+    speakMessage(message);
+    setProactiveTriggered(prev => new Set(Array.from(prev).concat([trigger])));
   };
 
   const speakMessage = (message: string, targetLanguage?: string) => {
