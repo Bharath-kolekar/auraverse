@@ -624,55 +624,57 @@ export default function EnhancedVoiceAssistant() {
       {isVisible && (
         <motion.div
           ref={assistantRef}
-          className="fixed bottom-6 right-6 z-50"
-          initial={{ opacity: 0, scale: 0.8, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.8, y: 20 }}
+          className="fixed top-20 right-2 z-50 max-w-xs"
+          initial={{ opacity: 0, scale: 0.8, x: 20 }}
+          animate={{ opacity: 1, scale: 1, x: 0 }}
+          exit={{ opacity: 0, scale: 0.8, x: 20 }}
           transition={{ duration: 0.3 }}
         >
-          <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-4 shadow-2xl border border-white/20 backdrop-blur-lg">
-            <div className="flex items-center gap-3 mb-3">
-              <motion.div
-                className="w-3 h-3 bg-green-400 rounded-full"
-                animate={isListening ? { scale: [1, 1.5, 1] } : {}}
-                transition={{ repeat: isListening ? Infinity : 0, duration: 1 }}
-              />
-              <span className="text-white font-medium text-sm">Voice Assistant</span>
-              <div className="flex items-center gap-1">
+          <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-3 shadow-2xl border border-white/20 backdrop-blur-lg w-full">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2 min-w-0">
+                <motion.div
+                  className="w-2 h-2 bg-green-400 rounded-full flex-shrink-0"
+                  animate={isListening ? { scale: [1, 1.5, 1] } : {}}
+                  transition={{ repeat: isListening ? Infinity : 0, duration: 1 }}
+                />
+                <span className="text-white font-medium text-xs truncate">Voice Assistant</span>
+              </div>
+              <div className="flex items-center gap-1 flex-shrink-0">
                 <button
                   onClick={toggleListening}
-                  className="p-2 rounded-lg bg-white/20 hover:bg-white/30 transition-colors"
+                  className="p-1 rounded-lg bg-white/20 hover:bg-white/30 transition-colors"
                   title={isListening ? 'Stop listening' : 'Start listening'}
                 >
-                  {isListening ? <MicOff className="w-4 h-4 text-white" /> : <Mic className="w-4 h-4 text-white" />}
+                  {isListening ? <MicOff className="w-3 h-3 text-white" /> : <Mic className="w-3 h-3 text-white" />}
                 </button>
                 <button
                   onClick={stopSpeaking}
-                  className="p-2 rounded-lg bg-white/20 hover:bg-white/30 transition-colors"
+                  className="p-1 rounded-lg bg-white/20 hover:bg-white/30 transition-colors"
                   title={isSpeaking ? 'Stop speaking' : 'Voice controls'}
                 >
-                  {isSpeaking ? <VolumeX className="w-4 h-4 text-white" /> : <Volume2 className="w-4 h-4 text-white" />}
+                  {isSpeaking ? <VolumeX className="w-3 h-3 text-white" /> : <Volume2 className="w-3 h-3 text-white" />}
                 </button>
                 <button
                   onClick={cycleLanguages}
-                  className="p-2 rounded-lg bg-white/20 hover:bg-white/30 transition-colors"
+                  className="p-1 rounded-lg bg-white/20 hover:bg-white/30 transition-colors"
                   title="Change language"
                 >
-                  <Languages className="w-4 h-4 text-white" />
+                  <Languages className="w-3 h-3 text-white" />
                 </button>
               </div>
             </div>
             
             {currentMessage && (
               <motion.div
-                className="bg-white/10 rounded-lg p-3 mb-3 text-white text-sm"
+                className="bg-white/10 rounded-lg p-2 mb-2 text-white text-xs"
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
               >
                 <div className="flex items-start gap-2">
-                  <Sparkles className="w-4 h-4 text-yellow-400 mt-0.5 flex-shrink-0" />
-                  <p>{currentMessage}</p>
+                  <Sparkles className="w-3 h-3 text-yellow-400 mt-0.5 flex-shrink-0" />
+                  <p className="break-words leading-tight">{currentMessage}</p>
                 </div>
               </motion.div>
             )}

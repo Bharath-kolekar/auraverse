@@ -277,26 +277,26 @@ const SuperIntelligencePanel: React.FC = () => {
 
   return (
     <motion.div
-      className="fixed left-4 top-32 z-50 w-80 max-w-sm"
+      className="fixed left-2 top-20 z-50 w-72 max-w-xs"
       initial={{ x: -100, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ type: "spring", damping: 20 }}
     >
       <Card className="bg-gradient-to-br from-purple-900/95 via-blue-900/95 to-indigo-900/95 backdrop-blur-lg border border-purple-500/20 shadow-2xl">
-        <CardContent className="p-4">
-          <div className="flex items-center gap-4">
+        <CardContent className="p-3">
+          <div className="flex items-start gap-3">
             {/* Left side - Content */}
-            <div className="flex-1 space-y-3">
+            <div className="flex-1 space-y-2 min-w-0">
               {/* Header */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Brain className="w-4 h-4 text-purple-400" />
-                  <span className="text-white font-semibold text-sm">Super Intelligence</span>
+              <div className="flex items-center justify-between mb-1">
+                <div className="flex items-center gap-1 min-w-0">
+                  <Brain className="w-3 h-3 text-purple-400 flex-shrink-0" />
+                  <span className="text-white font-semibold text-xs truncate">Super Intelligence</span>
                 </div>
                 {systemHealth?.status === 'operational' && (
-                  <Badge variant="outline" className="border-green-500 text-green-400 text-xs">
+                  <Badge variant="outline" className="border-green-500 text-green-400 text-xs px-1 py-0 h-4 flex-shrink-0">
                     <Zap className="w-2 h-2 mr-1" />
-                    Active
+                    <span className="text-xs">Active</span>
                   </Badge>
                 )}
               </div>
@@ -320,42 +320,42 @@ const SuperIntelligencePanel: React.FC = () => {
               </AnimatePresence>
 
               {/* Quick Actions */}
-              <div className="space-y-2">
-                <h4 className="text-xs font-medium text-purple-200">Quick Enhancements</h4>
+              <div className="space-y-1">
+                <h4 className="text-xs font-medium text-purple-200">Quick Actions</h4>
                 <div className="grid grid-cols-2 gap-1">
                   <Button
                     size="sm"
                     onClick={() => handleQuickEnhancement('quality')}
                     disabled={isProcessing}
-                    className="bg-purple-600 hover:bg-purple-700 text-white text-xs h-7"
+                    className="bg-purple-600 hover:bg-purple-700 text-white text-xs h-6 px-2"
                   >
                     <Star className="w-2 h-2 mr-1" />
-                    Quality
+                    <span className="truncate">Quality</span>
                   </Button>
                   <Button
                     size="sm"
                     onClick={() => handleQuickEnhancement('creativity')}
                     disabled={isProcessing}
-                    className="bg-blue-600 hover:bg-blue-700 text-white text-xs h-7"
+                    className="bg-blue-600 hover:bg-blue-700 text-white text-xs h-6 px-2"
                   >
                     <Zap className="w-2 h-2 mr-1" />
-                    Creative
+                    <span className="truncate">Creative</span>
                   </Button>
                 </div>
               </div>
 
               {/* System Status */}
               {systemHealth && (
-                <div className="text-xs text-purple-300 pt-2 border-t border-purple-500/20">
-                  <div className="flex justify-between">
-                    <span>Status:</span>
-                    <span className={systemHealth.status === 'operational' ? 'text-green-400' : 'text-yellow-400'}>
+                <div className="text-xs text-purple-300 pt-1 border-t border-purple-500/20 space-y-1">
+                  <div className="flex justify-between items-center">
+                    <span className="truncate">Status:</span>
+                    <span className={`truncate text-xs ${systemHealth.status === 'operational' ? 'text-green-400' : 'text-yellow-400'}`}>
                       {systemHealth.status}
                     </span>
                   </div>
-                  <div className="flex justify-between">
-                    <span>Version:</span>
-                    <span>{systemHealth.version}</span>
+                  <div className="flex justify-between items-center">
+                    <span className="truncate">Version:</span>
+                    <span className="truncate text-xs">{systemHealth.version}</span>
                   </div>
                 </div>
               )}
@@ -363,14 +363,14 @@ const SuperIntelligencePanel: React.FC = () => {
 
             {/* Right side - Motion.div */}
             <motion.div
-              className="w-16 h-16 rounded-full bg-gradient-to-r from-purple-600/30 to-pink-600/30 backdrop-blur-xl flex items-center justify-center border border-purple-400/30"
+              className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-600/30 to-pink-600/30 backdrop-blur-xl flex items-center justify-center border border-purple-400/30 flex-shrink-0"
               animate={{ 
                 rotate: [0, 360],
-                scale: [1, 1.1, 1],
+                scale: [1, 1.05, 1],
                 boxShadow: [
-                  "0 0 20px rgba(138, 43, 226, 0.3)",
-                  "0 0 40px rgba(138, 43, 226, 0.6)",
-                  "0 0 20px rgba(138, 43, 226, 0.3)"
+                  "0 0 15px rgba(138, 43, 226, 0.3)",
+                  "0 0 25px rgba(138, 43, 226, 0.5)",
+                  "0 0 15px rgba(138, 43, 226, 0.3)"
                 ]
               }}
               transition={{ 
@@ -378,9 +378,9 @@ const SuperIntelligencePanel: React.FC = () => {
                 scale: { duration: 2, repeat: Infinity },
                 boxShadow: { duration: 2, repeat: Infinity }
               }}
-              whileHover={{ scale: 1.2 }}
+              whileHover={{ scale: 1.1 }}
             >
-              <Brain className="w-8 h-8 text-purple-300" />
+              <Brain className="w-6 h-6 text-purple-300" />
             </motion.div>
           </div>
         </CardContent>
