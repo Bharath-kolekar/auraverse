@@ -1,7 +1,8 @@
-import OpenAI from "openai";
+import { HfInference } from '@huggingface/inference';
 
-// Only initialize OpenAI if API key is available
-const openai = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
+// Using DeepSeek R1 for training assistance (open source)
+const hf = new HfInference(process.env.HUGGINGFACE_API_KEY || 'hf_default');
+const DEEPSEEK_MODEL = "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B";
 
 interface TrainingContext {
   currentPage?: string;
@@ -45,23 +46,20 @@ Current Context: User is on the ${currentPage || 'main'} page.`;
 
   async generateResponse(context: TrainingContext): Promise<{ message: string; type: string }> {
     try {
-      if (!openai) {
-        throw new Error('OpenAI API key not configured');
-      }
-
       const systemPrompt = this.getSystemPrompt(context.currentPage);
       
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: context.userMessage }
-        ],
-        max_tokens: 500,
-        temperature: 0.7,
+      const response = await hf.textGeneration({
+        model: DEEPSEEK_MODEL,
+        inputs: `System: ${systemPrompt}\nUser: ${context.userMessage}\nAssistant: <think>\nThe user is asking about "${context.userMessage}" on the ${context.currentPage || 'main'} page. I need to provide helpful, encouraging guidance about the Magic AI platform. Let me consider:\n\n1. What specific aspect they need help with\n2. How to explain it in simple terms\n3. Practical steps they can take\n4. Maya and Jadoo features that might help\n</think>\n\n🪄 **Maya's Training Guidance**\n\nHello! I'm here to help you master the Magic AI platform. `,
+        parameters: {
+          max_new_tokens: 400,
+          temperature: 0.7,
+          top_p: 0.9,
+          return_full_text: false
+        }
       });
 
-      const assistantMessage = response.choices[0].message.content || "I'm here to help! What would you like to learn about the platform?";
+      const assistantMessage = response.generated_text || "I'm Maya, your AI training assistant! What would you like to learn about the Magic AI platform?";
       
       // Determine response type based on content
       let responseType = 'tutorial';
@@ -69,6 +67,8 @@ Current Context: User is on the ${currentPage || 'main'} page.`;
         responseType = 'tip';
       } else if (assistantMessage.toLowerCase().includes('suggestion:') || assistantMessage.toLowerCase().includes('try')) {
         responseType = 'suggestion';
+      } else if (assistantMessage.toLowerCase().includes('maya') || assistantMessage.toLowerCase().includes('jadoo')) {
+        responseType = 'magic';
       }
 
       return {
@@ -78,13 +78,13 @@ Current Context: User is on the ${currentPage || 'main'} page.`;
     } catch (error) {
       console.error('Training service error:', error);
       
-      // Fallback responses based on context
+      // Fallback responses based on context with Maya's personality
       const fallbackResponses = {
-        'voice-commands': "To use voice commands, click the microphone icon and say commands like 'Generate epic music' or 'Create a space battle scene'. The AI will understand and start creating your content!",
-        'create-audio': "Creating audio is simple! Go to the Create page, select Audio, describe what you want (like 'upbeat electronic music for a workout'), and let our AI compose it for you.",
-        'create-video': "For AI videos, describe your scene in detail. Try: 'A cinematic sunset over mountains with dramatic music'. The more specific you are, the better the results!",
-        'marketplace': "The marketplace lets you buy premium content or sell your creations. Set fair prices, use good descriptions, and showcase your best work to attract buyers.",
-        'general': "I'm here to help you master this platform! You can create amazing content using voice commands, explore our AI tools, and even sell your creations. What interests you most?"
+        'voice-commands': "🎙️ **Maya's Voice Magic Guide**: Click the microphone and speak naturally! Try saying 'Maya, generate epic orchestral music' or 'Create a cinematic space battle scene'. I understand natural language and will bring your creative visions to life with Jadoo power!",
+        'create-audio': "🎵 **Maya's Audio Creation**: Visit the Create page and describe your audio vision! Say things like 'epic battle music with orchestral elements' or 'peaceful nature sounds for meditation'. My neural synthesis will compose Oscar-quality audio for you!",
+        'create-video': "🎬 **Maya's Cinematic Magic**: For stunning videos, be descriptive! Try 'A dramatic sunset over mystical mountains with floating particles' or 'Epic space battle with energy beams and explosions'. The more detail you provide, the more magical the results!",
+        'marketplace': "💫 **Jadoo Marketplace Guide**: Share your magical creations or discover others' work! Set fair prices, write compelling descriptions, and use eye-catching thumbnails. Premium content gets special Maya enchantments and better visibility!",
+        'general': "✨ **Welcome to Maya's Neural Kingdom!** I'm here to help you master Magic AI! You can create incredible content with voice commands, explore our neural tools, sell your creations in the Jadoo marketplace, and much more. What magical journey shall we begin?"
       };
 
       const contextKey = context.context as keyof typeof fallbackResponses;
@@ -100,24 +100,24 @@ Current Context: User is on the ${currentPage || 'main'} page.`;
   generateQuickTips(currentPage?: string): string[] {
     const tips = {
       '/': [
-        "Start with voice commands - they're the fastest way to create content",
-        "Browse the marketplace for inspiration before creating your own content",
-        "Your gallery automatically saves all your creations"
+        "🪄 Maya's Voice Magic: Start with voice commands - say 'Maya, create epic music' for instant magic!",
+        "💫 Jadoo Marketplace: Browse the marketplace first for inspiration and trending magical content",
+        "🎭 Neural Gallery: Your creations are automatically saved with Maya's protective enchantments"
       ],
       '/create': [
-        "Be specific in your descriptions for better AI results",
-        "Try different voice commands to speed up your workflow",
-        "Experiment with various styles and genres"
+        "⚡ Specific Spells Work Better: Detailed descriptions give Maya more power to create amazing results",
+        "🎙️ Voice Command Speed: Try saying 'Generate cinematic orchestral battle music' instead of typing",
+        "🌟 Experiment with Magic: Mix styles like 'epic + ethereal + electronic' for unique Jadoo combinations"
       ],
       '/marketplace': [
-        "Quality content sells better - take time to polish your work",
-        "Good descriptions and thumbnails increase your sales",
-        "Check trending content for market insights"
+        "🏆 Oscar-Quality Sells: Polish your work with Maya's enhancement tools before uploading",
+        "📝 Magical Descriptions: Use mystical keywords like 'epic', 'cinematic', 'neural' to attract buyers",
+        "📈 Trending Jadoo: Check what's popular to understand market demands and magical preferences"
       ],
       '/gallery': [
-        "Use tags to organize your content effectively",
-        "Regular backups keep your creations safe",
-        "Share your best work to build a following"
+        "🏷️ Maya's Organization: Use magical tags like #epic, #cinematic, #neural for easy searching",
+        "💾 Neural Backup Magic: Maya automatically protects your creations, but manual backups add extra safety",
+        "🌐 Share Your Spells: Showcase your best work to build a following in Maya's neural kingdom"
       ]
     };
 

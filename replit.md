@@ -25,8 +25,8 @@ Platform features: Multi-device recording capabilities from mobile phones and co
 - **API Design**: RESTful API with structured route handling
 - **Authentication**: Replit OpenID Connect (OIDC) with Passport.js strategy
 - **Session Management**: Express sessions stored in PostgreSQL with connect-pg-simple
-- **AI Services**: OpenAI integration for content generation (audio, video, text processing) and training assistance
-- **Training Service**: AI-powered user training system for platform education
+- **AI Services**: Open source integration using DeepSeek R1 for content generation and Kokoro TTS for voice synthesis
+- **Training Service**: DeepSeek R1-powered user training system for platform education with Maya's personality
 - **File Structure**: Modular organization with separate routes, services, and storage layers
 
 ## Data Storage
@@ -44,9 +44,10 @@ Platform features: Multi-device recording capabilities from mobile phones and co
 
 # External Dependencies
 
-## AI Services
-- **OpenAI API**: Primary AI service for text-to-speech, music generation, and video content creation
-- **ElevenLabs API**: Alternative/additional voice synthesis capabilities (configured but not fully implemented)
+## AI Services (Open Source)
+- **DeepSeek R1**: Open source text generation model for content creation, video descriptions, VFX specifications, and voice command processing
+- **Kokoro TTS**: Open source text-to-speech synthesis for voice generation with 82M parameters and multi-language support
+- **Hugging Face Inference**: API for accessing open source AI models including DeepSeek R1 variants
 
 ## Authentication
 - **Replit Auth**: OpenID Connect provider for user authentication

@@ -8,6 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import { VoiceIndicator } from "@/components/ui/voice-indicator";
+import { TrainingAssistantButton } from "@/components/ui/training-assistant-button";
 import { 
   NeuralParticles, 
   MagicalOrbs, 
@@ -666,6 +667,16 @@ export default function Home() {
               </motion.div>
             </div>
           </motion.div>
+          
+          {/* Training Assistant Integration */}
+          <TrainingAssistantButton 
+            position="bottom-right"
+            context={{
+              currentPage: "/",
+              userMessage: "",
+              context: "home-page"
+            }}
+          />
         </div>
       </section>
 
