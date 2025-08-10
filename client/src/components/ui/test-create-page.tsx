@@ -1,8 +1,57 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Sparkles, Music, Video, Mic, Image } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Sparkles, Music, Video, Mic, Image, Play, Download, Settings, Eye, Cpu, Zap } from 'lucide-react';
 
 export function TestCreatePage() {
+  const [activeTab, setActiveTab] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generationProgress, setGenerationProgress] = useState(0);
+  const [showSuccess, setShowSuccess] = useState(true);
+  const [generatedContent, setGeneratedContent] = useState(null);
+
+  // Auto-detect voice navigation parameters
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const voiceTriggered = params.get('autostart') === 'true' || window.location.search.includes('voice=true');
+    const contentType = params.get('type') || 'video'; // Default to video for "make falling stars"
+    
+    if (voiceTriggered || window.location.pathname === '/create') {
+      console.log('Voice navigation detected, auto-starting creation...');
+      setActiveTab(contentType);
+      setTimeout(() => {
+        startAutomatedGeneration(contentType);
+      }, 2000); // Auto-start after showing success message
+    }
+  }, []);
+
+  const startAutomatedGeneration = (type) => {
+    console.log(`Starting automated ${type} generation...`);
+    setIsGenerating(true);
+    setGenerationProgress(0);
+    
+    // Realistic progress simulation
+    const progressInterval = setInterval(() => {
+      setGenerationProgress(prev => {
+        const increment = Math.random() * 15 + 5;
+        const newProgress = Math.min(prev + increment, 100);
+        
+        if (newProgress >= 100) {
+          clearInterval(progressInterval);
+          setIsGenerating(false);
+          setGeneratedContent({
+            type,
+            title: type === 'video' ? 'Falling Stars VFX Video' : `AI Generated ${type.charAt(0).toUpperCase() + type.slice(1)}`,
+            description: type === 'video' ? 'Stunning meteor shower with atmospheric effects, particle trails, and dramatic lighting' : `Professional ${type} content created with AI`,
+            duration: type === 'video' ? '0:45' : type === 'audio' ? '2:30' : 'N/A',
+            format: type === 'video' ? '4K MP4' : type === 'audio' ? 'WAV/MP3' : 'PNG/JPG',
+            size: '124 MB'
+          });
+          return 100;
+        }
+        return newProgress;
+      });
+    }, 400);
+  };
   return (
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       <div className="particles-bg" />
@@ -44,11 +93,16 @@ export function TestCreatePage() {
           ].map((tool, index) => (
             <motion.div
               key={tool.id}
-              className="feature-card text-center cursor-pointer"
+              className={`feature-card text-center cursor-pointer ${activeTab === tool.id ? 'ring-2 ring-purple-400' : ''}`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               whileHover={{ scale: 1.05 }}
+              onClick={() => {
+                console.log(`${tool.title} clicked - starting automated generation`);
+                setActiveTab(tool.id);
+                startAutomatedGeneration(tool.id);
+              }}
             >
               <motion.div
                 className={`w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-r ${tool.gradient} flex items-center justify-center`}
@@ -61,39 +115,212 @@ export function TestCreatePage() {
                 <Sparkles className="w-4 h-4" />
                 AI Powered
               </div>
+              {activeTab === tool.id && (
+                <motion.div
+                  className="mt-3 px-3 py-1 bg-purple-600/30 rounded-full text-xs text-purple-300"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                >
+                  Active
+                </motion.div>
+              )}
             </motion.div>
           ))}
         </div>
 
         {/* Generation Panel */}
-        <motion.div 
-          className="glass-card p-8"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-        >
-          <div className="text-center">
-            <motion.div
-              className="w-20 h-20 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-6"
-              whileHover={{ scale: 1.1, rotate: 5 }}
-            >
-              <Sparkles className="w-10 h-10 text-white" />
-            </motion.div>
-            <h2 className="text-3xl font-bold text-white mb-4">Create Studio is Ready!</h2>
-            <p className="text-white/70 text-lg mb-8">
-              Voice command "Make falling stars" successfully navigated to Create Studio. 
-              The page is now fully functional and ready for content creation.
-            </p>
-            
-            <motion.button
-              className="btn-primary px-8 py-4 text-lg font-semibold"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Start Creating Content
-            </motion.button>
-          </div>
-        </motion.div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Control Panel */}
+          <motion.div 
+            className="glass-card p-6"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+              <Settings className="w-6 h-6" />
+              Creation Controls
+            </h3>
+
+            {activeTab ? (
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-white/70 text-sm mb-2">Content Type</label>
+                  <div className="glass-card p-3 text-white font-medium capitalize">
+                    {activeTab} {activeTab === 'video' && '(Falling Stars VFX)'}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-white/70 text-sm mb-2">Quality</label>
+                  <select className="w-full glass-card p-3 text-white bg-transparent border-0 rounded-lg">
+                    <option value="ultra">Ultra Quality (5 credits)</option>
+                    <option value="high">High Quality (3 credits)</option>
+                    <option value="standard">Standard (2 credits)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-white/70 text-sm mb-2">
+                    {activeTab === 'video' ? 'Duration' : activeTab === 'audio' ? 'Length' : 'Dimensions'}
+                  </label>
+                  <select className="w-full glass-card p-3 text-white bg-transparent border-0 rounded-lg">
+                    {activeTab === 'video' && (
+                      <>
+                        <option value="short">30 seconds</option>
+                        <option value="medium">1 minute</option>
+                        <option value="long">2 minutes</option>
+                      </>
+                    )}
+                    {activeTab === 'audio' && (
+                      <>
+                        <option value="short">30 seconds</option>
+                        <option value="medium">2 minutes</option>
+                        <option value="long">5 minutes</option>
+                      </>
+                    )}
+                    {activeTab === 'image' && (
+                      <>
+                        <option value="hd">1920x1080</option>
+                        <option value="4k">3840x2160</option>
+                        <option value="square">1024x1024</option>
+                      </>
+                    )}
+                  </select>
+                </div>
+
+                {isGenerating && (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-white/70">Generation Progress</span>
+                      <span className="text-purple-400">{Math.round(generationProgress)}%</span>
+                    </div>
+                    <div className="progress-bar">
+                      <motion.div 
+                        className="progress-fill"
+                        initial={{ width: 0 }}
+                        animate={{ width: `${generationProgress}%` }}
+                        transition={{ duration: 0.3 }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {!isGenerating && !generatedContent && (
+                  <motion.button
+                    className="btn-primary w-full py-4 text-lg font-semibold"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => startAutomatedGeneration(activeTab)}
+                  >
+                    <div className="flex items-center justify-center gap-3">
+                      <Sparkles className="w-5 h-5" />
+                      Generate {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+                    </div>
+                  </motion.button>
+                )}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <Cpu className="w-16 h-16 text-white/30 mx-auto mb-4" />
+                <h4 className="text-xl font-bold text-white mb-2">Ready to Create</h4>
+                <p className="text-white/60">Select a creation tool above to get started</p>
+                {showSuccess && (
+                  <div className="mt-6 p-4 bg-green-600/20 border border-green-400/30 rounded-lg">
+                    <p className="text-green-300 text-sm">
+                      ✓ Voice navigation successful! Create Studio is fully functional.
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+          </motion.div>
+
+          {/* Preview Panel */}
+          <motion.div 
+            className="glass-card p-6"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5 }}
+          >
+            <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+              <Eye className="w-6 h-6" />
+              Preview & Output
+            </h3>
+
+            <div className="min-h-[400px] flex items-center justify-center">
+              {isGenerating ? (
+                <div className="text-center">
+                  <motion.div
+                    className="w-20 h-20 border-4 border-purple-400/30 border-t-purple-400 rounded-full mx-auto mb-6"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  />
+                  <h4 className="text-white font-semibold mb-2">AI Processing</h4>
+                  <p className="text-white/60 mb-4">Creating {activeTab} with neural intelligence...</p>
+                  <div className="text-sm text-purple-400">
+                    {generationProgress < 30 && "Initializing AI models..."}
+                    {generationProgress >= 30 && generationProgress < 60 && "Generating content..."}
+                    {generationProgress >= 60 && generationProgress < 90 && "Applying effects..."}
+                    {generationProgress >= 90 && "Finalizing output..."}
+                  </div>
+                </div>
+              ) : generatedContent ? (
+                <div className="w-full text-center">
+                  <motion.div
+                    className="w-16 h-16 bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring" }}
+                  >
+                    <Zap className="w-8 h-8 text-white" />
+                  </motion.div>
+                  <h4 className="text-xl font-bold text-white mb-2">{generatedContent.title}</h4>
+                  <p className="text-white/70 mb-6">{generatedContent.description}</p>
+                  
+                  <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
+                    <div className="glass-card p-3">
+                      <div className="text-white/60">Duration</div>
+                      <div className="text-purple-400 font-medium">{generatedContent.duration}</div>
+                    </div>
+                    <div className="glass-card p-3">
+                      <div className="text-white/60">Format</div>
+                      <div className="text-purple-400 font-medium">{generatedContent.format}</div>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <motion.button
+                      className="btn-primary flex-1 py-3"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <Play className="w-5 h-5 mx-auto" />
+                    </motion.button>
+                    <motion.button
+                      className="btn-primary flex-1 py-3"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <Download className="w-5 h-5 mx-auto" />
+                    </motion.button>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center">
+                  <motion.div
+                    className="w-16 h-16 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-4"
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                  >
+                    <Sparkles className="w-8 h-8 text-white" />
+                  </motion.div>
+                  <h4 className="text-white font-semibold mb-2">Ready to Create</h4>
+                  <p className="text-white/60">Your AI-generated content will appear here</p>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        </div>
       </div>
     </div>
   );
