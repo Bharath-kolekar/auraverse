@@ -8,8 +8,14 @@ export interface OscarStandardsConfig {
 export interface TechnicalSpecs {
   video?: {
     minResolution: string;
-    frameRate: number;
+    recommendedResolution: string;
+    frameRate: number[];
     format: string[];
+    deliveryFormat: string[];
+    colorSpace: string[];
+    bitDepth: number;
+    hdr: string[];
+    aspectRatio: string[];
     duration: {
       min: number;
       max?: number;
@@ -19,6 +25,17 @@ export interface TechnicalSpecs {
     channels: string[];
     format: string[];
     quality: string;
+    minimumQuality: string;
+    loudness: string;
+    peakLevel: string;
+    dynamicRange: string;
+    stems: string[];
+  };
+  postProduction?: {
+    editing: string[];
+    colorGrading: string[];
+    vfx: string[];
+    qualityControl: string[];
   };
   general?: {
     originalityRequired: boolean;
@@ -49,14 +66,31 @@ export class OscarStandardsService {
       technicalSpecs: {
         video: {
           minResolution: '2048x1080',
-          frameRate: 24,
-          format: ['35mm', '70mm', 'Digital Cinema (DCP)'],
+          recommendedResolution: '4096x2160',
+          frameRate: [24, 48],
+          format: ['ProRes 4444 XQ', 'DNxHR 444', 'Digital Cinema (DCP)'],
+          deliveryFormat: ['SMPTE DCP', 'DCP (Digital Cinema Package)'],
+          colorSpace: ['DCI-P3', 'Rec. 2020'],
+          bitDepth: 10,
+          hdr: ['Dolby Vision', 'HDR10+'],
+          aspectRatio: ['2.39:1', '1.85:1', '16:9'],
           duration: { min: 40 }
         },
         audio: {
-          channels: ['5.1', '7.1', 'Immersive Audio'],
-          format: ['SMPTE ST 429-3', 'SMPTE ST 428-2'],
-          quality: 'Professional theatrical standard'
+          channels: ['5.1 surround', '7.1 surround', 'Dolby Atmos', 'IMAX 12-track'],
+          format: ['Uncompressed PCM (WAV/AIFF)', 'Dolby Digital (AC-3)', 'SMPTE ST 429-3'],
+          quality: '24-bit/96kHz',
+          minimumQuality: '24-bit/48kHz',
+          loudness: '-27 LUFS (streaming target)',
+          peakLevel: '-2 dBTP (True Peak)',
+          dynamicRange: 'ITU-R BS.1770-4 compliant',
+          stems: ['Dialogue', 'Music', 'Sound Effects']
+        },
+        postProduction: {
+          editing: ['Frame-accurate cutting', 'Multi-cam editing', 'Sub-frame audio editing'],
+          colorGrading: ['Primary & Secondary grading', 'LUT support', 'HDR grading (PQ/HLG curves)'],
+          vfx: ['Node-based compositing', 'Green screen keying', '3D tracking for CGI integration'],
+          qualityControl: ['Black level check (IRE 0-255)', 'Phase correlation analysis', 'DCP validation']
         },
         general: {
           originalityRequired: true,
@@ -85,9 +119,21 @@ export class OscarStandardsService {
       technicalSpecs: {
         video: {
           minResolution: '2048x1080',
-          frameRate: 24,
-          format: ['35mm', '70mm', 'Digital Cinema'],
+          recommendedResolution: '4096x2160',
+          frameRate: [24, 48],
+          format: ['ProRes 4444 XQ', 'DNxHR 444', 'Digital Cinema (DCP)'],
+          deliveryFormat: ['SMPTE DCP', 'DCP (Digital Cinema Package)'],
+          colorSpace: ['DCI-P3', 'Rec. 2020'],
+          bitDepth: 10,
+          hdr: ['Dolby Vision', 'HDR10+'],
+          aspectRatio: ['2.39:1', '1.85:1', '16:9'],
           duration: { min: 40 }
+        },
+        postProduction: {
+          editing: ['Frame-accurate cutting', 'Multi-cam editing'],
+          colorGrading: ['Primary & Secondary grading', 'LUT support', 'HDR grading (PQ/HLG curves)'],
+          vfx: ['Node-based compositing', 'Green screen keying'],
+          qualityControl: ['Black level check (IRE 0-255)', 'Aspect ratio validation', 'DCP validation']
         },
         general: {
           originalityRequired: false,
@@ -116,9 +162,21 @@ export class OscarStandardsService {
       technicalSpecs: {
         video: {
           minResolution: '2048x1080',
-          frameRate: 24,
-          format: ['Digital Cinema (DCP)', '35mm', '70mm'],
+          recommendedResolution: '4096x2160',
+          frameRate: [24, 48],
+          format: ['ProRes 4444 XQ', 'DNxHR 444', 'Digital Cinema (DCP)'],
+          deliveryFormat: ['SMPTE DCP', 'DCP (Digital Cinema Package)'],
+          colorSpace: ['DCI-P3', 'Rec. 2020'],
+          bitDepth: 10,
+          hdr: ['Dolby Vision', 'HDR10+'],
+          aspectRatio: ['2.39:1', '1.85:1', '16:9'],
           duration: { min: 40 }
+        },
+        postProduction: {
+          editing: ['Frame-accurate cutting', 'Multi-cam editing'],
+          colorGrading: ['Primary & Secondary grading', 'LUT support', 'HDR grading'],
+          vfx: ['Node-based compositing', 'Green screen keying', '3D tracking for CGI integration'],
+          qualityControl: ['Black level check (IRE 0-255)', 'Phase correlation analysis', 'DCP validation']
         },
         general: {
           originalityRequired: false,
@@ -146,9 +204,14 @@ export class OscarStandardsService {
       ],
       technicalSpecs: {
         audio: {
-          channels: ['5.1 minimum', '7.1', 'Immersive Audio'],
-          format: ['SMPTE DCP standard', 'Professional theatrical'],
-          quality: 'Broadcast/theatrical professional standard'
+          channels: ['5.1 surround', '7.1 surround', 'Dolby Atmos', 'IMAX 12-track'],
+          format: ['Uncompressed PCM (WAV/AIFF)', 'Dolby Digital (AC-3)', 'SMPTE ST 429-3'],
+          quality: '24-bit/96kHz',
+          minimumQuality: '24-bit/48kHz',
+          loudness: '-27 LUFS (streaming target)',
+          peakLevel: '-2 dBTP (True Peak)',
+          dynamicRange: 'ITU-R BS.1770-4 compliant',
+          stems: ['Dialogue', 'Music', 'Sound Effects']
         },
         general: {
           originalityRequired: false,
@@ -177,8 +240,14 @@ export class OscarStandardsService {
       technicalSpecs: {
         video: {
           minResolution: '2048x1080',
-          frameRate: 24,
-          format: ['Digital Cinema (DCP)', '35mm'],
+          recommendedResolution: '4096x2160',
+          frameRate: [24, 48],
+          format: ['ProRes 4444 XQ', 'DNxHR 444', 'Digital Cinema (DCP)'],
+          deliveryFormat: ['SMPTE DCP', 'DCP (Digital Cinema Package)'],
+          colorSpace: ['DCI-P3', 'Rec. 2020'],
+          bitDepth: 10,
+          hdr: ['Dolby Vision', 'HDR10+'],
+          aspectRatio: ['2.39:1', '1.85:1', '16:9'],
           duration: { min: 40 }
         },
         general: {

@@ -166,23 +166,86 @@ export function OscarQualityPanel() {
           {standards.technicalSpecs.video && (
             <div className="mb-4">
               <h5 className="text-yellow-200 font-medium mb-2">Video Requirements</h5>
-              <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="grid grid-cols-1 gap-3 text-sm">
                 <div>
-                  <span className="text-yellow-300">Min Resolution:</span>
-                  <span className="text-white ml-2">{standards.technicalSpecs.video.minResolution}</span>
+                  <span className="text-yellow-300">Resolution:</span>
+                  <span className="text-white ml-2">{standards.technicalSpecs.video.minResolution} minimum</span>
+                  {standards.technicalSpecs.video.recommendedResolution && (
+                    <span className="text-gray-300"> | Recommended: {standards.technicalSpecs.video.recommendedResolution}</span>
+                  )}
                 </div>
                 <div>
                   <span className="text-yellow-300">Frame Rate:</span>
-                  <span className="text-white ml-2">{standards.technicalSpecs.video.frameRate} FPS</span>
+                  <span className="text-white ml-2">{Array.isArray(standards.technicalSpecs.video.frameRate) 
+                    ? standards.technicalSpecs.video.frameRate.join('/') 
+                    : standards.technicalSpecs.video.frameRate} FPS</span>
                 </div>
+                {standards.technicalSpecs.video.colorSpace && (
+                  <div>
+                    <span className="text-yellow-300">Color Space:</span>
+                    <span className="text-white ml-2">{Array.isArray(standards.technicalSpecs.video.colorSpace) 
+                      ? standards.technicalSpecs.video.colorSpace.join(', ')
+                      : standards.technicalSpecs.video.colorSpace}</span>
+                  </div>
+                )}
+                {standards.technicalSpecs.video.bitDepth && (
+                  <div>
+                    <span className="text-yellow-300">Bit Depth:</span>
+                    <span className="text-white ml-2">{standards.technicalSpecs.video.bitDepth}-bit</span>
+                  </div>
+                )}
+                {standards.technicalSpecs.video.hdr && (
+                  <div>
+                    <span className="text-yellow-300">HDR Support:</span>
+                    <span className="text-white ml-2">{standards.technicalSpecs.video.hdr.join(', ')}</span>
+                  </div>
+                )}
                 <div>
-                  <span className="text-yellow-300">Min Duration:</span>
-                  <span className="text-white ml-2">{standards.technicalSpecs.video.duration.min} minutes</span>
+                  <span className="text-yellow-300">Duration:</span>
+                  <span className="text-white ml-2">{standards.technicalSpecs.video.duration.min}+ minutes</span>
                 </div>
                 <div>
                   <span className="text-yellow-300">Formats:</span>
                   <span className="text-white ml-2">{standards.technicalSpecs.video.format.join(', ')}</span>
                 </div>
+                {standards.technicalSpecs.video.deliveryFormat && (
+                  <div>
+                    <span className="text-yellow-300">Delivery:</span>
+                    <span className="text-white ml-2">{standards.technicalSpecs.video.deliveryFormat.join(', ')}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {standards.technicalSpecs.postProduction && (
+            <div className="mb-4">
+              <h5 className="text-yellow-200 font-medium mb-2">Post-Production Requirements</h5>
+              <div className="grid grid-cols-1 gap-3 text-sm">
+                {standards.technicalSpecs.postProduction.editing && (
+                  <div>
+                    <span className="text-yellow-300">Editing:</span>
+                    <span className="text-white ml-2">{standards.technicalSpecs.postProduction.editing.join(', ')}</span>
+                  </div>
+                )}
+                {standards.technicalSpecs.postProduction.colorGrading && (
+                  <div>
+                    <span className="text-yellow-300">Color Grading:</span>
+                    <span className="text-white ml-2">{standards.technicalSpecs.postProduction.colorGrading.join(', ')}</span>
+                  </div>
+                )}
+                {standards.technicalSpecs.postProduction.vfx && (
+                  <div>
+                    <span className="text-yellow-300">VFX:</span>
+                    <span className="text-white ml-2">{standards.technicalSpecs.postProduction.vfx.join(', ')}</span>
+                  </div>
+                )}
+                {standards.technicalSpecs.postProduction.qualityControl && (
+                  <div>
+                    <span className="text-yellow-300">QC:</span>
+                    <span className="text-white ml-2">{standards.technicalSpecs.postProduction.qualityControl.join(', ')}</span>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -190,7 +253,7 @@ export function OscarQualityPanel() {
           {standards.technicalSpecs.audio && (
             <div>
               <h5 className="text-yellow-200 font-medium mb-2">Audio Requirements</h5>
-              <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="grid grid-cols-1 gap-3 text-sm">
                 <div>
                   <span className="text-yellow-300">Channels:</span>
                   <span className="text-white ml-2">{standards.technicalSpecs.audio.channels.join(', ')}</span>
@@ -198,7 +261,36 @@ export function OscarQualityPanel() {
                 <div>
                   <span className="text-yellow-300">Quality:</span>
                   <span className="text-white ml-2">{standards.technicalSpecs.audio.quality}</span>
+                  {standards.technicalSpecs.audio.minimumQuality && (
+                    <span className="text-gray-300"> | Minimum: {standards.technicalSpecs.audio.minimumQuality}</span>
+                  )}
                 </div>
+                {standards.technicalSpecs.audio.loudness && (
+                  <div>
+                    <span className="text-yellow-300">Loudness:</span>
+                    <span className="text-white ml-2">{standards.technicalSpecs.audio.loudness}</span>
+                  </div>
+                )}
+                {standards.technicalSpecs.audio.peakLevel && (
+                  <div>
+                    <span className="text-yellow-300">Peak Level:</span>
+                    <span className="text-white ml-2">{standards.technicalSpecs.audio.peakLevel}</span>
+                  </div>
+                )}
+                {standards.technicalSpecs.audio.dynamicRange && (
+                  <div>
+                    <span className="text-yellow-300">Standards:</span>
+                    <span className="text-white ml-2">{standards.technicalSpecs.audio.dynamicRange}</span>
+                  </div>
+                )}
+                {standards.technicalSpecs.audio.stems && (
+                  <div>
+                    <span className="text-yellow-300">Stems:</span>
+                    <span className="text-white ml-2">{Array.isArray(standards.technicalSpecs.audio.stems) 
+                      ? standards.technicalSpecs.audio.stems.join(', ')
+                      : standards.technicalSpecs.audio.stems}</span>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -270,7 +362,7 @@ export function OscarQualityPanel() {
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >
-        Validate Current Project Against Professional Standards
+        Validate Current Project Against Professional Quality Standards
       </motion.button>
     </motion.div>
   );

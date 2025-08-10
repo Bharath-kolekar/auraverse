@@ -497,9 +497,9 @@ class HybridAIService {
   private generateLocalVideo(request: ContentGenerationRequest): { videoUrl: string; thumbnailUrl: string } {
     // Apply professional-quality enhancements to the prompt
     const enhancedPrompt = oscarStandardsService.generateOscarQualityPrompt('cinematography', request.prompt);
-    // Generate video frames with proper Canvas-to-WebM conversion
-    const width = 1920;
-    const height = 1080;
+    // Generate video frames with 4K quality standards
+    const width = request.quality === 'ultra' ? 4096 : request.quality === 'hd' ? 1920 : 1280;
+    const height = request.quality === 'ultra' ? 2160 : request.quality === 'hd' ? 1080 : 720;
     const fps = 30;
     const duration = request.duration || 30;
     
