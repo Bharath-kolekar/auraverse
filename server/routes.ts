@@ -25,6 +25,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Auth middleware
   await setupAuth(app);
+  
+  // Enterprise Monitoring & Health Endpoints (Fortune 20 Standards)
+  const { healthCheckEndpoint, metricsEndpoint, analyticsEndpoint } = await import('./middleware/enterprise-monitoring');
+  const { getErrorMetrics } = await import('./middleware/enterprise-error-handler');
+  
+  app.get('/api/health', healthCheckEndpoint);
+  app.get('/api/metrics', metricsEndpoint);
+  app.get('/api/analytics', analyticsEndpoint);
+  app.get('/api/error-metrics', getErrorMetrics);
 
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {

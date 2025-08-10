@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import NeuralIntelligenceCore from "@/components/NeuralIntelligenceCore";
 import SuperIntelligencePanel from "@/components/ui/super-intelligence-panel";
+import EnhancedVoiceAssistant from "@/components/ui/enhanced-voice-assistant";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { TrainingAssistantButton } from "@/components/ui/training-assistant-button";
 import { useAuth } from "@/hooks/useAuth";
@@ -57,6 +58,7 @@ function AppContent() {
       <Router />
       <NeuralIntelligenceCore />
       <SuperIntelligencePanel />
+      <EnhancedVoiceAssistant />
       {isAuthenticated && <TrainingAssistantButton />}
     </>
   );
