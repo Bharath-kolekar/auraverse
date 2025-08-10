@@ -446,36 +446,12 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
     // Generate response with context
     const baseResponse = nlpEngine.processInput(command);
     
-    // Enhance response with conversation memory
+    // Clean response without repetitive enhancements that cause loops
     let enhancedResponse = baseResponse;
     
-    // Add speaker-specific personalization
-    if (detectedSpeakers.size > 1) {
-      enhancedResponse = `Hi ${speakerId}! ${enhancedResponse}`;
-    }
-    
-    // Reference previous context
-    if (speakerMessages.length > 0 && speakerId !== 'Speaker 1') {
-      enhancedResponse = enhancedResponse.replace(/^/, `Great to hear from you again! `);
-    }
-    
-    // VFX project continuity with specific context
-    if (userMessages.some(msg => msg.message.toLowerCase().includes('son') && msg.message.toLowerCase().includes('vfx'))) {
-      if (!enhancedResponse.includes('son') && !enhancedResponse.includes('child')) {
-        enhancedResponse += ` This will be perfect for surprising your son with amazing visual effects!`;
-      }
-    }
-    
-    // Ship/sea project continuity
-    if (userMessages.some(msg => msg.message.toLowerCase().includes('ship') || msg.message.toLowerCase().includes('sea'))) {
-      if (!enhancedResponse.includes('ship') && !enhancedResponse.includes('sea')) {
-        enhancedResponse += ` For your ship and sea VFX project, I can help create realistic ocean physics and cinematic lighting.`;
-      }
-    }
-    
-    // Audibility context
-    if (command.toLowerCase().includes('audible')) {
-      enhancedResponse = "Yes, I hear you clearly! " + enhancedResponse;
+    // Only add context for very specific situations to avoid repetition
+    if (command.toLowerCase().includes('audible') || command.toLowerCase().includes('hear')) {
+      enhancedResponse = "Yes, I can hear you perfectly! I'm ready to help you create amazing content.";
     }
     
     return enhancedResponse;

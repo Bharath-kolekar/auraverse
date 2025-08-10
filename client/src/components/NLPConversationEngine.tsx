@@ -238,53 +238,34 @@ export class NLPConversationEngine {
       return "No worries! Let me help you discover what's possible. We can create AI music that sounds like your favorite artists, generate videos that look like movie scenes, design images that capture your imagination, or build VFX that rival Hollywood blockbusters. What sounds most exciting to you?";
     }
     
+    // Spanish words detection
+    if (lowerInput.includes('dios') || lowerInput.includes('miro')) {
+      return "I can help you in Spanish too! Our AI can create amazing visual effects for your ship scene. Would you like me to continue in Spanish or English? I can generate realistic ocean waves, dramatic lighting, and cinematic effects for your project.";
+    }
+    
     // Short responses indicating interest
     if (lowerInput.length < 10 && (lowerInput.includes('yes') || lowerInput.includes('okay') || lowerInput.includes('sure'))) {
-      return `Perfect! Since you're interested, let me recommend starting with ${this.getRecommendation()}. It's beginner-friendly but produces professional results. Should I walk you through creating your first project?`;
+      return `Perfect! Let's start creating your VFX project. What specific visual effects would you like to add to your ship and sea scene?`;
     }
     
     return null; // No specific response found
   }
 
   private getRecommendation(): string {
-    const recommendations = [
-      'AI image generation - create stunning artwork in seconds',
-      'AI audio creation - compose music in any style you like',
-      'AI video production - generate cinematic scenes from descriptions',
-      'AI VFX tools - add Hollywood-quality effects to your content'
-    ];
-    return recommendations[Math.floor(Math.random() * recommendations.length)];
+    // Always recommend VFX since that's what the user is interested in
+    return 'VFX creation for your ship and sea scene';
   }
 
   private addIntelligentPersonalization(response: string, intent: string, userInput: string, sentiment: 'positive' | 'neutral' | 'negative'): string {
-    // Add sentiment-based personalization
-    if (sentiment === 'positive') {
-      response = response.replace(/^/, "I love your enthusiasm! ");
-    } else if (sentiment === 'negative') {
-      response = response.replace(/^/, "I understand your concerns. ");
+    // Remove repetitive conversation flow - this was causing the loops
+    // Just return the clean response without adding generic phrases
+    
+    // Only add sentiment-based personalization for very specific cases
+    if (sentiment === 'negative' && userInput.toLowerCase().includes('error')) {
+      response = "I understand your concerns. " + response;
     }
     
-    // Add conversation flow intelligence
-    if (this.conversationContext.conversationLength > 1) {
-      const flowPhrases = [
-        "Building on our discussion, ",
-        "Following up on that, ",
-        "To continue, ",
-        "Great question! "
-      ];
-      const randomPhrase = flowPhrases[Math.floor(Math.random() * flowPhrases.length)];
-      response = randomPhrase + response.toLowerCase();
-    }
-    
-    // Add user interest tracking
-    if (this.conversationContext.userInterests.length > 0) {
-      const interests = this.conversationContext.userInterests.join(' and ');
-      if (!response.includes(interests)) {
-        response += ` Since you're interested in ${interests}, I can provide specialized guidance for that area.`;
-      }
-    }
-    
-    return response;
+    return response; // Return clean response without repetitive additions
   }
 
   private updateUserInterests(input: string, intent: string): void {
