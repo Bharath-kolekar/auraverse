@@ -179,76 +179,147 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
 
   const speakMessage = (message: string) => {
     console.log('Attempting to speak:', message);
-    if (synthesis && message) {
-      synthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(message);
-      utterance.lang = selectedLanguage === 'zh' ? 'zh-CN' : selectedLanguage;
-      utterance.rate = 0.9;
-      utterance.pitch = 1.1;
-      utterance.volume = 1;
-      
-      utterance.onstart = () => {
-        console.log('Speech started');
-        setIsSpeaking(true);
-      };
-      utterance.onend = () => {
-        console.log('Speech ended');
-        setIsSpeaking(false);
-      };
-      utterance.onerror = (error) => {
-        console.error('Speech error:', error);
-        setIsSpeaking(false);
-      };
-      
-      // Ensure voices are loaded
-      const voices = synthesis.getVoices();
-      if (voices.length === 0) {
-        synthesis.onvoiceschanged = () => {
-          synthesis.speak(utterance);
+    if (!message || message.trim() === '') {
+      console.error('No message to speak');
+      return;
+    }
+    
+    if (synthesis) {
+      try {
+        synthesis.cancel(); // Cancel any ongoing speech
+        
+        const utterance = new SpeechSynthesisUtterance(message.trim());
+        utterance.lang = selectedLanguage === 'zh' ? 'zh-CN' : selectedLanguage === 'ja' ? 'ja-JP' : selectedLanguage;
+        utterance.rate = 0.9;
+        utterance.pitch = 1.0;
+        utterance.volume = 1;
+        
+        utterance.onstart = () => {
+          console.log('Speech started successfully');
+          setIsSpeaking(true);
         };
-      } else {
+        
+        utterance.onend = () => {
+          console.log('Speech ended');
+          setIsSpeaking(false);
+          // Auto-start listening after speech ends if assistant is open
+          if (isOpen && recognition) {
+            setTimeout(() => {
+              console.log('Auto-starting listening after speech');
+              startListening();
+            }, 500);
+          }
+        };
+        
+        utterance.onerror = (error) => {
+          console.error('Speech synthesis error:', error);
+          setIsSpeaking(false);
+        };
+        
+        // Try to find a suitable voice
+        const voices = synthesis.getVoices();
+        console.log('Found voices:', voices.length);
+        
+        if (voices.length > 0) {
+          const preferredVoice = voices.find(voice => 
+            voice.lang.startsWith(selectedLanguage) || 
+            voice.lang.startsWith('en')
+          );
+          if (preferredVoice) {
+            utterance.voice = preferredVoice;
+            console.log('Using voice:', preferredVoice.name);
+          }
+        }
+        
+        console.log('Starting speech synthesis...');
         synthesis.speak(utterance);
+      } catch (error) {
+        console.error('Error in speech synthesis:', error);
+        setIsSpeaking(false);
       }
     } else {
-      console.error('Speech synthesis not available or message empty');
+      console.error('Speech synthesis not available');
     }
   };
 
   const startListening = () => {
     console.log('Attempting to start listening');
-    if (recognition) {
-      try {
-        setIsListening(true);
-        recognition.start();
-        
-        recognition.onresult = (event: any) => {
-          console.log('Speech recognition result:', event);
-          const transcript = event.results[event.results.length - 1][0].transcript;
-          console.log('Transcript:', transcript);
-          if (event.results[event.results.length - 1].isFinal) {
-            handleVoiceCommand(transcript);
-          }
-        };
-        
-        recognition.onerror = (error: any) => {
-          console.error('Speech recognition error:', error);
-          setIsListening(false);
-        };
-        
-        recognition.onend = () => {
-          console.log('Speech recognition ended');
-          setIsListening(false);
-        };
-        
-        recognition.onstart = () => {
-          console.log('Speech recognition started');
-        };
-      } catch (error) {
-        console.error('Error starting recognition:', error);
-        setIsListening(false);
-      }
-    } else {
+    
+    if (!recognition) {
       console.error('Speech recognition not available');
+      return;
+    }
+    
+    if (isListening) {
+      console.log('Already listening, stopping first');
+      recognition.stop();
+      return;
+    }
+    
+    try {
+      // Stop any ongoing speech first
+      if (synthesis && isSpeaking) {
+        synthesis.cancel();
+        setIsSpeaking(false);
+      }
+      
+      setIsListening(true);
+      
+      recognition.onstart = () => {
+        console.log('Speech recognition started successfully');
+        setIsListening(true);
+      };
+      
+      recognition.onresult = (event: any) => {
+        console.log('Speech recognition result received');
+        const results = event.results;
+        const lastResult = results[results.length - 1];
+        const transcript = lastResult[0].transcript;
+        
+        console.log('Transcript:', transcript, 'isFinal:', lastResult.isFinal);
+        
+        if (lastResult.isFinal && transcript.trim()) {
+          console.log('Processing final transcript:', transcript);
+          setIsListening(false);
+          handleVoiceCommand(transcript.trim());
+        }
+      };
+      
+      recognition.onerror = (error: any) => {
+        console.error('Speech recognition error:', error.error, error.message);
+        setIsListening(false);
+        
+        // Show user-friendly error message
+        const errorMessages: Record<string, string> = {
+          'no-speech': 'No speech detected. Please try speaking again.',
+          'audio-capture': 'Microphone not accessible. Please check permissions.',
+          'not-allowed': 'Microphone permission denied. Please allow microphone access.',
+          'network': 'Network error. Please check your connection.',
+          'aborted': 'Speech recognition was interrupted.',
+        };
+        
+        const userMessage = errorMessages[error.error] || 'Speech recognition error. Please try again.';
+        setCurrentMessage(userMessage);
+      };
+      
+      recognition.onend = () => {
+        console.log('Speech recognition ended');
+        setIsListening(false);
+      };
+      
+      // Configure recognition settings
+      recognition.lang = selectedLanguage === 'zh' ? 'zh-CN' : selectedLanguage === 'ja' ? 'ja-JP' : selectedLanguage;
+      recognition.continuous = false;
+      recognition.interimResults = true;
+      recognition.maxAlternatives = 1;
+      
+      console.log('Starting recognition with language:', recognition.lang);
+      recognition.start();
+      
+    } catch (error) {
+      console.error('Error starting speech recognition:', error);
+      setIsListening(false);
+      setCurrentMessage('Unable to start voice recognition. Please try the text input instead.');
     }
   };
 
@@ -269,18 +340,38 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
   const handleVoiceCommand = (command: string) => {
     console.log('Processing voice command:', command);
     
-    // Add user message to conversation history
-    setConversationHistory(prev => [...prev, { type: 'user', message: command }]);
+    if (!command || command.trim() === '') {
+      console.log('Empty command received');
+      return;
+    }
     
-    // Use NLP engine for natural conversation
-    nlpEngine.setLanguage(selectedLanguage);
-    const response = nlpEngine.processInput(command);
-    
-    // Add AI response to conversation history
-    setConversationHistory(prev => [...prev, { type: 'ai', message: response }]);
-    
-    setCurrentMessage(response);
-    speakMessage(response);
+    try {
+      // Add user message to conversation history
+      setConversationHistory(prev => [...prev, { type: 'user', message: command }]);
+      
+      // Use NLP engine for natural conversation
+      nlpEngine.setLanguage(selectedLanguage);
+      const response = nlpEngine.processInput(command);
+      
+      console.log('Generated response:', response);
+      
+      // Add AI response to conversation history
+      setConversationHistory(prev => [...prev, { type: 'ai', message: response }]);
+      
+      // Update UI and speak response
+      setCurrentMessage(response);
+      
+      // Small delay before speaking to ensure UI updates
+      setTimeout(() => {
+        speakMessage(response);
+      }, 100);
+      
+    } catch (error) {
+      console.error('Error processing voice command:', error);
+      const fallbackResponse = 'I apologize, I had trouble processing that. Could you please try again?';
+      setCurrentMessage(fallbackResponse);
+      speakMessage(fallbackResponse);
+    }
   };
 
   const toggleAssistant = () => {
@@ -426,17 +517,47 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
 
             {/* Message Area */}
             <div className="p-4 min-h-32 max-h-48 overflow-y-auto">
+              {/* Conversation History */}
+              {conversationHistory.length > 0 && (
+                <div className="mb-4 space-y-2 max-h-32 overflow-y-auto">
+                  {conversationHistory.slice(-4).map((msg, index) => (
+                    <div key={index} className={`text-xs ${msg.type === 'user' ? 'text-cyan-300' : 'text-white/60'}`}>
+                      <span className="font-medium">{msg.type === 'user' ? 'You: ' : 'AI: '}</span>
+                      {msg.message}
+                    </div>
+                  ))}
+                </div>
+              )}
+              
+              {/* Current Message */}
               <div className="f500-caption text-white/80 leading-relaxed">
                 {currentMessage || 'Hello! I am your AI assistant. Click the microphone to start speaking, or I can help you with features, pricing, or getting started.'}
               </div>
               
-              {/* Debug Info */}
-              {process.env.NODE_ENV === 'development' && (
-                <div className="mt-2 text-xs text-white/40">
-                  Speech: {synthesis ? 'Available' : 'Not Available'} | 
-                  Recognition: {recognition ? 'Available' : 'Not Available'}
+              {/* Status Indicators */}
+              <div className="mt-3 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  {isListening && (
+                    <div className="flex items-center gap-1 text-red-400">
+                      <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse" />
+                      Listening...
+                    </div>
+                  )}
+                  {isSpeaking && (
+                    <div className="flex items-center gap-1 text-green-400">
+                      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                      Speaking...
+                    </div>
+                  )}
                 </div>
-              )}
+                
+                {/* Debug Info */}
+                {process.env.NODE_ENV === 'development' && (
+                  <div className="text-white/40">
+                    Speech: {synthesis ? '✓' : '✗'} | Recognition: {recognition ? '✓' : '✗'}
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Controls */}
@@ -444,18 +565,24 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
               <div className="flex items-center gap-2">
                 <motion.button
                   onClick={isListening ? stopListening : startListening}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg font-medium f500-caption transition-colors ${
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium f500-caption transition-all ${
                     isListening 
-                      ? 'bg-red-600 text-white' 
-                      : 'bg-purple-600 text-white hover:bg-purple-700'
+                      ? 'bg-red-600 text-white shadow-lg shadow-red-600/30' 
+                      : isSpeaking
+                      ? 'bg-yellow-600 text-white cursor-not-allowed opacity-50'
+                      : 'bg-purple-600 text-white hover:bg-purple-700 shadow-lg shadow-purple-600/30'
                   }`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  disabled={!recognition}
-                  title={isListening ? 'Stop Listening' : 'Start Voice Input'}
+                  whileHover={{ scale: isListening || isSpeaking ? 1 : 1.05 }}
+                  whileTap={{ scale: isListening || isSpeaking ? 1 : 0.95 }}
+                  disabled={!recognition || isSpeaking}
+                  title={
+                    isSpeaking ? 'Wait for speech to finish' :
+                    isListening ? 'Stop Listening' : 
+                    'Start Voice Input'
+                  }
                 >
                   {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-                  {isListening ? 'Stop' : 'Speak'}
+                  {isListening ? 'Listening...' : isSpeaking ? 'Wait...' : 'Speak'}
                 </motion.button>
                 
                 <motion.button

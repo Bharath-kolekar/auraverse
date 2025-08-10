@@ -108,18 +108,7 @@ export default function Landing() {
       {/* Subtle Background */}
       <div className="neural-bg-overlay" />
       
-      {/* Subtle Mouse Follower */}
-      <motion.div
-        className="fixed pointer-events-none z-10 w-3 h-3 rounded-full opacity-30"
-        style={{
-          background: 'radial-gradient(circle, rgba(138, 43, 226, 0.6) 0%, transparent 70%)',
-        }}
-        animate={{
-          x: mousePosition.x - 6,
-          y: mousePosition.y - 6,
-        }}
-        transition={{ type: "spring", damping: 50, stiffness: 300 }}
-      />
+
 
       {/* Navigation */}
       <motion.nav 
