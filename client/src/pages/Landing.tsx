@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { Sparkles, Zap, Mic, Video, Music, Image, Cpu, Globe, Play, ArrowRight, Star, Award, TrendingUp } from 'lucide-react';
+import NeuralBackground from '@/components/NeuralBackground';
+import AIProcessingIcon from '@/components/AIProcessingIcon';
+import NeuralCard from '@/components/NeuralCard';
+import NeuralProcessingVisual from '@/components/NeuralProcessingVisual';
 
 export default function Landing() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -105,6 +109,7 @@ export default function Landing() {
     <div className="min-h-screen relative overflow-hidden">
       {/* Dynamic Background */}
       <div className="particles-bg" />
+      <NeuralBackground />
       
       {/* Mouse Follower */}
       <motion.div
@@ -263,6 +268,16 @@ export default function Landing() {
                   </motion.button>
                 </motion.div>
 
+                {/* Neural Processing Visual */}
+                <motion.div
+                  className="mb-16"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1, duration: 0.8 }}
+                >
+                  <NeuralProcessingVisual />
+                </motion.div>
+
                 {/* Enhanced Stats Bar */}
                 <motion.div
                   className="glass-card p-10 mx-auto max-w-5xl"
@@ -362,24 +377,29 @@ export default function Landing() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
             {features.map((feature, index) => (
-              <motion.div
+              <NeuralCard
                 key={index}
-                className="feature-card group will-change-transform relative overflow-hidden"
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: feature.delay, duration: 0.6 }}
-                whileHover={{ y: -12, scale: 1.02 }}
+                className="feature-card group will-change-transform"
+                isActive={index === 0}
               >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-white/5 to-transparent rounded-full -translate-y-16 translate-x-16" />
-                
                 <motion.div
-                  className={`inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-r ${feature.gradient} mb-8 shadow-2xl`}
-                  whileHover={{ scale: 1.1, rotate: 5 }}
-                  transition={{ type: "spring", stiffness: 300 }}
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: feature.delay, duration: 0.6 }}
                 >
-                  {feature.icon}
-                </motion.div>
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-white/5 to-transparent rounded-full -translate-y-16 translate-x-16" />
+                  
+                  <motion.div
+                    className={`inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-r ${feature.gradient} mb-8 shadow-2xl relative`}
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                  >
+                    {feature.icon}
+                    <div className="absolute -top-2 -right-2">
+                      <AIProcessingIcon size={16} isProcessing={index === 0} />
+                    </div>
+                  </motion.div>
                 
                 <div className="mb-4">
                   <span className="inline-block px-4 py-2 text-sm font-semibold text-purple-400 bg-purple-400/10 rounded-full mb-4">
@@ -395,13 +415,14 @@ export default function Landing() {
                   {feature.description}
                 </p>
 
-                <motion.div
-                  className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-                  initial={{ scaleX: 0 }}
-                  whileHover={{ scaleX: 1 }}
-                  transition={{ duration: 0.3 }}
-                />
-              </motion.div>
+                  <motion.div
+                    className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                    initial={{ scaleX: 0 }}
+                    whileHover={{ scaleX: 1 }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </motion.div>
+              </NeuralCard>
             ))}
           </div>
         </div>
