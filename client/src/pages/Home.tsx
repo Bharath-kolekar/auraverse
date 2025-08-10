@@ -17,6 +17,7 @@ import { ThemeCustomizer } from '@/components/ui/theme-customizer';
 import { useTheme } from '@/contexts/ThemeContext';
 import { AchievementPanel } from '@/components/achievements/AchievementPanel';
 import { useTrackActivity, useUserStats } from '@/hooks/useAchievements';
+import { TransitionSettings } from '@/components/ui/transition-settings';
 
 export default function Home() {
   const { user } = useAuth();
@@ -26,6 +27,7 @@ export default function Home() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [themeCustomizerOpen, setThemeCustomizerOpen] = useState(false);
   const [achievementPanelOpen, setAchievementPanelOpen] = useState(false);
+  const [transitionSettingsOpen, setTransitionSettingsOpen] = useState(false);
   const { currentTheme, themeName } = useTheme();
   const trackActivity = useTrackActivity();
   const { stats: userStats } = useUserStats();
@@ -244,6 +246,16 @@ export default function Home() {
               >
                 <Palette className="w-4 h-4 mr-1" />
                 Theme
+              </Button>
+
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="glass-card hover:bg-white/10"
+                onClick={() => setTransitionSettingsOpen(true)}
+              >
+                <Zap className="w-4 h-4 mr-1" />
+                Transitions
               </Button>
 
               <a href="/api/logout">
@@ -480,6 +492,12 @@ export default function Home() {
           </div>
         )}
       </AnimatePresence>
+
+      {/* Transition Settings */}
+      <TransitionSettings 
+        isOpen={transitionSettingsOpen} 
+        onClose={() => setTransitionSettingsOpen(false)} 
+      />
     </div>
   );
 }
