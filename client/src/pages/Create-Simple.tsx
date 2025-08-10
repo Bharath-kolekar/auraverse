@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Video, Upload, Zap, Download, Play, Sparkles } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { FixedNavigation } from '@/components/ui/fixed-navigation';
-import { VideoPlayer } from '@/components/ui/video-player';
+// VideoPlayer component will be created if needed
 
 export default function VideoProduction() {
   const { user } = useAuth();
@@ -114,7 +114,14 @@ export default function VideoProduction() {
             transition={{ delay: 0.3 }}
           >
             <h3 className="text-xl font-bold text-white mb-4">Generated Video</h3>
-            <VideoPlayer src={generatedVideo} />
+            <div className="bg-black/30 rounded-lg p-8 text-center">
+              <Video className="w-16 h-16 text-purple-400 mx-auto mb-4" />
+              <p className="text-white">Video: {generatedVideo}</p>
+              <button className="mt-4 bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg transition-colors">
+                <Play className="w-4 h-4 mr-2 inline" />
+                Play Video
+              </button>
+            </div>
             
             <div className="mt-6 flex gap-4">
               <motion.button

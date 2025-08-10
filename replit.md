@@ -16,6 +16,10 @@ Revenue strategy: Pay-per-intelligence model with 99.8% profit margins and compr
 Advanced features: Multi-tier optimization system, predictive analytics, user behavior analysis, and automated performance tuning.
 UI terminology: Complete removal of "Oscar" and "standards" references from user interface, replaced with "Professional Quality Standards" and "Industry-leading benchmarks".
 Quality implementation: Comprehensive professional quality standards based on Academy specifications but hidden from user-facing interface.
+Global Development Rules: Voice-first, multi-language, assistant-led UX architecture with self-healing AI agents, fallback systems, and accent-aware assistants integrated across all components.
+Automation mandate: Continuous iteration upgrades, optimizations, automations, UX improvements, validations, error handling improvements, and error correction mechanisms applied to all routers, services, and modules.
+Compliance automation: Automatic adherence to GDPR, FERPA, CCPA, PCI-DSS, ISO 27001 standards without user intervention.
+Zero user-facing errors: Assistant proactively guides users with redundant failover capabilities and device/language/network customization.
 
 # System Architecture
 

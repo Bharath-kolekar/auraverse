@@ -14,8 +14,13 @@ import { registerIntelligenceRoutes } from "./routes-intelligence";
 import { registerVideoRoutes } from "./routes-video";
 import { oscarStandardsService } from "./services/oscar-standards-service";
 import { productionIntelligenceService } from "./services/production-intelligence-service";
+import { enhancedRouterService } from "./services/enhanced-router-service";
+import { globalAIAgent } from "./services/global-ai-agent";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Apply Global Development Rules enhancements
+  enhancedRouterService.applyGlobalEnhancements(app);
+  
   // Auth middleware
   await setupAuth(app);
 
