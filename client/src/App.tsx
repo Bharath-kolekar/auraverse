@@ -2,6 +2,7 @@ import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
+import { PlacementProvider } from "@/contexts/PlacementContext";
 import NeuralIntelligenceCore from "@/components/NeuralIntelligenceCore";
 import SuperIntelligencePanel from "@/components/ui/super-intelligence-panel";
 import EnhancedVoiceAssistant from "@/components/ui/enhanced-voice-assistant";
@@ -54,14 +55,14 @@ function AppContent() {
   const { isAuthenticated } = useAuth();
 
   return (
-    <>
+    <PlacementProvider>
       <Router />
-      {/* AI Components temporarily disabled to fix overlapping issues */}
-      {/* <NeuralIntelligenceCore /> */}
-      {/* <SuperIntelligencePanel /> */}
-      {/* <EnhancedVoiceAssistant /> */}
+      {/* AI Components with intelligent placement to prevent overlaps */}
+      <NeuralIntelligenceCore />
+      <SuperIntelligencePanel />
+      <EnhancedVoiceAssistant />
       {isAuthenticated && <TrainingAssistantButton />}
-    </>
+    </PlacementProvider>
   );
 }
 
