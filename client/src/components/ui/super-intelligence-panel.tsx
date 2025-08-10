@@ -275,6 +275,9 @@ const SuperIntelligencePanel: React.FC = () => {
     }));
   };
 
+  // Temporarily hide to fix overlapping
+  return null;
+  
   return (
     <motion.div
       className="fixed bottom-4 left-4 z-[200] w-48"

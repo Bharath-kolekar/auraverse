@@ -460,6 +460,9 @@ export default function NeuralIntelligenceCore() {
     document.removeEventListener('keydown', () => {});
   };
 
+  // Temporarily hide to fix overlapping
+  return null;
+  
   return (
     <AnimatePresence>
       {showSkull && (

@@ -73,6 +73,9 @@ export default function EnhancedVoiceAssistant() {
     setupAccessibilityFeatures();
     initializeVoiceServices();
     
+    // Disable auto-speaking to stop repetition
+    return;
+    
     return () => {
       cleanup();
     };
@@ -619,6 +622,9 @@ export default function EnhancedVoiceAssistant() {
     return messages[language]?.[page] || messages[language]?.['default'] || messages['en']['default'];
   };
 
+  // Temporarily hide to fix overlapping
+  return null;
+  
   return (
     <AnimatePresence>
       {isVisible && (
