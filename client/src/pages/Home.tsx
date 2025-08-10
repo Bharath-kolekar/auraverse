@@ -270,12 +270,48 @@ export default function Home() {
       </motion.div>
 
       <div className="container mx-auto px-6 py-8 mt-16">
-        {/* Performance Metrics */}
+        {/* Quick Actions Grid - No heading */}
         <motion.div 
           className="mb-12"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {quickActions.map((action, index) => (
+              <motion.div
+                key={index}
+                className="glass-card p-6 hover:bg-white/5 transition-all duration-300 cursor-pointer"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: index * 0.05 }}
+                whileHover={{ y: -5, scale: 1.02 }}
+                onClick={() => handleQuickAction(action)}
+              >
+                <div className="flex items-start gap-4">
+                  <motion.div 
+                    className={`p-3 rounded-xl bg-gradient-to-r ${action.gradient} shadow-lg`}
+                    whileHover={{ rotate: 5, scale: 1.1 }}
+                  >
+                    {action.icon}
+                  </motion.div>
+                  <div className="flex-1">
+                    <h3 className="text-white font-semibold text-lg mb-1">{action.title}</h3>
+                    <p className="text-white/60 text-sm">{action.description}</p>
+                  </div>
+                  <CheckCircle className="w-5 h-5 text-green-400" />
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Performance Metrics Dashboard */}
+        <motion.div 
+          className="mb-12"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.8 }}
         >
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {performanceMetrics.map((metric, index) => (
@@ -308,47 +344,6 @@ export default function Home() {
                 <h3 className="text-white font-semibold mb-2">{metric.title}</h3>
                 <p className="text-3xl font-bold text-gradient mb-1">{metric.value}</p>
                 <p className="text-white/60 text-sm">Current performance</p>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Quick Actions Grid */}
-        <motion.div 
-          className="mb-12"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.8 }}
-        >
-          <h2 className="text-3xl font-bold text-white mb-8 flex items-center gap-3">
-            <Sparkles className="w-8 h-8 text-blue-400" />
-            Quick Actions
-          </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {quickActions.map((action, index) => (
-              <motion.div
-                key={index}
-                className="glass-card p-6 hover:bg-white/5 transition-all duration-300 cursor-pointer"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: index * 0.05 }}
-                whileHover={{ y: -5, scale: 1.02 }}
-                onClick={() => handleQuickAction(action)}
-              >
-                <div className="flex items-start gap-4">
-                  <motion.div 
-                    className={`p-3 rounded-xl bg-gradient-to-r ${action.gradient} shadow-lg`}
-                    whileHover={{ rotate: 5, scale: 1.1 }}
-                  >
-                    {action.icon}
-                  </motion.div>
-                  <div className="flex-1">
-                    <h3 className="text-white font-semibold text-lg mb-1">{action.title}</h3>
-                    <p className="text-white/60 text-sm">{action.description}</p>
-                  </div>
-                  <CheckCircle className="w-5 h-5 text-green-400" />
-                </div>
               </motion.div>
             ))}
           </div>
