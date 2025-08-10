@@ -87,7 +87,7 @@ export function useTrackActivity() {
 
   const mutation = useMutation({
     mutationFn: async (activity: { type: string; metadata?: any; points?: number }) => {
-      return apiRequest('/api/achievements/track', 'POST', activity);
+      return apiRequest('POST', '/api/achievements/track', activity);
     },
     onSuccess: (data: any) => {
       // Invalidate related queries
