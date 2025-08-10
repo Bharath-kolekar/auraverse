@@ -25,24 +25,32 @@
    - `SESSION_SECRET` (automatically generated)
    - Additional secrets as needed
 
-### **Step 2: Custom Domain Setup**
+### **Step 2: Custom Domain Setup (Both cognomega.com and www.cognomega.com)**
 1. After deployment, navigate to **Deployments** → **Settings**
 2. Click **"Link a domain"** or **"Manually connect from another registrar"**
-3. Enter domain: `cognomega.com`
-4. Copy the provided DNS records:
-   - **A Record**: Points to Replit's servers
+3. **Add Primary Domain**: Enter `cognomega.com`
+4. **Add WWW Subdomain**: Enter `www.cognomega.com`
+5. Copy the provided DNS records for both domains:
+   - **A Record** for cognomega.com: Points to Replit's servers
+   - **CNAME Record** for www.cognomega.com: Points to cognomega.com
    - **TXT Record**: For domain verification
 
 ### **Step 3: Configure DNS at Domain Registrar**
 1. Log into your domain registrar (GoDaddy, Namecheap, etc.)
 2. Access DNS management for cognomega.com
-3. Add the A and TXT records provided by Replit
+3. Add the following DNS records:
+   - **A Record**: `cognomega.com` → Replit's IP address
+   - **CNAME Record**: `www.cognomega.com` → `cognomega.com`
+   - **TXT Record**: Domain verification (provided by Replit)
 4. Wait for DNS propagation (5 minutes to 48 hours)
 
 ### **Step 4: Verification**
 1. Monitor the **Domains** tab in Replit
-2. Status will change to **"Verified"** when ready
-3. Access your app at https://cognomega.com
+2. Status will change to **"Verified"** for both domains when ready
+3. Access your app at:
+   - **https://cognomega.com** (primary domain)
+   - **https://www.cognomega.com** (www subdomain)
+4. Both URLs will automatically redirect to HTTPS and serve your application
 
 ## 🏗️ Application Architecture (Production)
 

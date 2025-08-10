@@ -5,7 +5,7 @@ This is a full-stack web application called "Infinite Intelligence" that provide
 # User Preferences
 
 Preferred communication style: Simple, everyday language.
-Custom domain: cognomega.com for production deployment.
+Custom domain: cognomega.com and www.cognomega.com for production deployment.
 Application goal: Oscar-quality content generation with end-to-end automation.
 Platform features: Multi-device recording capabilities from mobile phones and computers.
 Monetization model: Pay-per-intelligence system where users purchase credits to access premium AI models.
