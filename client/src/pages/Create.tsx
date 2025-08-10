@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Sparkles, Music, Video, Mic, Image, Zap, Brain, 
@@ -55,7 +55,7 @@ export default function Create() {
   ];
 
   // Check for voice-triggered navigation
-  React.useEffect(() => {
+  useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('autostart') === 'true') {
       const type = params.get('type') || 'video';
@@ -79,7 +79,7 @@ export default function Create() {
   }, []);
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       <div className="particles-bg" />
       
       {/* Voice Command Success Banner */}
