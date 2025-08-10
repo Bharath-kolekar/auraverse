@@ -129,10 +129,7 @@ export default function Landing() {
             >
               <Sparkles className="w-7 h-7 text-white" />
             </motion.div>
-            <h1 className="f500-h4 font-bold holographic flex items-center gap-3">
-              <NeuralSkull size={40} showMagic={true} isActive={true} />
-              Infinite Intelligence
-            </h1>
+            
           </motion.div>
           
           <div className="hidden md:flex items-center space-x-8">
