@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useLocation } from 'wouter';
+import { useEffect } from 'react';
 
 interface ActionResponse {
   success: boolean;
@@ -9,8 +10,13 @@ interface ActionResponse {
 }
 
 export function useVoiceActions() {
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const [isProcessing, setIsProcessing] = useState(false);
+  
+  // Add debugging for location changes
+  useEffect(() => {
+    console.log('Current location changed to:', location);
+  }, [location]);
   
   const executeCommand = async (command: string): Promise<ActionResponse> => {
     setIsProcessing(true);
@@ -43,7 +49,9 @@ export function useVoiceActions() {
           (lowerCommand.includes('make') && lowerCommand.includes('falling') && lowerCommand.includes('stars'))) {
         console.log('Creating meteor VFX, navigating to Create Studio...');
         // Use immediate SPA navigation only
+        console.log('Before navigation - current location check');
         setLocation('/create');
+        console.log('After setLocation call to /create');
         return { 
           success: true, 
           message: "Creating spectacular falling star VFX! Opening Create Studio now and generating meteors with glowing trails, atmospheric entry effects, particle sparkles, and dramatic sky illumination.", 

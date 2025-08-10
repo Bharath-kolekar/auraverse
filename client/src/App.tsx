@@ -28,19 +28,25 @@ function Router() {
             </div>
           </div>
         </Route>
-      ) : !isAuthenticated ? (
-        <>
-          <Route path="/" component={Landing} />
-          <Route path="/create" component={Create} />
-          <Route component={Landing} />
-        </>
       ) : (
         <>
-          <Route path="/" component={Home} />
+          {/* Create Studio accessible for all users */}
           <Route path="/create" component={Create} />
-          <Route path="/marketplace" component={Marketplace} />
-          <Route path="/gallery" component={Gallery} />
-          <Route path="/intelligence" component={Intelligence} />
+          
+          {/* Main routes for authenticated users */}
+          {isAuthenticated && (
+            <>
+              <Route path="/" component={Home} />
+              <Route path="/marketplace" component={Marketplace} />
+              <Route path="/gallery" component={Gallery} />
+              <Route path="/intelligence" component={Intelligence} />
+            </>
+          )}
+          
+          {/* Landing page for unauthenticated users */}
+          {!isAuthenticated && <Route path="/" component={Landing} />}
+          
+          {/* Fallback */}
           <Route component={NotFound} />
         </>
       )}
