@@ -198,11 +198,11 @@ export function RealCreateStudio() {
               <Sparkles className="w-8 h-8 text-purple-400" />
               <div>
                 <h1 className="text-3xl font-bold text-white">AI Create Studio</h1>
-                <p className="text-purple-300">Production-grade AI content generation powered by OpenAI</p>
+                <p className="text-purple-300">Hybrid AI system: OpenAI when available, local processing as fallback</p>
               </div>
             </div>
-            <div className="bg-green-500/20 border border-green-500/30 rounded-lg px-4 py-2">
-              <span className="text-green-400 font-semibold">✓ AI Models Active</span>
+            <div className="bg-blue-500/20 border border-blue-500/30 rounded-lg px-4 py-2">
+              <span className="text-blue-400 font-semibold">⚡ Hybrid AI Mode</span>
             </div>
           </div>
         </motion.div>
@@ -404,10 +404,11 @@ export function RealCreateStudio() {
                         <h4 className="text-white font-semibold mb-2">Generation Details:</h4>
                         <div className="text-white/70 text-sm space-y-1">
                           <p><strong>Model:</strong> {currentJob.metadata.model}</p>
+                          <p><strong>Mode:</strong> {currentJob.metadata.mode === 'openai' ? '🌐 OpenAI' : '🔧 Local Processing'}</p>
                           <p><strong>Quality:</strong> {quality}</p>
                           <p><strong>Style:</strong> {style}</p>
-                          {currentJob.metadata.production_notes && (
-                            <p><strong>Notes:</strong> {currentJob.metadata.production_notes}</p>
+                          {currentJob.metadata.note && (
+                            <p><strong>Info:</strong> {currentJob.metadata.note}</p>
                           )}
                         </div>
                       </div>

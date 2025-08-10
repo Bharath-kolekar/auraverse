@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { aiService, type ContentGenerationRequest } from "./services/ai-service";
+import { hybridAiService as aiService, type ContentGenerationRequest } from "./services/hybrid-ai-service";
 import { localAiServices } from "./services/localAiServices";
 import { localTrainingService } from "./services/localTrainingService";
 
