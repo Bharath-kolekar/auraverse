@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mic, MicOff, Volume2, VolumeX, MessageCircle, X, Languages, Settings } from 'lucide-react';
 import NeuralSkull from './NeuralSkull';
+import { NLPConversationEngine } from './NLPConversationEngine';
 
 interface VoiceAIAssistantProps {
   onToggle?: (isOpen: boolean) => void;
@@ -66,6 +67,8 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
   const [recognition, setRecognition] = useState<any | null>(null);
   const [synthesis, setSynthesis] = useState<SpeechSynthesis | null>(null);
   const [proactiveTriggered, setProactiveTriggered] = useState<Set<string>>(new Set());
+  const [nlpEngine] = useState(() => new NLPConversationEngine(selectedLanguage));
+  const [conversationHistory, setConversationHistory] = useState<Array<{type: 'user' | 'ai', message: string}>>([]);
   
   useEffect(() => {
     const initializeSpeech = () => {
@@ -264,47 +267,17 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
   };
 
   const handleVoiceCommand = (command: string) => {
-    const lowerCommand = command.toLowerCase();
-    let response = '';
+    console.log('Processing voice command:', command);
     
-    // Basic command handling
-    if (lowerCommand.includes('help') || lowerCommand.includes('assist')) {
-      response = 'I can help you create AI-powered content, explain features, or guide you through the platform. What would you like to know?';
-    } else if (lowerCommand.includes('feature') || lowerCommand.includes('capability')) {
-      response = 'Our platform offers AI audio generation, video creation, image synthesis, and VFX tools. Which feature interests you most?';
-    } else if (lowerCommand.includes('price') || lowerCommand.includes('cost')) {
-      response = 'We use a credit-based system. Basic AI models cost 2-3 credits, premium models cost 4-5 credits per generation. Would you like more details?';
-    } else if (lowerCommand.includes('start') || lowerCommand.includes('begin')) {
-      response = 'Great! You can start by signing up and choosing your first AI creation tool. Should I guide you through the process?';
-    } else {
-      response = 'I understand you said: "' + command + '". How can I help you with your creative AI journey?';
-    }
+    // Add user message to conversation history
+    setConversationHistory(prev => [...prev, { type: 'user', message: command }]);
     
-    // Translate response if needed
-    if (selectedLanguage !== 'en') {
-      // Basic translations - in a real app, you'd use a translation API
-      const translations: Record<string, Record<string, string>> = {
-        es: {
-          'I can help you create': 'Puedo ayudarte a crear',
-          'Our platform offers': 'Nuestra plataforma ofrece',
-          'We use a credit-based system': 'Usamos un sistema basado en créditos',
-          'Great! You can start': '¡Genial! Puedes empezar'
-        },
-        fr: {
-          'I can help you create': 'Je peux vous aider à créer',
-          'Our platform offers': 'Notre plateforme offre',
-          'We use a credit-based system': 'Nous utilisons un système de crédits',
-          'Great! You can start': 'Génial! Vous pouvez commencer'
-        }
-      };
-      
-      const langTranslations = translations[selectedLanguage as keyof typeof translations];
-      if (langTranslations) {
-        Object.entries(langTranslations).forEach(([en, translated]) => {
-          response = response.replace(en, translated);
-        });
-      }
-    }
+    // Use NLP engine for natural conversation
+    nlpEngine.setLanguage(selectedLanguage);
+    const response = nlpEngine.processInput(command);
+    
+    // Add AI response to conversation history
+    setConversationHistory(prev => [...prev, { type: 'ai', message: response }]);
     
     setCurrentMessage(response);
     speakMessage(response);
@@ -349,7 +322,8 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
       >
         <motion.button
           onClick={toggleAssistant}
-          className="relative w-16 h-16 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full shadow-2xl flex items-center justify-center group"
+          data-ai-assistant="true"
+          className="relative w-20 h-20 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full shadow-2xl flex items-center justify-center group"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
           animate={isListening ? { 
@@ -357,7 +331,7 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
           } : {}}
           transition={{ duration: 1, repeat: isListening ? Infinity : 0 }}
         >
-          <NeuralSkull size={24} isActive={isOpen || isListening} showMagic={isSpeaking} />
+          <NeuralSkull size={32} isActive={isOpen || isListening} showMagic={isSpeaking} />
           
           {/* Status indicators */}
           {isListening && (

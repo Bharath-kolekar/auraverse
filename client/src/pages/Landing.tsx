@@ -140,8 +140,8 @@ export default function Landing() {
             >
               <Sparkles className="w-7 h-7 text-white" />
             </motion.div>
-            <h1 className="f500-h4 font-bold holographic flex items-center gap-2">
-              <NeuralSkull size={28} showMagic={true} />
+            <h1 className="f500-h4 font-bold holographic flex items-center gap-3">
+              <NeuralSkull size={40} showMagic={true} isActive={true} />
               Infinite Intelligence
             </h1>
           </motion.div>
@@ -265,17 +265,64 @@ export default function Landing() {
                   </motion.button>
                 </motion.div>
 
-                {/* AI Intelligence Indicator */}
+                {/* Primary Neural Intelligence Hub */}
                 <motion.div
-                  className="mb-16 flex justify-center"
+                  className="mb-16 flex flex-col items-center"
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 1, duration: 0.8 }}
                 >
-                  <div className="flex items-center gap-4 glass-card px-6 py-3">
-                    <NeuralSkull size={24} isActive={true} showMagic={true} />
-                    <span className="f500-caption text-white/70">Neural Intelligence Processing</span>
+                  <div className="relative mb-6">
+                    <motion.div
+                      className="w-40 h-40 rounded-full bg-gradient-to-r from-purple-600/20 to-pink-600/20 flex items-center justify-center backdrop-blur-xl border border-white/20 cursor-pointer"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      animate={{ 
+                        boxShadow: [
+                          "0 0 40px rgba(138, 43, 226, 0.3)",
+                          "0 0 80px rgba(138, 43, 226, 0.6)",
+                          "0 0 40px rgba(138, 43, 226, 0.3)"
+                        ]
+                      }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      onClick={() => {
+                        // Trigger AI assistant
+                        const assistantButton = document.querySelector('[data-ai-assistant]') as HTMLElement;
+                        if (assistantButton) {
+                          assistantButton.click();
+                        }
+                      }}
+                    >
+                      <NeuralSkull size={100} isActive={true} showMagic={true} />
+                    </motion.div>
+                    
+                    {/* Orbital elements */}
+                    <motion.div
+                      className="absolute inset-0 rounded-full border border-purple-400/30"
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                    >
+                      <div className="absolute top-0 left-1/2 w-2 h-2 bg-cyan-400 rounded-full -translate-x-1/2 -translate-y-1" />
+                    </motion.div>
+                    
+                    <motion.div
+                      className="absolute inset-2 rounded-full border border-cyan-400/20"
+                      animate={{ rotate: -360 }}
+                      transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+                    >
+                      <div className="absolute bottom-0 right-1/2 w-1.5 h-1.5 bg-purple-400 rounded-full translate-x-1/2 translate-y-1" />
+                    </motion.div>
                   </div>
+                  
+                  <motion.div
+                    className="text-center"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 1.5 }}
+                  >
+                    <h3 className="f500-h4 font-bold text-white mb-2">Neural Intelligence Core</h3>
+                    <p className="f500-caption text-white/60">Click to activate AI conversation</p>
+                  </motion.div>
                 </motion.div>
 
                 {/* Enhanced Stats Bar */}
@@ -507,7 +554,7 @@ export default function Landing() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <NeuralSkull size={36} showMagic={true} />
+              <NeuralSkull size={48} showMagic={true} isActive={true} />
               Ready to Transform Your Creative Workflow?
             </motion.h2>
             
