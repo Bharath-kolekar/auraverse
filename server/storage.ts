@@ -46,6 +46,13 @@ export interface IStorage {
   // Training conversation operations
   saveTrainingConversation(conversation: InsertTrainingConversation): Promise<TrainingConversation>;
   getTrainingConversationsByUser(userId: string): Promise<TrainingConversation[]>;
+
+  // Intelligence credits operations
+  getUserCredits?(userId: string): Promise<any>;
+  addUserCredits?(userId: string, credits: number, tier: string): Promise<any>;
+  deductUserCredits?(userId: string, credits: number): Promise<boolean>;
+  saveIntelligenceUsage?(usage: any): Promise<any>;
+  getUserIntelligenceUsage?(userId: string, options: any): Promise<any[]>;
 }
 
 export class DatabaseStorage implements IStorage {

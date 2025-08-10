@@ -8,8 +8,10 @@ Preferred communication style: Simple, everyday language.
 Custom domain: cognomega.com for production deployment.
 Application goal: Oscar-quality content generation with end-to-end automation.
 Platform features: Multi-device recording capabilities from mobile phones and computers.
+Monetization model: Pay-per-intelligence system where users purchase credits to access premium AI models.
 Cost optimization: Zero-cost local processing for unlimited testing and development.
 Performance enhancement: Local AI delivers 2-5x faster responses with professional-grade quality.
+Revenue strategy: Users pay for intelligence consumption while basic features remain free.
 
 # System Architecture
 
@@ -48,11 +50,13 @@ Performance enhancement: Local AI delivers 2-5x faster responses with profession
 
 # External Dependencies
 
-## AI Services (Zero Cost Local Processing)
-- **Local AI Services**: Template-based content generation using browser APIs and pattern matching (zero cost)
-- **Browser Speech Synthesis**: Native Web Speech API for voice generation (zero cost)
-- **Local Pattern Matching**: Command processing using local algorithms (zero cost)
-- **Optional External APIs**: DeepSeek R1 and Kokoro TTS available when budget allows (can be toggled)
+## AI Services (Pay-Per-Intelligence Model)
+- **Local AI Services**: Template-based content generation using browser APIs and pattern matching (free tier)
+- **Super Intelligence Service**: Advanced AI models using Hugging Face Inference and local processing
+- **Premium Models**: DeepSeek R1, Stable Diffusion XL, Whisper Large, MusicGen Large (credit-based)
+- **Intelligence Tiers**: Basic (free), Pro (1-3 credits), Ultimate (4-5 credits)
+- **Monetization**: Users purchase intelligence credits to access premium AI features
+- **Fallback System**: Enhanced local processing when external models unavailable
 
 ## Authentication
 - **Replit Auth**: OpenID Connect provider for user authentication

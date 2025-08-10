@@ -9,6 +9,10 @@ import {
   type InsertVoiceCommand,
   type TrainingConversation,
   type InsertTrainingConversation,
+  type IntelligenceCredits,
+  type InsertIntelligenceCredits,
+  type IntelligenceUsage,
+  type InsertIntelligenceUsage,
 } from "@shared/schema";
 import { IStorage } from "./storage";
 
@@ -19,6 +23,8 @@ export class MemoryStorage implements IStorage {
   private projects: Map<string, Project> = new Map();
   private voiceCommands: Map<string, VoiceCommand> = new Map();
   private trainingConversations: Map<string, TrainingConversation> = new Map();
+  private intelligenceCredits: Map<string, IntelligenceCredits> = new Map();
+  private intelligenceUsage: Map<string, IntelligenceUsage> = new Map();
 
   // User operations (required for Replit Auth)
   async getUser(id: string): Promise<User | undefined> {
@@ -170,6 +176,74 @@ export class MemoryStorage implements IStorage {
 
   async getTrainingConversationsByUser(userId: string): Promise<TrainingConversation[]> {
     return Array.from(this.trainingConversations.values()).filter(c => c.userId === userId);
+  }
+
+  // Intelligence credits operations
+  async getUserCredits(userId: string): Promise<IntelligenceCredits | undefined> {
+    return Array.from(this.intelligenceCredits.values())
+      .filter(c => c.userId === userId)
+      .sort((a, b) => {
+        const aTime = a.purchasedAt ? new Date(a.purchasedAt).getTime() : 0;
+        const bTime = b.purchasedAt ? new Date(b.purchasedAt).getTime() : 0;
+        return bTime - aTime;
+      })[0];
+  }
+
+  async addUserCredits(userId: string, credits: number, tier: string): Promise<IntelligenceCredits> {
+    const existingCredits = await this.getUserCredits(userId);
+    const totalCredits = (existingCredits?.credits || 0) + credits;
+    
+    const newCredits: IntelligenceCredits = {
+      id: this.generateId(),
+      userId,
+      credits: totalCredits,
+      tier,
+      purchasedAt: new Date(),
+      expiresAt: null, // No expiration for simplicity
+    };
+    
+    this.intelligenceCredits.set(newCredits.id, newCredits);
+    return newCredits;
+  }
+
+  async deductUserCredits(userId: string, creditsToDeduct: number): Promise<boolean> {
+    const userCredits = await this.getUserCredits(userId);
+    if (!userCredits || userCredits.credits < creditsToDeduct) {
+      return false;
+    }
+
+    userCredits.credits -= creditsToDeduct;
+    this.intelligenceCredits.set(userCredits.id, userCredits);
+    return true;
+  }
+
+  async saveIntelligenceUsage(usage: InsertIntelligenceUsage): Promise<IntelligenceUsage> {
+    const newUsage: IntelligenceUsage = {
+      id: this.generateId(),
+      userId: usage.userId,
+      creditId: usage.creditId || null,
+      modelType: usage.modelType,
+      creditsUsed: usage.creditsUsed,
+      prompt: usage.prompt,
+      result: usage.result || null,
+      tier: usage.tier,
+      usedAt: new Date(),
+    };
+    
+    this.intelligenceUsage.set(newUsage.id, newUsage);
+    return newUsage;
+  }
+
+  async getUserIntelligenceUsage(userId: string, options: { limit: number; offset: number }): Promise<IntelligenceUsage[]> {
+    const userUsage = Array.from(this.intelligenceUsage.values())
+      .filter(u => u.userId === userId)
+      .sort((a, b) => {
+        const aTime = a.usedAt ? new Date(a.usedAt).getTime() : 0;
+        const bTime = b.usedAt ? new Date(b.usedAt).getTime() : 0;
+        return bTime - aTime;
+      });
+    
+    return userUsage.slice(options.offset, options.offset + options.limit);
   }
 
   // Utility method to generate IDs

@@ -11,6 +11,7 @@ import Home from "@/pages/Home";
 import Create from "@/pages/Create";
 import Marketplace from "@/pages/Marketplace";
 import Gallery from "@/pages/Gallery";
+import Intelligence from "@/pages/Intelligence";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -26,6 +27,7 @@ function Router() {
           <Route path="/create" component={Create} />
           <Route path="/marketplace" component={Marketplace} />
           <Route path="/gallery" component={Gallery} />
+          <Route path="/intelligence" component={Intelligence} />
         </>
       )}
       <Route component={NotFound} />

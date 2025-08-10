@@ -120,3 +120,40 @@ export const insertTrainingConversationSchema = createInsertSchema(trainingConve
 });
 export type InsertTrainingConversation = z.infer<typeof insertTrainingConversationSchema>;
 export type TrainingConversation = typeof trainingConversations.$inferSelect;
+
+// Intelligence credits table for pay-per-use model
+export const intelligenceCredits = pgTable("intelligence_credits", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  credits: integer("credits").notNull().default(0),
+  tier: varchar("tier").notNull().default('basic'), // 'basic', 'pro', 'ultimate'
+  purchasedAt: timestamp("purchased_at").defaultNow(),
+  expiresAt: timestamp("expires_at"),
+});
+
+// Intelligence usage tracking table
+export const intelligenceUsage = pgTable("intelligence_usage", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  creditId: varchar("credit_id").references(() => intelligenceCredits.id),
+  modelType: varchar("model_type").notNull(), // 'deepseek-r1', 'stable-diffusion', etc.
+  creditsUsed: integer("credits_used").notNull(),
+  prompt: text("prompt").notNull(),
+  result: jsonb("result"),
+  tier: varchar("tier").notNull(), // 'basic', 'pro', 'ultimate'
+  usedAt: timestamp("used_at").defaultNow(),
+});
+
+export const insertIntelligenceCreditsSchema = createInsertSchema(intelligenceCredits).omit({
+  id: true,
+  purchasedAt: true,
+});
+export type InsertIntelligenceCredits = z.infer<typeof insertIntelligenceCreditsSchema>;
+export type IntelligenceCredits = typeof intelligenceCredits.$inferSelect;
+
+export const insertIntelligenceUsageSchema = createInsertSchema(intelligenceUsage).omit({
+  id: true,
+  usedAt: true,
+});
+export type InsertIntelligenceUsage = z.infer<typeof insertIntelligenceUsageSchema>;
+export type IntelligenceUsage = typeof intelligenceUsage.$inferSelect;

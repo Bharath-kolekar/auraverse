@@ -9,6 +9,7 @@ import { localTrainingService } from "./services/localTrainingService";
 // Using local services to eliminate API costs
 // To switch back to external APIs: import { aiServices } and { TrainingService }
 import { insertContentSchema, insertProjectSchema, insertVoiceCommandSchema } from "@shared/schema";
+import { registerIntelligenceRoutes } from "./routes-intelligence";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
@@ -208,6 +209,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to get training tips" });
     }
   });
+
+  // Register intelligence routes for pay-per-use model
+  registerIntelligenceRoutes(app);
 
   const httpServer = createServer(app);
 
