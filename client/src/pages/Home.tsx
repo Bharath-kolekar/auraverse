@@ -669,14 +669,7 @@ export default function Home() {
           </motion.div>
           
           {/* Training Assistant Integration */}
-          <TrainingAssistantButton 
-            position="bottom-right"
-            context={{
-              currentPage: "/",
-              userMessage: "",
-              context: "home-page"
-            }}
-          />
+          <TrainingAssistantButton />
         </div>
       </section>
 
