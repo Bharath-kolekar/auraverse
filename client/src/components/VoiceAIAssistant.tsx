@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Mic, MicOff, Volume2, VolumeX, MessageCircle, X, Languages, Settings } from 'lucide-react';
 import NeuralSkull from './NeuralSkull';
 import { NLPConversationEngine } from './NLPConversationEngine';
+import { useVoiceActions } from '../hooks/useVoiceActions';
 
 interface VoiceAIAssistantProps {
   onToggle?: (isOpen: boolean) => void;
@@ -68,6 +69,7 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
   const [synthesis, setSynthesis] = useState<SpeechSynthesis | null>(null);
   const [proactiveTriggered, setProactiveTriggered] = useState<Set<string>>(new Set());
   const [nlpEngine] = useState(() => new NLPConversationEngine(selectedLanguage));
+  const { executeCommand, isProcessing } = useVoiceActions();
   const [conversationHistory, setConversationHistory] = useState<Array<{type: 'user' | 'ai', message: string, timestamp: Date, language?: string, speaker?: string}>>([]);
   const [detectedSpeakers, setDetectedSpeakers] = useState<Set<string>>(new Set());
   const [currentSpeaker, setCurrentSpeaker] = useState<string>('Speaker 1');
@@ -354,7 +356,7 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
     }
   };
 
-  const handleVoiceCommand = (command: string, detectedLanguage?: string, speakerId?: string) => {
+  const handleVoiceCommand = async (command: string, detectedLanguage?: string, speakerId?: string) => {
     console.log('Processing voice command:', command, 'Language:', detectedLanguage, 'Speaker:', speakerId);
     
     if (!command || command.trim() === '') {
@@ -390,7 +392,7 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
       nlpEngine.setLanguage(finalLanguage);
       
       // Provide conversation context to NLP engine
-      const contextualResponse = generateContextualResponse(command, finalLanguage, finalSpeakerId);
+      const contextualResponse = await generateContextualResponse(command, finalLanguage, finalSpeakerId);
       
       console.log('Generated contextual response:', contextualResponse);
       
@@ -418,10 +420,17 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
     }
   };
 
-  const generateContextualResponse = (command: string, language: string, speakerId: string): string => {
+  const generateContextualResponse = async (command: string, language: string, speakerId: string): Promise<string> => {
     console.log('Generating contextual response for:', command);
     
-    // Get recent conversation context
+    // First priority: Execute action commands
+    const actionResult = await executeCommand(command);
+    if (actionResult.success) {
+      console.log('Executed action:', actionResult.action, actionResult.message);
+      return actionResult.message;
+    }
+    
+    // Get recent conversation context for NLP fallback
     const recentHistory = conversationHistory.slice(-6);
     const userMessages = recentHistory.filter(msg => msg.type === 'user');
     
@@ -453,7 +462,7 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
       nlpEngine.conversationContext.userInterests.push('fantasy');
     }
     
-    // Generate the core response
+    // Generate conversational response as fallback
     const baseResponse = nlpEngine.processInput(command);
     
     console.log('Generated base response:', baseResponse);
@@ -719,6 +728,12 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
                     <div className="flex items-center gap-1 text-blue-400">
                       <div className="w-2 h-2 bg-blue-400 rounded-full" />
                       {detectedSpeakers.size} Speakers
+                    </div>
+                  )}
+                  {isProcessing && (
+                    <div className="flex items-center gap-1 text-yellow-400">
+                      <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" />
+                      Executing...
                     </div>
                   )}
                 </div>

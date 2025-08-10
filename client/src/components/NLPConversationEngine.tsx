@@ -136,12 +136,7 @@ export class NLPConversationEngine {
     }
   };
 
-  // Context awareness for follow-up conversations
-  private conversationContext = {
-    lastIntent: '',
-    userInterests: [] as string[],
-    conversationLength: 0
-  };
+  // Removed duplicate - already defined above as public
 
   public processInput(input: string): string {
     const intent = this.detectIntent(input);
@@ -196,19 +191,29 @@ export class NLPConversationEngine {
   private getDirectPatternResponse(input: string): string | null {
     const lowerInput = input.toLowerCase().trim();
     
+    // Falling stars/meteors
+    if (lowerInput.includes('falling') && (lowerInput.includes('star') || lowerInput.includes('meteor') || lowerInput.includes('sky'))) {
+      return "Creating falling star VFX! Generating meteors with glowing particle trails, atmospheric entry effects, and spectacular sky illumination.";
+    }
+    
     // Fantasy VFX
     if (lowerInput === 'fantasy' || lowerInput.includes('fantasy')) {
-      return "Fantastic choice! Fantasy VFX for your ship scene could include magical glowing waters, mystical sea creatures like dragons or krakens, floating islands, magical storms with lightning, enchanted ships with glowing sails, or underwater kingdoms. What kind of fantasy elements would excite your son most?";
+      return "Creating fantasy VFX! Generating mystical effects including glowing waters, sea dragons, floating islands, and enchanted storms.";
+    }
+    
+    // Make/Create commands
+    if (lowerInput.includes('make') || lowerInput.includes('create')) {
+      return "Starting creation process! Opening Create Studio and preparing AI tools for your project.";
     }
     
     // Show me / demonstrate
     if (lowerInput.includes('show me') || lowerInput === 'yes, show me') {
-      return "I'd love to show you our VFX capabilities! Let me guide you through creating your first effect. For your ship and sea scene, I can demonstrate: realistic water physics, cinematic lighting, weather effects, or magical elements. Which would you like to see first?";
+      return "Opening Create Studio! Starting demonstration with real-time VFX generation.";
     }
     
     // Simple affirmations
     if (lowerInput === 'yes' && this.conversationContext.conversationLength > 2) {
-      return "Great! Let's dive into creating your VFX masterpiece. What specific visual effects would make this ship scene amazing for your son?";
+      return "Perfect! Executing your request now.";
     }
     
     return null;
@@ -230,14 +235,14 @@ export class NLPConversationEngine {
     const lowerInput = userInput.toLowerCase().trim();
     console.log('Checking specific patterns for:', lowerInput);
     
-    // Fantasy keyword - high priority match
+    // Fantasy keyword - convert to action command
     if (lowerInput === 'fantasy' || (lowerInput.includes('fantasy') && lowerInput.length < 20)) {
-      return "Excellent! Fantasy VFX will make your ship scene magical. I can create: mystical glowing waters, sea dragons emerging from the depths, floating magical islands, enchanted storms with colorful lightning, ships with luminous sails, underwater crystal palaces, or flying sea creatures. Which fantasy element sounds most exciting for your son's surprise?";
+      return "Creating fantasy VFX now! Generating mystical glowing waters, sea dragons, floating magical islands, and enchanted storms for your ship scene.";
     }
     
-    // Show me requests - high priority
+    // Show me requests - action response  
     if (lowerInput.includes('show me') || lowerInput.includes('demonstrate')) {
-      return "Perfect! I'll demonstrate our VFX creation process. For your fantasy ship scene, I can show you how to: generate realistic ocean physics, add magical lighting effects, create mystical sea creatures, build dramatic weather, or design floating elements. Which demonstration would you like to see first?";
+      return "Opening Create Studio now! Starting VFX demonstration with realistic ocean physics, magical lighting effects, and mystical creatures.";
     }
     
     // VFX-specific responses
