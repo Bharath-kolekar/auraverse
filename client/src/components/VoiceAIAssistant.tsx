@@ -324,11 +324,11 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
         setIsListening(false);
       };
       
-      // Configure recognition settings
-      recognition.lang = selectedLanguage === 'zh' ? 'zh-CN' : selectedLanguage === 'ja' ? 'ja-JP' : selectedLanguage;
+      // Configure recognition settings for better accuracy
+      recognition.lang = langToUse === 'zh' ? 'zh-CN' : langToUse === 'ja' ? 'ja-JP' : langToUse;
       recognition.continuous = false;
       recognition.interimResults = true;
-      recognition.maxAlternatives = 1;
+      recognition.maxAlternatives = 3; // Get more alternatives for better matching
       
       console.log('Starting recognition with language:', recognition.lang);
       recognition.start();
@@ -419,42 +419,45 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
   };
 
   const generateContextualResponse = (command: string, language: string, speakerId: string): string => {
+    console.log('Generating contextual response for:', command);
+    
     // Get recent conversation context
-    const recentHistory = conversationHistory.slice(-6); // Last 6 messages
+    const recentHistory = conversationHistory.slice(-6);
     const userMessages = recentHistory.filter(msg => msg.type === 'user');
-    const speakerMessages = recentHistory.filter(msg => msg.speaker === speakerId);
     
-    // Build context for NLP engine
-    let contextPrompt = '';
+    // Set important context flags
+    const hasVFXContext = userMessages.some(msg => 
+      msg.message.toLowerCase().includes('vfx') || 
+      msg.message.toLowerCase().includes('visual effects') ||
+      msg.message.toLowerCase().includes('ship') ||
+      msg.message.toLowerCase().includes('sea')
+    );
     
-    if (speakerMessages.length > 0) {
-      contextPrompt += `Previous messages from ${speakerId}: ${speakerMessages.map(msg => msg.message).join('. ')}. `;
+    const hasChildContext = userMessages.some(msg => 
+      msg.message.toLowerCase().includes('son') || 
+      msg.message.toLowerCase().includes('child')
+    );
+    
+    const hasFantasyContext = userMessages.some(msg => 
+      msg.message.toLowerCase().includes('fantasy')
+    );
+    
+    // Update NLP engine context
+    if (hasVFXContext) {
+      nlpEngine.conversationContext.userInterests.push('VFX');
+    }
+    if (hasChildContext) {
+      nlpEngine.conversationContext.userInterests.push('child project');
+    }
+    if (hasFantasyContext) {
+      nlpEngine.conversationContext.userInterests.push('fantasy');
     }
     
-    if (detectedSpeakers.size > 1) {
-      contextPrompt += `Note: Multiple speakers detected in this conversation (${Array.from(detectedSpeakers).join(', ')}). `;
-    }
-    
-    if (userMessages.some(msg => msg.message.toLowerCase().includes('son') || msg.message.toLowerCase().includes('child'))) {
-      contextPrompt += 'User mentioned creating content for their child. ';
-    }
-    
-    if (userMessages.some(msg => msg.message.toLowerCase().includes('vfx') || msg.message.toLowerCase().includes('visual effects'))) {
-      contextPrompt += 'User is specifically interested in VFX creation. ';
-    }
-    
-    // Generate response with context
+    // Generate the core response
     const baseResponse = nlpEngine.processInput(command);
     
-    // Clean response without repetitive enhancements that cause loops
-    let enhancedResponse = baseResponse;
-    
-    // Only add context for very specific situations to avoid repetition
-    if (command.toLowerCase().includes('audible') || command.toLowerCase().includes('hear')) {
-      enhancedResponse = "Yes, I can hear you perfectly! I'm ready to help you create amazing content.";
-    }
-    
-    return enhancedResponse;
+    console.log('Generated base response:', baseResponse);
+    return baseResponse;
   };
 
   const detectLanguage = (text: string): string => {
@@ -682,7 +685,7 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
                     <div key={index} className={`text-xs ${msg.type === 'user' ? 'text-cyan-300' : 'text-white/60'}`}>
                       <span className="font-medium">
                         {msg.type === 'user' 
-                          ? `${msg.speaker || 'You'}${msg.language !== 'en' ? ` (${msg.language.toUpperCase()})` : ''}: `
+                          ? `${msg.speaker || 'You'}${msg.language && msg.language !== 'en' ? ` (${msg.language.toUpperCase()})` : ''}: `
                           : 'AI: '
                         }
                       </span>
