@@ -3,13 +3,13 @@ import { motion } from 'framer-motion';
 import { Video, Upload, Zap, Download, Play, Sparkles } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { FixedNavigation } from '@/components/ui/fixed-navigation';
-// VideoPlayer component will be created if needed
+import { VideoCanvas } from '@/components/video/VideoCanvas';
 
 export default function VideoProduction() {
   const { user } = useAuth();
   const [prompt, setPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedVideo, setGeneratedVideo] = useState<string | null>(null);
+  const [generatedVideo, setGeneratedVideo] = useState<any>(null);
 
   const handleGenerateVideo = async () => {
     if (!prompt.trim()) return;
@@ -29,8 +29,8 @@ export default function VideoProduction() {
       });
       
       const result = await response.json();
-      if (result.url) {
-        setGeneratedVideo(result.url);
+      if (result.url || result.metadata) {
+        setGeneratedVideo(result);
       }
     } catch (error) {
       console.error('Video generation failed:', error);
@@ -105,7 +105,7 @@ export default function VideoProduction() {
           </div>
         </motion.div>
 
-        {/* Video Display */}
+        {/* Video Production Results */}
         {generatedVideo && (
           <motion.div 
             className="glass-card p-8"
@@ -113,14 +113,91 @@ export default function VideoProduction() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.3 }}
           >
-            <h3 className="text-xl font-bold text-white mb-4">Generated Video</h3>
-            <div className="bg-black/30 rounded-lg p-8 text-center">
-              <Video className="w-16 h-16 text-purple-400 mx-auto mb-4" />
-              <p className="text-white">Video: {generatedVideo}</p>
-              <button className="mt-4 bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg transition-colors">
-                <Play className="w-4 h-4 mr-2 inline" />
-                Play Video
-              </button>
+            <h3 className="text-xl font-bold text-white mb-4">Video Production Package</h3>
+            
+            {/* Animated Video Display */}
+            <div className="mb-6">
+              <VideoCanvas 
+                prompt={generatedVideo.metadata?.prompt || prompt}
+                duration={5}
+              />
+            </div>
+            
+            {/* Preview Frame */}
+            {generatedVideo.url && (
+              <div className="mb-6">
+                <h4 className="text-lg font-semibold text-purple-300 mb-3">Preview Frame</h4>
+                <div className="rounded-lg overflow-hidden border border-purple-500/30">
+                  <img 
+                    src={generatedVideo.url} 
+                    alt="Video preview frame"
+                    className="w-full h-auto"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Storyboard */}
+            {generatedVideo.metadata?.storyboard && (
+              <div className="mb-6">
+                <h4 className="text-lg font-semibold text-purple-300 mb-3">Storyboard</h4>
+                <div className="rounded-lg overflow-hidden border border-purple-500/30">
+                  <img 
+                    src={generatedVideo.metadata.storyboard} 
+                    alt="Video storyboard"
+                    className="w-full h-auto"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Production Details */}
+            <div className="bg-black/30 rounded-lg p-6 mb-6">
+              <h4 className="text-lg font-semibold text-purple-300 mb-4">Production Details</h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-white/60 text-sm">Duration</p>
+                  <p className="text-white">{generatedVideo.metadata?.duration || 30} seconds</p>
+                </div>
+                <div>
+                  <p className="text-white/60 text-sm">Quality</p>
+                  <p className="text-white">{generatedVideo.metadata?.quality || 'HD'}</p>
+                </div>
+                <div>
+                  <p className="text-white/60 text-sm">AI Model</p>
+                  <p className="text-white">{generatedVideo.metadata?.model || 'Advanced AI'}</p>
+                </div>
+                <div>
+                  <p className="text-white/60 text-sm">Status</p>
+                  <p className="text-green-400">Production Plan Ready</p>
+                </div>
+              </div>
+
+              {/* Production Plan Summary */}
+              {generatedVideo.metadata?.productionPlan && (
+                <div className="mt-4 pt-4 border-t border-purple-500/30">
+                  <p className="text-white/60 text-sm mb-2">Production Plan</p>
+                  <div className="bg-purple-600/10 rounded p-3">
+                    <p className="text-purple-300 text-sm">
+                      Complete production plan with scene breakdowns, technical specifications, and artistic direction has been generated.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* AI Enhancements */}
+              {generatedVideo.metadata?.aiEnhancements && (
+                <div className="mt-4 pt-4 border-t border-purple-500/30">
+                  <p className="text-white/60 text-sm mb-2">AI Enhancements Applied</p>
+                  <div className="flex flex-wrap gap-2">
+                    {generatedVideo.metadata.aiEnhancements.map((enhancement: string, index: number) => (
+                      <span key={index} className="px-3 py-1 bg-purple-600/20 text-purple-300 text-xs rounded-full">
+                        {enhancement.replace(/_/g, ' ')}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
             
             <div className="mt-6 flex gap-4">
