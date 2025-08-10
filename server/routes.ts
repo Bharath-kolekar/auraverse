@@ -304,6 +304,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user.claims.sub;
       const { type, metadata, points = 0 } = req.body;
       
+      // Ensure user exists in database before tracking activity
+      await storage.upsertUser({
+        id: userId,
+        email: req.user.claims.email,
+        firstName: req.user.claims.first_name,
+        lastName: req.user.claims.last_name,
+        profileImageUrl: req.user.claims.profile_image_url
+      });
+      
       const unlockedAchievements = await achievementService.trackActivity(
         userId,
         type,
@@ -321,6 +330,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/achievements', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
+      
+      // Ensure user exists in database
+      await storage.upsertUser({
+        id: userId,
+        email: req.user.claims.email,
+        firstName: req.user.claims.first_name,
+        lastName: req.user.claims.last_name,
+        profileImageUrl: req.user.claims.profile_image_url
+      });
+      
       const achievements = await achievementService.getAllAchievementsWithProgress(userId);
       res.json(achievements);
     } catch (error) {
@@ -332,6 +351,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/achievements/user', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
+      
+      // Ensure user exists in database
+      await storage.upsertUser({
+        id: userId,
+        email: req.user.claims.email,
+        firstName: req.user.claims.first_name,
+        lastName: req.user.claims.last_name,
+        profileImageUrl: req.user.claims.profile_image_url
+      });
+      
       const userAchievements = await achievementService.getUserAchievements(userId);
       res.json(userAchievements);
     } catch (error) {
@@ -343,6 +372,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/achievements/stats', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
+      
+      // Ensure user exists in database
+      await storage.upsertUser({
+        id: userId,
+        email: req.user.claims.email,
+        firstName: req.user.claims.first_name,
+        lastName: req.user.claims.last_name,
+        profileImageUrl: req.user.claims.profile_image_url
+      });
       const stats = await achievementService.getUserStats(userId);
       res.json(stats);
     } catch (error) {
