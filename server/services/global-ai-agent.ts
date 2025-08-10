@@ -157,13 +157,13 @@ Return JSON with actionable insights.`;
 
   private applyIntelligentOptimizations(insights: any): void {
     // Apply AI-recommended optimizations
-    if (insights.performanceOptimizations) {
+    if (insights.performanceOptimizations && Array.isArray(insights.performanceOptimizations)) {
       insights.performanceOptimizations.forEach((optimization: any) => {
         this.intelligentDecisions.set(`optimization_${Date.now()}`, optimization);
       });
     }
 
-    if (insights.errorPrevention) {
+    if (insights.errorPrevention && Array.isArray(insights.errorPrevention)) {
       insights.errorPrevention.forEach((prevention: any) => {
         this.behaviorPatterns.get('recovery_procedures')?.push(prevention);
       });
