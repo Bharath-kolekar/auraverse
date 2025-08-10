@@ -13,6 +13,7 @@ import { insertContentSchema, insertProjectSchema, insertVoiceCommandSchema } fr
 import { registerIntelligenceRoutes } from "./routes-intelligence";
 import { registerVideoRoutes } from "./routes-video";
 import { oscarStandardsService } from "./services/oscar-standards-service";
+import { productionIntelligenceService } from "./services/production-intelligence-service";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
@@ -274,6 +275,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error getting training tips:", error);
       res.status(500).json({ message: "Failed to get training tips" });
+    }
+  });
+
+  // Production Intelligence Routes
+  app.post('/api/intelligence/process', isAuthenticated, async (req: any, res) => {
+    try {
+      const intelligenceRequest = req.body;
+      const result = await productionIntelligenceService.processIntelligence(intelligenceRequest);
+      res.json(result);
+    } catch (error) {
+      console.error('Intelligence processing error:', error);
+      res.status(500).json({ error: 'Intelligence processing failed' });
+    }
+  });
+
+  app.get('/api/intelligence/result/:id', isAuthenticated, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const result = productionIntelligenceService.getResult(id);
+      if (result) {
+        res.json(result);
+      } else {
+        res.status(404).json({ error: 'Result not found' });
+      }
+    } catch (error) {
+      console.error('Result retrieval error:', error);
+      res.status(500).json({ error: 'Result retrieval failed' });
+    }
+  });
+
+  app.get('/api/intelligence/results', isAuthenticated, async (req, res) => {
+    try {
+      const results = productionIntelligenceService.getAllResults();
+      res.json({ results });
+    } catch (error) {
+      console.error('Results retrieval error:', error);
+      res.status(500).json({ error: 'Results retrieval failed' });
     }
   });
 

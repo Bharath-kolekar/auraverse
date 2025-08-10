@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import Landing from "@/pages/Landing";
 import Home from "@/pages/Home";
 import Create from "@/pages/Create";
+import CreateSimple from "@/pages/Create-Simple";
 import Marketplace from "@/pages/Marketplace";
 import Gallery from "@/pages/Gallery";
 import Intelligence from "@/pages/Intelligence";
@@ -32,6 +33,7 @@ function Router() {
     <Switch>
       {/* All routes accessible regardless of authentication status */}
       <Route path="/create" component={Create} />
+      <Route path="/video-production" component={CreateSimple} />
       <Route path="/marketplace" component={Marketplace} />
       <Route path="/gallery" component={Gallery} />
       <Route path="/intelligence" component={Intelligence} />

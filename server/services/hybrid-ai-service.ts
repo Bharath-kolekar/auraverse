@@ -775,15 +775,9 @@ class HybridAIService {
         <circle cx="${width/2}" cy="${height/2 + 70}" r="20" fill="#2F4F4F"/>
         <circle cx="${width/2}" cy="${height/2 + 70}" r="15" fill="#696969"/>
         
-        <!-- Performance text -->
-        <text x="${width/2}" y="100" font-family="Arial" font-size="24" fill="#FF1493" text-anchor="middle" filter="url(#glow)">
-          🎵 Toddler's Concert 🎵
-        </text>
+        <!-- Optional performance text (only when requested) -->
         
-        <!-- Time indicator -->
-        <text x="50" y="50" font-family="Arial" font-size="16" fill="#FFF">
-          Frame: ${frame} | Time: ${time.toFixed(1)}s
-        </text>
+        <!-- Optional text overlay (only when specifically requested) -->
       </svg>
     `;
   }
@@ -957,9 +951,7 @@ class HybridAIService {
           </radialGradient>
         </defs>
         <rect width="100%" height="100%" fill="#000"/>
-        <text x="50%" y="10%" font-family="Arial" font-size="32" fill="#f59e0b" text-anchor="middle">
-          VFX: ${request.prompt}
-        </text>
+        <!-- High-quality VFX without text overlay -->
         ${Array.from({length: 30}, (_, i) => {
           const x = Math.random() * 1792;
           const y = Math.random() * 1024;

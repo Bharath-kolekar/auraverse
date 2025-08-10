@@ -199,7 +199,7 @@ export function RealCreateStudio() {
       <FixedNavigation currentPath="/create" />
       
       <div className="container mx-auto px-6 py-24 relative z-10">
-        {/* Development Mode Header */}
+        {/* Production Intelligence Header */}
         <motion.div 
           className="glass-card p-6 mb-8 border border-purple-500/30"
           initial={{ opacity: 0, y: -20 }}
@@ -209,12 +209,12 @@ export function RealCreateStudio() {
             <div className="flex items-center gap-4">
               <Sparkles className="w-8 h-8 text-purple-400" />
               <div>
-                <h1 className="text-3xl font-bold text-white">AI Create Studio</h1>
-                <p className="text-purple-300">Hybrid AI system: OpenAI when available, local processing as fallback</p>
+                <h1 className="text-3xl font-bold text-white">Infinite Intelligence Studio</h1>
+                <p className="text-purple-300">Advanced AI system with professional quality standards</p>
               </div>
             </div>
-            <div className="bg-blue-500/20 border border-blue-500/30 rounded-lg px-4 py-2">
-              <span className="text-blue-400 font-semibold">⚡ Hybrid AI Mode</span>
+            <div className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/30 rounded-lg px-4 py-2">
+              <span className="text-purple-400 font-semibold">🚀 Production Intelligence</span>
             </div>
           </div>
         </motion.div>

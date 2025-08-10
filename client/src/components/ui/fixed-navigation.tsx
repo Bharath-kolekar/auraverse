@@ -13,6 +13,7 @@ export function FixedNavigation({ currentPath = '/' }: NavigationProps) {
   const navigationItems = [
     { path: '/', label: 'Home', icon: Home },
     { path: '/create', label: 'Create Studio', icon: Sparkles },
+    { path: '/video-production', label: 'Video Production', icon: Video },
     { path: '/gallery', label: 'Gallery', icon: Eye },
     { path: '/marketplace', label: 'Marketplace', icon: Globe },
     { path: '/intelligence', label: 'Intelligence', icon: Brain }

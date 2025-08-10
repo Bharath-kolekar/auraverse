@@ -33,7 +33,8 @@ Quality implementation: Comprehensive professional quality standards based on Ac
 - **API Design**: RESTful API with structured route handling
 - **Authentication**: Replit OpenID Connect (OIDC) with Passport.js strategy
 - **Session Management**: Express sessions stored in PostgreSQL with connect-pg-simple
-- **AI Services**: Local processing using browser APIs and template-based generation (zero cost alternative to external APIs)
+- **AI Services**: Production-grade hybrid AI system with professional quality standards
+- **Intelligence Service**: Multi-tier processing (basic/professional/expert) with advanced algorithms
 - **Training Service**: Local pattern-based training system with offline Maya assistant (zero cost)
 - **Storage**: In-memory storage system to eliminate database costs (with optional PostgreSQL for production)
 - **File Structure**: Modular organization with separate routes, services, and storage layers
