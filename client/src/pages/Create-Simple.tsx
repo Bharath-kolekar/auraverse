@@ -4,6 +4,7 @@ import { Video, Upload, Zap, Download, Play, Sparkles } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { FixedNavigation } from '@/components/ui/fixed-navigation';
 import { VideoCanvas } from '@/components/video/VideoCanvas';
+import { PredictivePrompt } from '@/components/PredictivePrompt';
 
 export default function VideoProduction() {
   const { user } = useAuth();
@@ -75,11 +76,12 @@ export default function VideoProduction() {
           <div className="space-y-6">
             <div>
               <label className="block text-white font-medium mb-3">Video Description</label>
-              <textarea
+              <PredictivePrompt
                 value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
+                onChange={setPrompt}
                 placeholder="Describe the video you want to create..."
-                className="w-full px-4 py-3 bg-black/30 border border-purple-500/30 rounded-lg text-white placeholder-white/50 focus:border-purple-500 focus:outline-none min-h-[120px]"
+                contentType="video"
+                onSubmit={handleGenerateVideo}
               />
             </div>
             

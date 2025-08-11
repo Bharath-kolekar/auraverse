@@ -6,7 +6,7 @@ import { ContentCard } from "@/components/ui/content-card";
 import type { Content } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { PredictivePrompt } from "@/components/PredictivePrompt";
 import { 
   Search,
   Filter,
@@ -58,18 +58,17 @@ export default function Marketplace() {
             </p>
           </div>
 
-          {/* Search Bar */}
+          {/* Search Bar with Predictive AI */}
           <div className="max-w-2xl mx-auto mb-8">
             <div className="relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-              <Input
-                type="text"
-                placeholder="Search for content, creators, or keywords..."
+              <PredictivePrompt
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12 pr-4 py-3 bg-deep-black/60 border-gray-600 text-lg"
+                onChange={setSearchQuery}
+                placeholder="Search for content, creators, or keywords..."
+                contentType="text"
+                onSubmit={() => {/* search is reactive based on searchQuery */}}
               />
-              <Button size="sm" className="absolute right-2 top-1/2 transform -translate-y-1/2">
+              <Button size="sm" className="absolute right-2 top-2 z-10">
                 <Filter className="h-4 w-4" />
               </Button>
             </div>

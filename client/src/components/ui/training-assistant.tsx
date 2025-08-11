@@ -5,6 +5,7 @@ import { Textarea } from "./textarea";
 import { Badge } from "./badge";
 import { ScrollArea } from "./scroll-area";
 import { useToast } from "@/hooks/use-toast";
+import { PredictivePrompt } from '@/components/PredictivePrompt';
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { 
@@ -240,19 +241,15 @@ export function TrainingAssistant({ isOpen, onClose, currentPage }: TrainingAssi
           {/* Input */}
           <div className="p-4 border-t border-gray-800 flex-shrink-0">
             <div className="flex space-x-2">
-              <Textarea
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask me anything about using the platform..."
-                className="flex-1 resize-none"
-                rows={2}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSendMessage(input);
-                  }
-                }}
-              />
+              <div className="flex-1">
+                <PredictivePrompt
+                  value={input}
+                  onChange={setInput}
+                  placeholder="Ask me anything about using the platform..."
+                  contentType="text"
+                  onSubmit={() => handleSendMessage(input)}
+                />
+              </div>
               <Button
                 onClick={() => handleSendMessage(input)}
                 disabled={!input.trim() || sendMessageMutation.isPending}

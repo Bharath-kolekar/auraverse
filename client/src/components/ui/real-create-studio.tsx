@@ -6,6 +6,7 @@ import { apiRequest } from '@/lib/queryClient';
 import { FixedNavigation } from './fixed-navigation';
 import { VideoPlayer } from './video-player';
 import { OscarQualityPanel } from './oscar-quality-panel';
+import { PredictivePrompt } from '@/components/PredictivePrompt';
 
 interface ContentGenerationRequest {
   type: 'video' | 'audio' | 'image' | 'voice' | 'vfx';
@@ -267,16 +268,15 @@ export function RealCreateStudio() {
           <div className="glass-card p-8">
             <h3 className="text-xl font-bold text-white mb-6">Generation Settings</h3>
             
-            {/* Prompt Input */}
+            {/* Prompt Input with Predictive AI */}
             <div className="mb-6">
               <label className="block text-white font-medium mb-3">Describe what you want to create:</label>
-              <textarea
+              <PredictivePrompt
                 value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
+                onChange={setPrompt}
                 placeholder={`Enter your ${activeTab} prompt... (e.g., "A rocket launching from Earth with spectacular visual effects and dramatic lighting")`}
-                className="w-full p-4 bg-black/30 border border-white/10 rounded-xl text-white placeholder-white/50 focus:border-purple-500 focus:outline-none resize-none"
-                rows={4}
-                disabled={isGenerating}
+                contentType={activeTab as 'image' | 'video' | 'audio' | 'text'}
+                onSubmit={handleGenerate}
               />
             </div>
 
