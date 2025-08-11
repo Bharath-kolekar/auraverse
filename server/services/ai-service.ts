@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { aiEnsemble } from "./ai-ensemble";
 
 const apiKey = process.env.OPENAI_API_KEY_NEW || process.env.OPENAI_API_KEY;
 
@@ -253,6 +254,56 @@ class AIService {
       this.updateProgress(jobId, 30);
       const enhancedPrompt = await this.aiEngine.optimizePrompt(request.prompt, 'image', intentAnalysis);
       
+      // Use ensemble learning for superior results when enabled
+      if (request.useEnsemble !== false) {
+        this.updateProgress(jobId, 40);
+        
+        const ensembleResult = await aiEnsemble.ensembleGeneration({
+          ...request,
+          prompt: enhancedPrompt,
+          type: 'image',
+          intentAnalysis,
+          optimalSettings
+        });
+        
+        this.updateProgress(jobId, 90);
+        
+        const result: ContentGenerationResult = {
+          id: jobId,
+          type: 'image',
+          status: 'completed',
+          progress: 100,
+          url: ensembleResult.bestResult.url || ensembleResult.bestResult,
+          metadata: {
+            prompt: request.prompt,
+            enhancedPrompt: enhancedPrompt,
+            intentAnalysis: intentAnalysis,
+            optimalSettings: optimalSettings,
+            model: ensembleResult.selectedModel,
+            mode: 'ensemble_ai',
+            aiEnhancements: [
+              'ensemble_learning',
+              'cross_validation',
+              'quality_scoring',
+              'intelligent_model_switching',
+              'intent_analysis',
+              'prompt_optimization'
+            ],
+            ensembleData: {
+              consensusScore: ensembleResult.consensusScore,
+              selectedModel: ensembleResult.selectedModel,
+              reasoning: ensembleResult.reasoning,
+              alternativeResults: ensembleResult.allResults.slice(1, 4)
+            }
+          }
+        };
+        
+        this.activeJobs.set(jobId, result);
+        return result;
+      }
+      
+      // Intelligent model switching based on content type
+      const optimalModel = await aiEnsemble.selectOptimalModel('image', request);
       this.updateProgress(jobId, 40);
       
       const response = await openai.images.generate({
@@ -278,9 +329,14 @@ class AIService {
           intentAnalysis: intentAnalysis,
           optimalSettings: optimalSettings,
           size: optimalSettings.size || (request.quality === 'ultra' ? "1792x1024" : request.quality === 'hd' ? "1024x1024" : "512x512"),
-          model: 'dall-e-3',
+          model: optimalModel,
           mode: 'advanced_ai',
-          aiEnhancements: ['intent_analysis', 'prompt_optimization', 'setting_prediction']
+          aiEnhancements: [
+            'intelligent_model_switching',
+            'intent_analysis',
+            'prompt_optimization',
+            'setting_prediction'
+          ]
         }
       };
       
