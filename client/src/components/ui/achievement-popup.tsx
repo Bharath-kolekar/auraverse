@@ -204,25 +204,31 @@ export function AchievementPopup({ achievement, onClose, autoClose = 0 }: Achiev
   };
 
   const shareOnLinkedIn = () => {
-    const text = `🏆 Achievement Unlocked: ${achievement?.title}! ${achievement?.description}`;
-    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}&summary=${encodeURIComponent(text)}`, '_blank');
+    const achievementText = `🏆 Achievement Unlocked: ${achievement?.title}!\n\n${achievement?.description}\n\nRarity: ${achievement?.rarity?.toUpperCase()}\nCredits Earned: ${achievement?.credits || 0}\n\n#Achievement #InfiniteIntelligence #AI`;
+    const shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}&summary=${encodeURIComponent(achievementText)}`;
+    window.open(shareUrl, '_blank');
     toast({ title: "Shared on LinkedIn!" });
   };
 
   const shareOnTwitter = () => {
-    const text = `🏆 Just unlocked "${achievement?.title}" achievement! ${achievement?.description} #Achievement #Gaming`;
-    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`, '_blank');
+    const achievementText = `🏆 Just unlocked "${achievement?.title}" achievement!\n\n${achievement?.description}\n\nRarity: ${achievement?.rarity?.toUpperCase()}\nCredits: +${achievement?.credits || 0}\n\n#Achievement #InfiniteIntelligence #AI #ContentCreation`;
+    const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(achievementText)}`;
+    window.open(shareUrl, '_blank');
     toast({ title: "Shared on Twitter!" });
   };
 
   const shareOnFacebook = () => {
-    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank');
+    const achievementText = `🏆 Achievement Unlocked: ${achievement?.title}!\n\n${achievement?.description}\n\nRarity: ${achievement?.rarity?.toUpperCase()}\nCredits Earned: ${achievement?.credits || 0}`;
+    // Facebook requires quote parameter for text
+    const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${encodeURIComponent(achievementText)}`;
+    window.open(shareUrl, '_blank');
     toast({ title: "Shared on Facebook!" });
   };
 
   const shareOnWhatsApp = () => {
-    const text = `🏆 Achievement Unlocked: ${achievement?.title}! ${achievement?.description}`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + window.location.href)}`, '_blank');
+    const achievementText = `🏆 *Achievement Unlocked!*\n\n*${achievement?.title}*\n${achievement?.description}\n\n📊 Rarity: ${achievement?.rarity?.toUpperCase()}\n💰 Credits: +${achievement?.credits || 0}\n\nCheck out Infinite Intelligence AI Platform!`;
+    const shareUrl = `https://wa.me/?text=${encodeURIComponent(achievementText + '\n\n' + window.location.href)}`;
+    window.open(shareUrl, '_blank');
     toast({ title: "Shared on WhatsApp!" });
   };
 
@@ -430,6 +436,23 @@ export function AchievementPopup({ achievement, onClose, autoClose = 0 }: Achiev
               >
                 <Share2 className="w-4 h-4 mr-2" />
                 Share Achievement
+              </Button>
+              
+              {/* Copy to Clipboard Option */}
+              <Button
+                onClick={() => {
+                  const text = `🏆 Achievement Unlocked: ${achievement?.title}!\n\n${achievement?.description}\n\nRarity: ${achievement?.rarity?.toUpperCase()}\nCredits: +${achievement?.credits || 0}\n\n#InfiniteIntelligence`;
+                  navigator.clipboard.writeText(text);
+                  toast({ 
+                    title: "Copied to clipboard!", 
+                    description: "Achievement details copied. You can paste it anywhere."
+                  });
+                }}
+                variant="outline"
+                className="w-full"
+              >
+                <MessageCircle className="w-4 h-4 mr-2" />
+                Copy Achievement Text
               </Button>
 
               {/* Social Media Buttons */}
