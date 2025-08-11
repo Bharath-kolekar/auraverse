@@ -12,15 +12,16 @@ import {
   Brain, Sparkles, Zap, Activity, Cpu, Layers, GitBranch,
   ChevronRight, Play, Settings, Info, ArrowRight, BarChart3,
   Rocket, Shield, Globe, Users, TrendingUp, Award, Target,
-  Lightbulb, Code, Database, Cloud, Gauge, Filter
+  Lightbulb, Code, Database, Cloud, Gauge, Filter, FileText
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -94,6 +95,20 @@ export default function IntelligenceGateway() {
   const [filterCategory, setFilterCategory] = useState('all');
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  
+  // Playground state
+  const [selectedPlaygroundTier, setSelectedPlaygroundTier] = useState<string>('basic');
+  const [selectedPlaygroundCapability, setSelectedPlaygroundCapability] = useState<string>('text_generation');
+  const [testInput, setTestInput] = useState<string>('');
+  const [testResult, setTestResult] = useState<any>(null);
+  
+  // Evolution state
+  const [evolutionConfig, setEvolutionConfig] = useState({
+    preferredTier: 'basic',
+    activeBehaviors: [] as string[],
+    customParameters: {}
+  });
+  const [evolutionResult, setEvolutionResult] = useState<any>(null);
 
   // Fetch intelligence tiers
   const { data: tiersData, isLoading: tiersLoading } = useQuery({
@@ -119,6 +134,7 @@ export default function IntelligenceGateway() {
       return await apiRequest('/api/gateway/test', 'POST', data);
     },
     onSuccess: (data: any) => {
+      setTestResult(data);
       toast({
         title: 'Test Successful',
         description: `Capability tested successfully. Processing time: ${data?.performance?.processingTime || 'N/A'}ms`
@@ -128,6 +144,27 @@ export default function IntelligenceGateway() {
       toast({
         title: 'Test Failed',
         description: error instanceof Error ? error.message : 'Failed to test capability',
+        variant: 'destructive'
+      });
+    }
+  });
+  
+  // Evolution mutation
+  const evolveMutation = useMutation({
+    mutationFn: async (config: any) => {
+      return await apiRequest('/api/gateway/evolve', 'POST', config);
+    },
+    onSuccess: (data: any) => {
+      setEvolutionResult(data);
+      toast({
+        title: 'Evolution Complete',
+        description: 'Your AI intelligence has been evolved successfully'
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Evolution Failed',
+        description: error instanceof Error ? error.message : 'Failed to evolve intelligence',
         variant: 'destructive'
       });
     }
@@ -178,6 +215,22 @@ export default function IntelligenceGateway() {
       capabilityId: capability.id,
       input: testInput
     });
+  };
+  
+  const handlePlaygroundTest = async () => {
+    if (!selectedPlaygroundCapability || !testInput) return;
+    
+    await testCapabilityMutation.mutateAsync({
+      capabilityId: selectedPlaygroundCapability,
+      input: { 
+        prompt: testInput,
+        tier: selectedPlaygroundTier
+      }
+    });
+  };
+  
+  const handleEvolve = async () => {
+    await evolveMutation.mutateAsync(evolutionConfig);
   };
 
   const handleToggleBehavior = async (behavior: AIBehavior) => {
@@ -621,15 +674,215 @@ export default function IntelligenceGateway() {
 
           {/* Playground Tab */}
           <TabsContent value="playground" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Test Interface */}
+              <Card className="glass-morphism border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <Play className="w-5 h-5" />
+                    Test Intelligence
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Tier Selection */}
+                  <div>
+                    <label className="text-sm text-white/70 mb-2 block">Select Intelligence Tier</label>
+                    <Select value={selectedPlaygroundTier} onValueChange={setSelectedPlaygroundTier}>
+                      <SelectTrigger className="border-white/20 text-white">
+                        <SelectValue placeholder="Choose tier" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="basic">Basic Intelligence</SelectItem>
+                        <SelectItem value="advanced">Advanced Intelligence</SelectItem>
+                        <SelectItem value="super">Super Intelligence</SelectItem>
+                        <SelectItem value="quantum">Quantum Intelligence</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Capability Selection */}
+                  <div>
+                    <label className="text-sm text-white/70 mb-2 block">Select Capability</label>
+                    <Select value={selectedPlaygroundCapability} onValueChange={setSelectedPlaygroundCapability}>
+                      <SelectTrigger className="border-white/20 text-white">
+                        <SelectValue placeholder="Choose capability" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="text_generation">Text Generation</SelectItem>
+                        <SelectItem value="image_generation">Image Generation</SelectItem>
+                        <SelectItem value="audio_generation">Audio Generation</SelectItem>
+                        <SelectItem value="video_synthesis">Video Synthesis</SelectItem>
+                        <SelectItem value="sentiment_analysis">Sentiment Analysis</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Input */}
+                  <div>
+                    <label className="text-sm text-white/70 mb-2 block">Input Prompt</label>
+                    <Textarea
+                      placeholder="Enter your prompt or test input..."
+                      className="border-white/20 text-white placeholder:text-white/40 min-h-[100px]"
+                      value={testInput}
+                      onChange={(e) => setTestInput(e.target.value)}
+                    />
+                  </div>
+
+                  {/* Test Button */}
+                  <Button 
+                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600"
+                    onClick={() => handlePlaygroundTest()}
+                    disabled={!selectedPlaygroundTier || !selectedPlaygroundCapability || !testInput || testCapabilityMutation.isPending}
+                  >
+                    {testCapabilityMutation.isPending ? (
+                      <>
+                        <Sparkles className="w-4 h-4 mr-2 animate-spin" />
+                        Processing...
+                      </>
+                    ) : (
+                      <>
+                        <Zap className="w-4 h-4 mr-2" />
+                        Run Test
+                      </>
+                    )}
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Results Display */}
+              <Card className="glass-morphism border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <FileText className="w-5 h-5" />
+                    Test Results
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {testResult ? (
+                    <div className="space-y-4">
+                      {/* Performance Metrics */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="bg-white/5 rounded-lg p-3">
+                          <p className="text-xs text-white/50 mb-1">Processing Time</p>
+                          <p className="text-lg font-bold text-white">
+                            {testResult.performance?.processingTime || '0'}ms
+                          </p>
+                        </div>
+                        <div className="bg-white/5 rounded-lg p-3">
+                          <p className="text-xs text-white/50 mb-1">Accuracy</p>
+                          <p className="text-lg font-bold text-white">
+                            {testResult.performance?.accuracy || '0'}%
+                          </p>
+                        </div>
+                        <div className="bg-white/5 rounded-lg p-3">
+                          <p className="text-xs text-white/50 mb-1">Tier Used</p>
+                          <p className="text-lg font-bold text-white capitalize">
+                            {testResult.performance?.tier || 'Basic'}
+                          </p>
+                        </div>
+                        <div className="bg-white/5 rounded-lg p-3">
+                          <p className="text-xs text-white/50 mb-1">Credits Used</p>
+                          <p className="text-lg font-bold text-white">
+                            {testResult.cost || '0'}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Output */}
+                      <div>
+                        <p className="text-sm text-white/70 mb-2">Output</p>
+                        <div className="bg-white/5 rounded-lg p-4 max-h-[300px] overflow-y-auto">
+                          <pre className="text-sm text-white whitespace-pre-wrap">
+                            {JSON.stringify(testResult.output, null, 2)}
+                          </pre>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="h-64 flex items-center justify-center text-white/50">
+                      <FileText className="w-8 h-8 mr-2" />
+                      <span>Run a test to see results</span>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Evolution Engine */}
             <Card className="glass-morphism border-white/10">
               <CardHeader>
-                <CardTitle className="text-white">Interactive Playground</CardTitle>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Brain className="w-5 h-5" />
+                  Evolution Engine
+                </CardTitle>
+                <CardDescription className="text-white/70">
+                  Configure and evolve your AI intelligence preferences
+                </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="h-64 flex items-center justify-center text-white/50">
-                  <Play className="w-8 h-8 mr-2" />
-                  <span>Select a tier or capability to test</span>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* Preferred Tier */}
+                  <div>
+                    <label className="text-sm text-white/70 mb-2 block">Preferred Tier</label>
+                    <Select value={evolutionConfig.preferredTier} 
+                            onValueChange={(value) => setEvolutionConfig({...evolutionConfig, preferredTier: value})}>
+                      <SelectTrigger className="border-white/20 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="basic">Basic</SelectItem>
+                        <SelectItem value="advanced">Advanced</SelectItem>
+                        <SelectItem value="super">Super</SelectItem>
+                        <SelectItem value="quantum">Quantum</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Active Behaviors */}
+                  <div className="md:col-span-2">
+                    <label className="text-sm text-white/70 mb-2 block">Active Behaviors</label>
+                    <div className="flex flex-wrap gap-2">
+                      {behaviors.map((behavior: AIBehavior) => (
+                        <Badge
+                          key={behavior.id}
+                          variant={evolutionConfig.activeBehaviors.includes(behavior.id) ? "default" : "outline"}
+                          className="cursor-pointer"
+                          onClick={() => {
+                            const updated = evolutionConfig.activeBehaviors.includes(behavior.id)
+                              ? evolutionConfig.activeBehaviors.filter(id => id !== behavior.id)
+                              : [...evolutionConfig.activeBehaviors, behavior.id];
+                            setEvolutionConfig({...evolutionConfig, activeBehaviors: updated});
+                          }}
+                        >
+                          {behavior.name}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
                 </div>
+
+                <Button 
+                  className="w-full bg-gradient-to-r from-cyan-600 to-purple-600"
+                  onClick={() => handleEvolve()}
+                  disabled={evolveMutation.isPending}
+                >
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Evolve Intelligence
+                </Button>
+
+                {evolutionResult && (
+                  <div className="bg-white/5 rounded-lg p-4">
+                    <p className="text-sm text-white/70 mb-2">Recommendations:</p>
+                    <ul className="space-y-1">
+                      {evolutionResult.recommendations?.map((rec: string, i: number) => (
+                        <li key={i} className="text-sm text-white flex items-start gap-2">
+                          <ChevronRight className="w-4 h-4 mt-0.5 text-purple-400" />
+                          <span>{rec}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -720,7 +973,13 @@ export default function IntelligenceGateway() {
             {/* Neural Network Visualization */}
             <Card className="glass-morphism border-white/10">
               <CardHeader>
-                <CardTitle className="text-white">Neural Network Activity</CardTitle>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Brain className="w-5 h-5" />
+                  Neural Network Activity
+                </CardTitle>
+                <CardDescription className="text-white/70">
+                  Real-time visualization of AI processing pathways
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="h-64 flex items-center justify-center text-white/50">
