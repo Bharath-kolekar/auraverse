@@ -32,6 +32,7 @@ export default function Home() {
   const [promptValue, setPromptValue] = useState('');
   const [selectedContentType, setSelectedContentType] = useState<'image' | 'video' | 'audio' | 'text'>('image');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedContent, setGeneratedContent] = useState<{ type: string; url?: string; content?: string } | null>(null);
   const { currentTheme, themeName } = useTheme();
   const trackActivity = useTrackActivity();
   const { stats: userStats } = useUserStats();
@@ -361,11 +362,33 @@ export default function Home() {
                 onChange={setPromptValue}
                 placeholder={`Describe the ${selectedContentType} you want to create...`}
                 contentType={selectedContentType}
-                onSubmit={() => {
+                onSubmit={async () => {
+                  if (!promptValue || isGenerating) return;
+                  
                   setIsGenerating(true);
-                  // Simulate generation
-                  setTimeout(() => {
-                    setIsGenerating(false);
+                  setGeneratedContent(null);
+                  
+                  try {
+                    const response = await fetch('/api/ai/generate', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      credentials: 'include',
+                      body: JSON.stringify({
+                        prompt: promptValue,
+                        type: selectedContentType,
+                        mode: 'enhanced'
+                      })
+                    });
+                    
+                    if (!response.ok) throw new Error('Generation failed');
+                    
+                    const result = await response.json();
+                    setGeneratedContent({
+                      type: selectedContentType,
+                      url: result.url,
+                      content: result.content
+                    });
+                    
                     // Safe activity tracking
                     try {
                       if (trackActivity) {
@@ -380,7 +403,11 @@ export default function Home() {
                     } catch (err) {
                       console.log('Activity tracking skipped');
                     }
-                  }, 2000);
+                  } catch (error) {
+                    console.error('Generation error:', error);
+                  } finally {
+                    setIsGenerating(false);
+                  }
                 }}
               />
 
@@ -389,10 +416,33 @@ export default function Home() {
                 <Button
                   className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg"
                   disabled={!promptValue || isGenerating}
-                  onClick={() => {
+                  onClick={async () => {
+                    if (!promptValue || isGenerating) return;
+                    
                     setIsGenerating(true);
-                    setTimeout(() => {
-                      setIsGenerating(false);
+                    setGeneratedContent(null);
+                    
+                    try {
+                      const response = await fetch('/api/ai/generate', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                          prompt: promptValue,
+                          type: selectedContentType,
+                          mode: 'enhanced'
+                        })
+                      });
+                      
+                      if (!response.ok) throw new Error('Generation failed');
+                      
+                      const result = await response.json();
+                      setGeneratedContent({
+                        type: selectedContentType,
+                        url: result.url,
+                        content: result.content
+                      });
+                      
                       // Safe activity tracking
                       try {
                         if (trackActivity) {
@@ -407,7 +457,11 @@ export default function Home() {
                       } catch (err) {
                         console.log('Activity tracking skipped');
                       }
-                    }, 2000);
+                    } catch (error) {
+                      console.error('Generation error:', error);
+                    } finally {
+                      setIsGenerating(false);
+                    }
                   }}
                 >
                   {isGenerating ? (
@@ -457,6 +511,54 @@ export default function Home() {
                   </div>
                 </div>
               </div>
+
+              {/* Generated Content Display */}
+              {generatedContent && (
+                <motion.div 
+                  className="mt-6 p-6 bg-white/5 rounded-xl border border-white/10"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <div className="flex items-center gap-2 mb-4">
+                    <Sparkles className="w-5 h-5 text-purple-400" />
+                    <h3 className="text-white font-semibold">Generated {generatedContent.type.charAt(0).toUpperCase() + generatedContent.type.slice(1)}</h3>
+                  </div>
+                  
+                  {generatedContent.type === 'image' && generatedContent.url && (
+                    <div className="relative rounded-lg overflow-hidden">
+                      <img 
+                        src={generatedContent.url} 
+                        alt="Generated content" 
+                        className="w-full h-auto max-h-[400px] object-contain"
+                      />
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
+                        <p className="text-white text-sm">{promptValue}</p>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {generatedContent.type === 'text' && generatedContent.content && (
+                    <div className="prose prose-invert max-w-none">
+                      <p className="text-white/90 whitespace-pre-wrap">{generatedContent.content}</p>
+                    </div>
+                  )}
+                  
+                  {(generatedContent.type === 'video' || generatedContent.type === 'audio') && (
+                    <div className="text-center py-8">
+                      <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-lg border border-purple-500/30">
+                        <CheckCircle className="w-5 h-5 text-green-400" />
+                        <span className="text-white">
+                          {generatedContent.type === 'video' ? 'Video' : 'Audio'} generated successfully!
+                        </span>
+                      </div>
+                      <p className="text-white/60 text-sm mt-3">
+                        {generatedContent.type === 'video' ? 'Video preview coming soon' : 'Audio player coming soon'}
+                      </p>
+                    </div>
+                  )}
+                </motion.div>
+              )}
             </div>
           </Card>
         </motion.div>
