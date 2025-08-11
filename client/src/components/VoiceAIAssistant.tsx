@@ -206,16 +206,17 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
         };
         
         utterance.onend = () => {
-          console.log('Speech ended');
+          console.log('Speech ended, will start listening again');
           setIsSpeaking(false);
-          // Only start listening if user hasn't started speaking
-          if (isOpen && recognition && !isUserSpeaking && workflowState !== WORKFLOW_STATES.COMPLETE) {
-            setTimeout(() => {
-              if (!isListening && !isSpeaking && !isUserSpeaking) {
-                startListening();
-              }
-            }, 1500); // Wait longer to ensure user can start speaking
-          }
+          // Always restart listening after speaking completes
+          setTimeout(() => {
+            console.log('Auto-starting listening after speech');
+            // Use document visibility to check if assistant is still open
+            const assistantPanel = document.querySelector('.voice-assistant-panel');
+            if (assistantPanel && recognition) {
+              startListening();
+            }
+          }, 1000); // 1 second delay to let user prepare
         };
         
         utterance.onerror = (error) => {
@@ -453,24 +454,19 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
     console.log('Generating contextual response for:', command);
     const lowerCommand = command.toLowerCase();
     
-    // Check for workflow-specific commands
+    // Check for VFX creation request
     if (lowerCommand.includes('vfx') || lowerCommand.includes('visual effect')) {
+      console.log('VFX creation detected, navigating to Create Studio...');
       setWorkflowState(WORKFLOW_STATES.PROCESSING);
       setCurrentProject({ type: 'vfx', request: command });
       
-      // Navigate to create page and select VFX
-      const actionResult = await executeCommand('create vfx');
-      if (actionResult.success && actionResult.redirect) {
-        setTimeout(() => {
-          // Auto-select VFX option after navigation
-          const vfxButton = document.querySelector('[data-content-type="vfx"]') as HTMLElement;
-          if (vfxButton) {
-            vfxButton.click();
-            handleWorkflowStep('CREATE');
-          }
-        }, 1500);
-      }
-      return 'Perfect! Let me help you create VFX content. I\'m opening the Create Studio and selecting VFX for you.';
+      // Directly navigate to create page using window.location
+      window.location.href = '/create';
+      
+      // Set a flag in localStorage to auto-select VFX after page loads
+      localStorage.setItem('autoSelectContent', 'vfx');
+      
+      return 'Perfect! I\'m taking you to the Create Studio now to create your VFX content. The page is loading...';
     }
     
     // Check for review/modification commands
@@ -714,7 +710,7 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="fixed bottom-24 right-6 w-80 max-h-96 bg-black/90 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl z-40 overflow-hidden"
+            className="voice-assistant-panel fixed bottom-24 right-6 w-80 max-h-96 bg-black/90 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl z-40 overflow-hidden"
             initial={{ opacity: 0, y: 50, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 50, scale: 0.9 }}
