@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { TransitionProvider } from "@/contexts/TransitionContext";
+import { PlacementProvider } from "@/contexts/PlacementContext";
 import { TrainingAssistantButton } from "@/components/ui/training-assistant-button";
 import { PageTransition, PageLoadingSkeleton } from "@/components/ui/page-transition";
 import { NeuralThemeProvider } from "@/components/effects/NeuralThemeProvider";
@@ -105,11 +106,13 @@ function App() {
       <NeuralThemeProvider>
         <ThemeProvider>
           <TransitionProvider>
-            <TooltipProvider>
-              <Toaster />
-              <AppContent />
-              <NeuralThemeSelector />
-            </TooltipProvider>
+            <PlacementProvider>
+              <TooltipProvider>
+                <Toaster />
+                <AppContent />
+                <NeuralThemeSelector />
+              </TooltipProvider>
+            </PlacementProvider>
           </TransitionProvider>
         </ThemeProvider>
       </NeuralThemeProvider>

@@ -127,7 +127,7 @@ export function useIntelligentPlacement(
       
       // Check if position overlaps with any occupied space
       let hasOverlap = false;
-      for (const [id, occupiedRect] of occupiedSpaces.current) {
+      for (const [id, occupiedRect] of Array.from(occupiedSpaces.current)) {
         if (id !== component.id && checkOverlap(rect, occupiedRect)) {
           hasOverlap = true;
           break;
@@ -169,7 +169,7 @@ export function useIntelligentPlacement(
         const rect = new DOMRect(x, y, component.width, component.height);
         
         let hasOverlap = false;
-        for (const [id, occupiedRect] of occupiedSpaces.current) {
+        for (const [id, occupiedRect] of Array.from(occupiedSpaces.current)) {
           if (id !== component.id && checkOverlap(rect, occupiedRect)) {
             hasOverlap = true;
             break;

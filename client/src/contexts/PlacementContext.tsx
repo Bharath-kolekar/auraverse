@@ -1,5 +1,5 @@
 // Global Placement Context for managing component positions
-import React, { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect, useRef, ReactNode } from 'react';
 import { useIntelligentPlacement, ComponentDimensions, ComponentPosition, PlacementConfig } from '@/hooks/useIntelligentPlacement';
 
 interface PlacementContextValue {
@@ -88,41 +88,59 @@ export function useSmartPosition(
 ) {
   const { registerComponent, unregisterComponent, getPosition, updateDimensions } = usePlacement();
   const [position, setPosition] = useState<ComponentPosition | undefined>();
+  
+  // Use refs to track if we've already registered
+  const hasRegisteredRef = useRef(false);
+  const dimensionsRef = useRef(defaultDimensions);
 
   useEffect(() => {
-    // Register component on mount
-    registerComponent(componentId, {
-      id: componentId,
-      width: defaultDimensions.width,
-      height: defaultDimensions.height,
-      priority
-    });
+    // Only register once
+    if (!hasRegisteredRef.current) {
+      hasRegisteredRef.current = true;
+      registerComponent(componentId, {
+        id: componentId,
+        width: defaultDimensions.width,
+        height: defaultDimensions.height,
+        priority
+      });
+    }
 
     // Unregister on unmount
     return () => {
-      unregisterComponent(componentId);
+      if (hasRegisteredRef.current) {
+        hasRegisteredRef.current = false;
+        unregisterComponent(componentId);
+      }
     };
-  }, []); // Only run on mount/unmount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty deps - only run on mount/unmount
 
-  // Update dimensions if they change (but not on every render)
+  // Update dimensions only when they actually change
   useEffect(() => {
-    updateDimensions(componentId, {
-      width: defaultDimensions.width,
-      height: defaultDimensions.height
-    });
-  }, [defaultDimensions.width, defaultDimensions.height]); // Only when dimensions actually change
+    if (dimensionsRef.current.width !== defaultDimensions.width || 
+        dimensionsRef.current.height !== defaultDimensions.height) {
+      dimensionsRef.current = defaultDimensions;
+      updateDimensions(componentId, {
+        width: defaultDimensions.width,
+        height: defaultDimensions.height
+      });
+    }
+  }, [componentId, defaultDimensions.width, defaultDimensions.height, updateDimensions]);
 
-  // Get position updates
+  // Get position updates - simplified to avoid dependency on position state
   useEffect(() => {
     const interval = setInterval(() => {
       const pos = getPosition(componentId);
-      if (pos && (!position || pos.x !== position.x || pos.y !== position.y)) {
-        setPosition(pos);
-      }
-    }, 500); // Reduced frequency to avoid excessive updates
+      setPosition(prevPos => {
+        if (pos && (!prevPos || pos.x !== prevPos.x || pos.y !== prevPos.y)) {
+          return pos;
+        }
+        return prevPos;
+      });
+    }, 500);
 
     return () => clearInterval(interval);
-  }, [componentId]); // Only depend on componentId
+  }, [componentId, getPosition]); // Don't depend on position state
 
   return {
     position,

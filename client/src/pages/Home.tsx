@@ -205,7 +205,7 @@ export default function Home() {
       
       {/* Top Header Bar */}
       <motion.div 
-        className="glass-morphism border-b border-white/10 sticky top-0 z-[60]"
+        className="glass-morphism border-b border-white/10 sticky top-0 z-50"
         initial={{ y: -50 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.6 }}
