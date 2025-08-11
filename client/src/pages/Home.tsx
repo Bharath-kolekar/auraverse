@@ -20,6 +20,11 @@ import { useTrackActivity, useUserStats } from '@/hooks/useAchievements';
 import { TransitionSettings } from '@/components/ui/transition-settings';
 import { PredictivePrompt } from '@/components/PredictivePrompt';
 import { LogoAdvanced } from '@/components/logos/LogoAdvanced';
+import { NeuralNetworkBackground } from '@/components/effects/NeuralNetworkBackground';
+import { NeuralButton } from '@/components/effects/NeuralButton';
+import { NeuralCard } from '@/components/effects/NeuralCard';
+import { NeuralText } from '@/components/effects/NeuralText';
+import { NeuralLoader } from '@/components/effects/NeuralLoader';
 
 export default function Home() {
   const { user } = useAuth();
@@ -188,6 +193,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
+      {/* Neural Network Background */}
+      <NeuralNetworkBackground particleCount={30} opacity={0.15} />
       <div className="particles-bg" />
       <FixedNavigation currentPath="/" />
       

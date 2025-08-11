@@ -17,6 +17,11 @@ import {
   Image,
   Flame
 } from "lucide-react";
+import { NeuralNetworkBackground } from "@/components/effects/NeuralNetworkBackground";
+import { NeuralButton } from "@/components/effects/NeuralButton";
+import { NeuralCard } from "@/components/effects/NeuralCard";
+import { NeuralText } from "@/components/effects/NeuralText";
+import { NeuralLoader } from "@/components/effects/NeuralLoader";
 
 export default function Marketplace() {
   const [selectedFilter, setSelectedFilter] = useState("trending");
@@ -42,7 +47,9 @@ export default function Marketplace() {
   ];
 
   return (
-    <div className="min-h-screen bg-space-black text-white">
+    <div className="min-h-screen bg-space-black text-white relative">
+      {/* Neural Network Background */}
+      <NeuralNetworkBackground particleCount={35} opacity={0.2} />
       <Navbar />
       
       {/* Header */}

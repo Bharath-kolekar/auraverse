@@ -5,6 +5,10 @@ import { Link } from 'wouter';
 import NeuralSkull from '@/components/NeuralSkull';
 import VoiceAIAssistant from '@/components/VoiceAIAssistant';
 import { LogoAdvanced } from '@/components/logos/LogoAdvanced';
+import { NeuralNetworkBackground } from '@/components/effects/NeuralNetworkBackground';
+import { NeuralButton } from '@/components/effects/NeuralButton';
+import { NeuralCard } from '@/components/effects/NeuralCard';
+import { NeuralText } from '@/components/effects/NeuralText';
 
 export default function Landing() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -107,6 +111,8 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
+      {/* Neural Network Background */}
+      <NeuralNetworkBackground particleCount={40} opacity={0.2} />
       {/* Subtle Background */}
       <div className="neural-bg-overlay" />
       

@@ -19,6 +19,11 @@ import {
   Calendar,
   TrendingUp
 } from "lucide-react";
+import { NeuralNetworkBackground } from "@/components/effects/NeuralNetworkBackground";
+import { NeuralButton } from "@/components/effects/NeuralButton";
+import { NeuralCard } from "@/components/effects/NeuralCard";
+import { NeuralText } from "@/components/effects/NeuralText";
+import { NeuralLoader } from "@/components/effects/NeuralLoader";
 
 export default function Gallery() {
   const { user } = useAuth();
@@ -46,13 +51,15 @@ export default function Gallery() {
     if (selectedFilter === "recent") {
       const oneWeekAgo = new Date();
       oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-      return new Date(item.createdAt) > oneWeekAgo;
+      return item.createdAt ? new Date(item.createdAt) > oneWeekAgo : false;
     }
     return item.type === selectedFilter;
   }) || [];
 
   return (
-    <div className="min-h-screen bg-space-black text-white">
+    <div className="min-h-screen bg-space-black text-white relative">
+      {/* Neural Network Background */}
+      <NeuralNetworkBackground particleCount={35} opacity={0.2} />
       <Navbar />
       
       {/* Header */}

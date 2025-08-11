@@ -7,6 +7,11 @@ import { FixedNavigation } from './fixed-navigation';
 import { VideoPlayer } from './video-player';
 import { OscarQualityPanel } from './oscar-quality-panel';
 import { PredictivePrompt } from '@/components/PredictivePrompt';
+import { NeuralNetworkBackground } from '@/components/effects/NeuralNetworkBackground';
+import { NeuralButton } from '@/components/effects/NeuralButton';
+import { NeuralCard } from '@/components/effects/NeuralCard';
+import { NeuralText } from '@/components/effects/NeuralText';
+import { NeuralLoader } from '@/components/effects/NeuralLoader';
 
 interface ContentGenerationRequest {
   type: 'video' | 'audio' | 'image' | 'voice' | 'vfx';
@@ -196,6 +201,8 @@ export function RealCreateStudio() {
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      {/* Neural Network Background */}
+      <NeuralNetworkBackground particleCount={40} opacity={0.25} />
       <div className="particles-bg" />
       <FixedNavigation currentPath="/create" />
       
@@ -210,8 +217,8 @@ export function RealCreateStudio() {
             <div className="flex items-center gap-4">
               <Sparkles className="w-8 h-8 text-purple-400" />
               <div>
-                <h1 className="text-3xl font-bold text-white">Infinite Intelligence Studio</h1>
-                <p className="text-purple-300">Advanced AI system with professional quality standards</p>
+                <NeuralText variant="title">Infinite Intelligence Studio</NeuralText>
+                <p className="text-purple-300 mt-2">Advanced AI system with professional quality standards</p>
               </div>
             </div>
             <div className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/30 rounded-lg px-4 py-2">
@@ -355,8 +362,7 @@ export function RealCreateStudio() {
             >
               {isGenerating ? (
                 <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Generating {activeTab}...
+                  <NeuralLoader size="small" text={`Generating ${activeTab}...`} />
                 </>
               ) : (
                 <>
