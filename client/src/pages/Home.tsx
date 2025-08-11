@@ -201,17 +201,27 @@ export default function Home() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <motion.div 
-                className="flex items-center gap-2"
+                className="flex items-center gap-3"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
-                  <Brain className="w-6 h-6 text-white" />
+                {/* Stunning Brain Icon with Glow */}
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-cyan-500 to-pink-600 rounded-xl blur-lg opacity-75 animate-pulse"></div>
+                  <div className="relative w-12 h-12 bg-gradient-to-br from-purple-600 via-cyan-500 to-pink-600 rounded-xl flex items-center justify-center shadow-2xl">
+                    <Brain className="w-7 h-7 text-white drop-shadow-lg" />
+                  </div>
                 </div>
-                <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                  COGNOMEGA
-                </span>
+                <div className="flex flex-col">
+                  <span className="text-2xl font-bold">
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-cyan-400 to-pink-400">COGNO</span>
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-pink-400 to-purple-400">MEGA</span>
+                  </span>
+                  <span className="text-[10px] font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-cyan-300 uppercase">
+                    Production Intelligence
+                  </span>
+                </div>
               </motion.div>
             </div>
             

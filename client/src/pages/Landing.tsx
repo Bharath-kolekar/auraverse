@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { Sparkles, Zap, Mic, Video, Music, Image, Cpu, Globe, Play, ArrowRight, Star, Award, TrendingUp } from 'lucide-react';
+import { Sparkles, Zap, Mic, Video, Music, Image, Cpu, Globe, Play, ArrowRight, Star, Award, TrendingUp, Brain } from 'lucide-react';
 import { Link } from 'wouter';
 import NeuralSkull from '@/components/NeuralSkull';
 import VoiceAIAssistant from '@/components/VoiceAIAssistant';
@@ -120,17 +120,40 @@ export default function Landing() {
       >
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <motion.div 
-            className="flex items-center space-x-3"
-            whileHover={{ scale: 1.05 }}
+            className="flex items-center space-x-4"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
-            <motion.div 
-              className="w-12 h-12 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl flex items-center justify-center"
-              animate={{ rotate: [0, 360] }}
-              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            >
-              <Sparkles className="w-7 h-7 text-white" />
-            </motion.div>
+            {/* Stunning Brain Icon with Advanced Glow Effect */}
+            <div className="relative logo-float-effect">
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-cyan-500 to-pink-600 rounded-2xl blur-xl opacity-75 animate-pulse"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-pink-600 via-purple-600 to-cyan-500 rounded-2xl blur-xl opacity-50 animate-pulse animation-delay-1000"></div>
+              <div className="relative w-14 h-14 bg-gradient-to-br from-purple-600 via-cyan-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-2xl transform transition-all duration-300 logo-glow-effect">
+                <Brain className="h-8 w-8 text-white drop-shadow-lg animate-pulse" />
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-white/0 to-white/30 shimmer-text"></div>
+              </div>
+            </div>
             
+            {/* Stunning Text Logo */}
+            <div className="flex flex-col">
+              <div className="flex items-baseline space-x-1">
+                <h1 className="text-3xl font-black tracking-tight">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-cyan-400 to-pink-400 drop-shadow-sm">
+                    COGNO
+                  </span>
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-pink-400 to-purple-400 drop-shadow-sm">
+                    MEGA
+                  </span>
+                </h1>
+              </div>
+              <div className="flex items-center space-x-1 mt-0.5">
+                <div className="h-px w-4 bg-gradient-to-r from-transparent via-cyan-400 to-transparent"></div>
+                <p className="text-xs font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-cyan-300 uppercase">
+                  Production Intelligence
+                </p>
+                <div className="h-px w-4 bg-gradient-to-r from-transparent via-purple-400 to-transparent"></div>
+              </div>
+            </div>
           </motion.div>
           
           <div className="hidden md:flex items-center space-x-8">
