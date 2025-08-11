@@ -397,14 +397,16 @@ export function RealCreateStudio() {
                         <audio controls autoPlay className="w-full">
                           <source src={currentJob.url} type="audio/mp3" />
                         </audio>
-                      ) : currentJob.type === 'video' && currentJob.metadata?.autoplay ? (
+                      ) : currentJob.type === 'video' ? (
                         <div className="space-y-4">
-                          <VideoPlayer 
-                            videoData={currentJob.url}
-                            thumbnail={currentJob.metadata.thumbnail}
-                            duration={currentJob.metadata.duration}
-                            prompt={currentJob.metadata.prompt}
-                          />
+                          <video 
+                            controls 
+                            autoPlay 
+                            className="w-full rounded-lg"
+                            src={currentJob.url}
+                          >
+                            Your browser does not support the video tag.
+                          </video>
                         </div>
                       ) : (
                         <img 

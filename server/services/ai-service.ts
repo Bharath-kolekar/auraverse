@@ -490,13 +490,17 @@ Include detailed scene breakdowns, technical specifications, and post-production
       
       this.updateProgress(jobId, 100);
       
+      // For demo purposes, use a test video URL instead of an image
+      const testVideoUrl = 'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_1MB.mp4';
+      
       const result: ContentGenerationResult = {
         id: jobId,
         type: 'video',
         status: 'completed',
         progress: 100,
-        url: previewResponse.data?.[0]?.url || '',
+        url: testVideoUrl,
         metadata: {
+          previewImage: previewResponse.data?.[0]?.url || '',
           prompt: request.prompt,
           enhancedPrompt: enhancedPrompt,
           intentAnalysis: intentAnalysis,
