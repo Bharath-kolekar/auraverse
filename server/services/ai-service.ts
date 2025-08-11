@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import { aiEnsemble } from "./ai-ensemble";
+import { continuousImprovement } from "./continuous-improvement";
 
 const apiKey = process.env.OPENAI_API_KEY_NEW || process.env.OPENAI_API_KEY;
 
@@ -252,8 +253,23 @@ class AIService {
       this.updateProgress(jobId, 20);
       const optimalSettings = await this.aiEngine.predictOptimalSettings(request);
       
+      // Use continuous improvement for prompt optimization
+      this.updateProgress(jobId, 25);
+      const optimizedPrompt = await continuousImprovement.optimizePrompt(request.prompt, 'image');
+      
+      // Get A/B test variant for parameters
+      const abTestVariant = await continuousImprovement.getABTestVariant('image', request.userId);
+      const testParams = abTestVariant ? abTestVariant.parameters : {};
+      
+      // Get dynamically tuned parameters
+      const tunedParams = await continuousImprovement.getTunedParameters('image', {
+        ...optimalSettings,
+        ...testParams,
+        style: request.style
+      });
+      
       this.updateProgress(jobId, 30);
-      const enhancedPrompt = await this.aiEngine.optimizePrompt(request.prompt, 'image', intentAnalysis);
+      const enhancedPrompt = await this.aiEngine.optimizePrompt(optimizedPrompt, 'image', intentAnalysis);
       
       // Use ensemble learning for superior results when enabled
       if (request.useEnsemble !== false) {
@@ -328,18 +344,34 @@ class AIService {
           prompt: request.prompt,
           enhancedPrompt: enhancedPrompt,
           intentAnalysis: intentAnalysis,
-          optimalSettings: optimalSettings,
-          size: optimalSettings.size || (request.quality === 'ultra' ? "1792x1024" : request.quality === 'hd' ? "1024x1024" : "512x512"),
+          optimalSettings: tunedParams,
+          size: tunedParams.size || (request.quality === 'ultra' ? "1792x1024" : request.quality === 'hd' ? "1024x1024" : "512x512"),
           model: optimalModel,
-          mode: 'advanced_ai',
+          mode: 'advanced_ai_with_continuous_improvement',
           aiEnhancements: [
+            'continuous_improvement',
+            'ab_testing',
+            'prompt_optimization',
+            'dynamic_parameter_tuning',
             'intelligent_model_switching',
             'intent_analysis',
-            'prompt_optimization',
             'setting_prediction'
-          ]
+          ],
+          continuousImprovement: {
+            abTestId: abTestVariant?.testId,
+            variantId: abTestVariant?.variantId,
+            optimizedPrompt: optimizedPrompt !== request.prompt,
+            tunedParameters: Object.keys(tunedParams).length > 0
+          }
         }
       };
+      
+      // Record initial generation event for continuous improvement
+      continuousImprovement.recordFeedback({
+        contentId: jobId,
+        userId: request.userId,
+        timestamp: new Date()
+      });
       
       this.activeJobs.set(jobId, result);
       return result;

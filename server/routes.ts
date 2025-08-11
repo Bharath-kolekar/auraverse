@@ -267,6 +267,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Continuous improvement feedback endpoint
+  app.post('/api/feedback/content', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { contentId, rating, liked, regenerated, shared, downloaded, timeSpent } = req.body;
+      
+      // Import continuous improvement service
+      const { continuousImprovement } = await import('./services/continuous-improvement');
+      
+      // Record user feedback for continuous improvement
+      await continuousImprovement.recordFeedback({
+        contentId,
+        userId,
+        rating,
+        liked,
+        regenerated,
+        shared,
+        downloaded,
+        timeSpent,
+        timestamp: new Date()
+      });
+      
+      res.json({ 
+        success: true, 
+        message: 'Feedback recorded for continuous improvement',
+        optimization: continuousImprovement.getOptimizationMetrics()
+      });
+    } catch (error) {
+      console.error('Feedback error:', error);
+      res.status(500).json({ message: 'Failed to record feedback' });
+    }
+  });
+
   // Training assistant routes
   app.post('/api/training/chat', isAuthenticated, async (req: any, res) => {
     try {
