@@ -20,6 +20,7 @@ import Marketplace from "@/pages/Marketplace";
 import Gallery from "@/pages/Gallery";
 import Intelligence from "@/pages/Intelligence";
 import IntelligenceTest from "@/pages/IntelligenceTest";
+import IntelligenceGateway from "@/pages/IntelligenceGateway";
 import CacheTest from "@/pages/CacheTest";
 import NotFound from "@/pages/not-found";
 
@@ -70,6 +71,7 @@ function Router() {
         <Route path="/gallery" component={Gallery} />
         <Route path="/intelligence" component={Intelligence} />
         <Route path="/intelligence-test" component={IntelligenceTest} />
+        <Route path="/intelligence-gateway" component={IntelligenceGateway} />
         <Route path="/cache-test" component={CacheTest} />
         
         {/* Home/Landing based on authentication */}
