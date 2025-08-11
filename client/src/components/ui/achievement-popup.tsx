@@ -204,10 +204,16 @@ export function AchievementPopup({ achievement, onClose, autoClose = 0 }: Achiev
   };
 
   const shareOnLinkedIn = () => {
-    const achievementText = `🏆 Achievement Unlocked: ${achievement?.title}!\n\n${achievement?.description}\n\nRarity: ${achievement?.rarity?.toUpperCase()}\nCredits Earned: ${achievement?.credits || 0}\n\n#Achievement #InfiniteIntelligence #AI`;
-    const shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}&summary=${encodeURIComponent(achievementText)}`;
+    // LinkedIn uses the page's Open Graph tags for the preview, but we can control the post text
+    const achievementText = `🏆 Achievement Unlocked: ${achievement?.title}!\n\n${achievement?.description}\n\nRarity: ${achievement?.rarity?.toUpperCase()}\nCredits Earned: ${achievement?.credits || 0}\n\n#Achievement #InfiniteIntelligence #AI\n\nPlatform: ${window.location.href}`;
+    // Copy to clipboard first as LinkedIn may not use the summary parameter
+    navigator.clipboard.writeText(achievementText);
+    const shareUrl = `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(achievementText)}`;
     window.open(shareUrl, '_blank');
-    toast({ title: "Shared on LinkedIn!" });
+    toast({ 
+      title: "Opening LinkedIn", 
+      description: "Achievement text copied to clipboard. Paste it in the LinkedIn post!" 
+    });
   };
 
   const shareOnTwitter = () => {
@@ -219,10 +225,14 @@ export function AchievementPopup({ achievement, onClose, autoClose = 0 }: Achiev
 
   const shareOnFacebook = () => {
     const achievementText = `🏆 Achievement Unlocked: ${achievement?.title}!\n\n${achievement?.description}\n\nRarity: ${achievement?.rarity?.toUpperCase()}\nCredits Earned: ${achievement?.credits || 0}`;
-    // Facebook requires quote parameter for text
-    const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${encodeURIComponent(achievementText)}`;
+    // Facebook uses Open Graph tags for preview, but quote parameter adds custom text
+    navigator.clipboard.writeText(achievementText);
+    const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${encodeURIComponent(achievementText)}&hashtag=%23Achievement`;
     window.open(shareUrl, '_blank');
-    toast({ title: "Shared on Facebook!" });
+    toast({ 
+      title: "Opening Facebook", 
+      description: "Achievement text copied. It will appear with your post!" 
+    });
   };
 
   const shareOnWhatsApp = () => {
@@ -408,6 +418,7 @@ export function AchievementPopup({ achievement, onClose, autoClose = 0 }: Achiev
                 <div>• Say <span className="font-semibold">"share on LinkedIn"</span> to share on LinkedIn</div>
                 <div>• Say <span className="font-semibold">"share on Twitter"</span> to share on Twitter</div>
                 <div>• Say <span className="font-semibold">"share"</span> to see all sharing options</div>
+                <div className="mt-2 text-xs opacity-75">Note: Social platforms may show site preview, but your achievement text will be in the post</div>
               </div>
               {voiceCommand && (
                 <div className="mt-2 p-2 bg-white dark:bg-gray-700 rounded text-xs">
