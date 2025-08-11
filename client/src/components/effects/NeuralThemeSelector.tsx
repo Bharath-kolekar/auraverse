@@ -70,11 +70,11 @@ export function NeuralThemeSelector() {
   }, [theme]);
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
+    <div className="fixed bottom-4 left-4 z-50">
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="absolute bottom-full right-0 mb-2 w-80 bg-black/90 backdrop-blur-xl rounded-2xl border-2 overflow-hidden"
+            className="absolute bottom-full left-0 mb-2 w-80 bg-black/90 backdrop-blur-xl rounded-2xl border-2 overflow-hidden"
             style={{ borderColor: `rgba(${theme.primary}, 0.3)` }}
             initial={{ opacity: 0, y: 20, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
