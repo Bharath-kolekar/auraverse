@@ -208,15 +208,14 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
         utterance.onend = () => {
           console.log('Speech ended, will start listening again');
           setIsSpeaking(false);
-          // Always restart listening after speaking completes
+          // Always restart listening after speaking completes if panel is open
           setTimeout(() => {
-            console.log('Auto-starting listening after speech');
-            // Use document visibility to check if assistant is still open
-            const assistantPanel = document.querySelector('.voice-assistant-panel');
-            if (assistantPanel && recognition) {
+            console.log('Auto-starting listening after speech, isOpen:', isOpen);
+            if (isOpen && recognition) {
+              console.log('Starting to listen automatically...');
               startListening();
             }
-          }, 1000); // 1 second delay to let user prepare
+          }, 800); // Short delay to let user prepare
         };
         
         utterance.onerror = (error) => {
