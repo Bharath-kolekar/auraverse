@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trophy, Star, Zap, Crown, Medal, Sparkles, Target, Brain } from 'lucide-react';
+import { Trophy, Star, Zap, Crown, Medal, Sparkles, Target, Brain, Mic, MicOff, Share2, X, MessageCircle } from 'lucide-react';
+import { FaLinkedin, FaTwitter, FaFacebook, FaWhatsapp } from 'react-icons/fa';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 
 export interface Achievement {
   id: string;
@@ -18,7 +21,7 @@ export interface Achievement {
 interface AchievementPopupProps {
   achievement: Achievement | null;
   onClose: () => void;
-  autoClose?: number; // milliseconds
+  autoClose?: number; // milliseconds - default 0 (no auto-close)
 }
 
 const achievementIcons = {
@@ -102,8 +105,61 @@ const PulseRing = ({ rarity }: { rarity: Achievement['rarity'] }) => (
   />
 );
 
-export function AchievementPopup({ achievement, onClose, autoClose = 5000 }: AchievementPopupProps) {
+export function AchievementPopup({ achievement, onClose, autoClose = 0 }: AchievementPopupProps) {
   const [isVisible, setIsVisible] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [showShareMenu, setShowShareMenu] = useState(false);
+  const [voiceCommand, setVoiceCommand] = useState('');
+  const recognitionRef = useRef<any>(null);
+  const { toast } = useToast();
+
+  // Initialize voice recognition
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'webkitSpeechRecognition' in window) {
+      const SpeechRecognition = (window as any).webkitSpeechRecognition;
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = true;
+      recognitionRef.current.lang = 'en-US';
+
+      recognitionRef.current.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript.toLowerCase();
+        setVoiceCommand(transcript);
+        
+        // Process voice commands
+        if (transcript.includes('close') || transcript.includes('dismiss')) {
+          handleClose();
+        } else if (transcript.includes('share')) {
+          if (transcript.includes('linkedin')) {
+            shareOnLinkedIn();
+          } else if (transcript.includes('twitter') || transcript.includes('x')) {
+            shareOnTwitter();
+          } else if (transcript.includes('facebook')) {
+            shareOnFacebook();
+          } else if (transcript.includes('whatsapp')) {
+            shareOnWhatsApp();
+          } else {
+            setShowShareMenu(true);
+          }
+        }
+      };
+
+      recognitionRef.current.onerror = (event: any) => {
+        console.error('Speech recognition error:', event.error);
+        setIsListening(false);
+      };
+
+      recognitionRef.current.onend = () => {
+        setIsListening(false);
+      };
+    }
+
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (achievement) {
@@ -111,14 +167,64 @@ export function AchievementPopup({ achievement, onClose, autoClose = 5000 }: Ach
       
       if (autoClose > 0) {
         const timer = setTimeout(() => {
-          setIsVisible(false);
-          setTimeout(onClose, 300); // Wait for exit animation
+          handleClose();
         }, autoClose);
         
         return () => clearTimeout(timer);
       }
     }
-  }, [achievement, autoClose, onClose]);
+  }, [achievement, autoClose]);
+
+  const handleClose = () => {
+    setIsVisible(false);
+    setTimeout(onClose, 300); // Wait for exit animation
+  };
+
+  const toggleVoiceRecognition = () => {
+    if (!recognitionRef.current) {
+      toast({
+        title: "Voice Commands Unavailable",
+        description: "Your browser doesn't support voice recognition.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    } else {
+      recognitionRef.current.start();
+      setIsListening(true);
+      toast({
+        title: "Listening...",
+        description: "Say 'close' to dismiss or 'share on [platform]' to share.",
+      });
+    }
+  };
+
+  const shareOnLinkedIn = () => {
+    const text = `🏆 Achievement Unlocked: ${achievement?.title}! ${achievement?.description}`;
+    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}&summary=${encodeURIComponent(text)}`, '_blank');
+    toast({ title: "Shared on LinkedIn!" });
+  };
+
+  const shareOnTwitter = () => {
+    const text = `🏆 Just unlocked "${achievement?.title}" achievement! ${achievement?.description} #Achievement #Gaming`;
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`, '_blank');
+    toast({ title: "Shared on Twitter!" });
+  };
+
+  const shareOnFacebook = () => {
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank');
+    toast({ title: "Shared on Facebook!" });
+  };
+
+  const shareOnWhatsApp = () => {
+    const text = `🏆 Achievement Unlocked: ${achievement?.title}! ${achievement?.description}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + window.location.href)}`, '_blank');
+    toast({ title: "Shared on WhatsApp!" });
+  };
 
   if (!achievement) return null;
 
@@ -261,58 +367,139 @@ export function AchievementPopup({ achievement, onClose, autoClose = 5000 }: Ach
               </motion.div>
             )}
             
-            {/* Action Buttons */}
+            {/* Voice Command Guide */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.65 }}
+              className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 mb-4"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Voice Commands Available
+                </span>
+                <Button
+                  size="sm"
+                  variant={isListening ? "destructive" : "outline"}
+                  onClick={toggleVoiceRecognition}
+                  className="h-8 px-3"
+                >
+                  {isListening ? (
+                    <>
+                      <MicOff className="w-4 h-4 mr-1" />
+                      Stop
+                    </>
+                  ) : (
+                    <>
+                      <Mic className="w-4 h-4 mr-1" />
+                      Start
+                    </>
+                  )}
+                </Button>
+              </div>
+              <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
+                <div>• Say <span className="font-semibold">"close"</span> or <span className="font-semibold">"dismiss"</span> to close</div>
+                <div>• Say <span className="font-semibold">"share on LinkedIn"</span> to share on LinkedIn</div>
+                <div>• Say <span className="font-semibold">"share on Twitter"</span> to share on Twitter</div>
+                <div>• Say <span className="font-semibold">"share"</span> to see all sharing options</div>
+              </div>
+              {voiceCommand && (
+                <div className="mt-2 p-2 bg-white dark:bg-gray-700 rounded text-xs">
+                  <span className="text-gray-500 dark:text-gray-400">Heard: </span>
+                  <span className="font-medium">{voiceCommand}</span>
+                </div>
+              )}
+            </motion.div>
+
+            {/* Social Sharing Section */}
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7 }}
-              className="flex gap-3 justify-center"
+              className="space-y-3"
             >
-              <button
-                onClick={() => {
-                  setIsVisible(false);
-                  setTimeout(onClose, 300);
-                }}
-                className="px-6 py-2 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-600 dark:hover:to-gray-500 transition-all duration-200 font-medium"
-              >
-                Continue
-              </button>
-              
-              <button
-                onClick={() => {
-                  // Share achievement logic could go here
-                  navigator.clipboard?.writeText(`I just earned "${achievement.title}" in Infinite Intelligence! 🎉`);
-                }}
+              {/* Share Toggle Button */}
+              <Button
+                onClick={() => setShowShareMenu(!showShareMenu)}
                 className={cn(
-                  "px-6 py-2 text-white rounded-lg font-medium",
+                  "w-full py-2 text-white rounded-lg font-medium",
                   "bg-gradient-to-r shadow-lg hover:shadow-xl",
                   "transition-all duration-200 transform hover:scale-105",
                   gradientClass
                 )}
               >
-                Share
-              </button>
-            </motion.div>
-            
-            {/* Auto-close indicator */}
-            {autoClose > 0 && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1 }}
-                className="absolute bottom-2 left-1/2 transform -translate-x-1/2"
+                <Share2 className="w-4 h-4 mr-2" />
+                Share Achievement
+              </Button>
+
+              {/* Social Media Buttons */}
+              <AnimatePresence>
+                {showShareMenu && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="grid grid-cols-4 gap-2"
+                  >
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={shareOnLinkedIn}
+                      className="flex flex-col items-center p-2 h-auto"
+                      title="Share on LinkedIn"
+                    >
+                      <FaLinkedin className="w-5 h-5 text-blue-600" />
+                      <span className="text-xs mt-1">LinkedIn</span>
+                    </Button>
+                    
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={shareOnTwitter}
+                      className="flex flex-col items-center p-2 h-auto"
+                      title="Share on Twitter"
+                    >
+                      <FaTwitter className="w-5 h-5 text-sky-500" />
+                      <span className="text-xs mt-1">Twitter</span>
+                    </Button>
+                    
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={shareOnFacebook}
+                      className="flex flex-col items-center p-2 h-auto"
+                      title="Share on Facebook"
+                    >
+                      <FaFacebook className="w-5 h-5 text-blue-700" />
+                      <span className="text-xs mt-1">Facebook</span>
+                    </Button>
+                    
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={shareOnWhatsApp}
+                      className="flex flex-col items-center p-2 h-auto"
+                      title="Share on WhatsApp"
+                    >
+                      <FaWhatsapp className="w-5 h-5 text-green-600" />
+                      <span className="text-xs mt-1">WhatsApp</span>
+                    </Button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Close Button */}
+              <Button
+                onClick={handleClose}
+                variant="outline"
+                className="w-full"
               >
-                <div className="text-xs text-gray-400 text-center">
-                  Auto-closing in {Math.ceil(autoClose / 1000)}s
-                </div>
-                <motion.div
-                  className="h-1 bg-gradient-to-r from-gray-200 to-gray-400 dark:from-gray-600 dark:to-gray-500 rounded-full mt-1"
-                  initial={{ width: "100%" }}
-                  animate={{ width: "0%" }}
-                  transition={{ duration: autoClose / 1000, ease: "linear" }}
-                />
-              </motion.div>
-            )}
+                <X className="w-4 h-4 mr-2" />
+                Close
+              </Button>
+            </motion.div>
+
+            {/* No auto-close - popup stays open until user interaction */}
           </motion.div>
         </motion.div>
       )}

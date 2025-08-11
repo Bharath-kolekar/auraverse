@@ -46,7 +46,7 @@ export default function Home() {
   const [generatedContent, setGeneratedContent] = useState<{ type: string; url?: string; content?: string } | null>(null);
   const { currentTheme, themeName } = useTheme();
   useActivityTracker();
-  const { stats: userStats } = useUserStats();
+  const { data: userStats } = useUserStats();
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -175,21 +175,12 @@ export default function Home() {
   ];
 
   const handleQuickAction = (action: any) => {
-    // Safe activity tracking
-    try {
-      if (trackActivity) {
-        trackActivity({ type: 'content_created', metadata: { contentType: action.title } });
-      }
-    } catch (err) {
-      console.log('Activity tracking skipped');
-    }
     setLocation(action.link);
   };
 
   const handleRecordToggle = () => {
     setIsRecording(!isRecording);
     if (!isRecording) {
-      trackActivity({ type: 'voice_command_used' });
       console.log("Starting voice recording...");
     } else {
       console.log("Stopping voice recording...");
@@ -402,20 +393,7 @@ export default function Home() {
                       content: result.content
                     });
                     
-                    // Safe activity tracking
-                    try {
-                      if (trackActivity) {
-                        trackActivity({ 
-                          type: 'content_generated',
-                          metadata: {
-                            contentType: selectedContentType,
-                            prompt: promptValue 
-                          }
-                        });
-                      }
-                    } catch (err) {
-                      console.log('Activity tracking skipped');
-                    }
+
                   } catch (error) {
                     console.error('Generation error:', error);
                   } finally {
@@ -456,20 +434,7 @@ export default function Home() {
                         content: result.content
                       });
                       
-                      // Safe activity tracking
-                      try {
-                        if (trackActivity) {
-                          trackActivity({ 
-                            type: 'content_generated',
-                            metadata: {
-                              contentType: selectedContentType,
-                              prompt: promptValue 
-                            }
-                          });
-                        }
-                      } catch (err) {
-                        console.log('Activity tracking skipped');
-                      }
+
                     } catch (error) {
                       console.error('Generation error:', error);
                     } finally {
