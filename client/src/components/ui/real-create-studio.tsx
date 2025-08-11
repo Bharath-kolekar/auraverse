@@ -411,32 +411,13 @@ export function RealCreateStudio() {
                         </audio>
                       ) : currentJob.type === 'video' ? (
                         <div className="space-y-4">
-                          {currentJob.url.startsWith('data:') ? (
-                            // For base64 videos
-                            <video 
-                              controls 
-                              className="w-full rounded-lg"
-                              src={currentJob.url}
-                            >
-                              Your browser does not support the video tag.
-                            </video>
-                          ) : (
-                            // For image previews (since we're generating images as video previews)
-                            <div className="relative">
-                              <img 
-                                src={currentJob.url} 
-                                alt="Video preview"
-                                className="w-full rounded-lg"
-                              />
-                              <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg">
-                                <div className="text-center text-white">
-                                  <div className="text-4xl mb-2">🎬</div>
-                                  <p className="text-lg font-semibold">Video Preview Generated</p>
-                                  <p className="text-sm opacity-75">Full video generation in development</p>
-                                </div>
-                              </div>
-                            </div>
-                          )}
+                          {/* Use VideoPlayer component for proper video playback */}
+                          <VideoPlayer 
+                            videoData={currentJob.url}
+                            thumbnail={currentJob.metadata?.thumbnail}
+                            duration={currentJob.metadata?.duration || 30}
+                            prompt={currentJob.metadata?.prompt || prompt}
+                          />
                           {currentJob.metadata?.note && (
                             <p className="text-xs text-yellow-400/70 italic">{currentJob.metadata.note}</p>
                           )}

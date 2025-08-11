@@ -223,116 +223,70 @@ export function VideoPlayer({ videoData, thumbnail, duration = 30, prompt }: Vid
   return (
     <div className="w-full bg-black rounded-xl overflow-hidden">
       {/* Video Display */}
-      <div className="relative group">
-        <canvas
+      <div className="relative aspect-video">
+        <canvas 
           ref={canvasRef}
-          width={800}
-          height={450}
-          className="w-full h-auto bg-black"
-          style={{ aspectRatio: '16/9' }}
+          width={1920}
+          height={1080}
+          className="w-full h-full"
         />
         
-        {/* Play/Pause Overlay */}
-        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-          <motion.button
+        {/* Play button overlay when paused */}
+        {!isPlaying && (
+          <div 
+            className="absolute inset-0 flex items-center justify-center cursor-pointer bg-black/30"
             onClick={handlePlayPause}
-            className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
           >
-            {isPlaying ? (
-              <Pause className="w-8 h-8 text-white ml-0" />
-            ) : (
-              <Play className="w-8 h-8 text-white ml-1" />
-            )}
-          </motion.button>
-        </div>
-
-        {/* Video Info Overlay */}
-        <div className="absolute top-4 left-4 bg-black/60 text-white px-3 py-1 rounded-lg backdrop-blur-sm">
-          <span className="text-sm font-medium">{prompt}</span>
-        </div>
+            <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+              <Play className="w-10 h-10 text-white ml-1" />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Controls */}
-      <div className="p-4 bg-gray-900 space-y-3">
-        {/* Progress Bar */}
+      <div className="p-4 bg-gradient-to-t from-black/80 to-transparent">
+        {/* Progress bar */}
         <div 
-          className="w-full h-2 bg-gray-700 rounded-full cursor-pointer"
+          className="relative h-2 bg-white/20 rounded-full cursor-pointer mb-4"
           onClick={handleSeek}
         >
           <div 
-            className="h-full bg-purple-500 rounded-full transition-all duration-100"
+            className="absolute h-full bg-purple-600 rounded-full"
             style={{ width: `${(currentTime / duration) * 100}%` }}
           />
         </div>
 
-        {/* Control Buttons */}
+        {/* Control buttons */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <motion.button
-              onClick={handlePlayPause}
-              className="w-10 h-10 bg-purple-600 hover:bg-purple-700 rounded-full flex items-center justify-center transition-colors"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              {isPlaying ? (
-                <Pause className="w-5 h-5 text-white" />
-              ) : (
-                <Play className="w-5 h-5 text-white ml-0.5" />
-              )}
-            </motion.button>
-
             <button
-              onClick={() => setIsMuted(!isMuted)}
-              className="text-white hover:text-purple-400 transition-colors"
+              onClick={handlePlayPause}
+              className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
             >
-              {isMuted ? (
-                <VolumeX className="w-5 h-5" />
-              ) : (
-                <Volume2 className="w-5 h-5" />
-              )}
+              {isPlaying ? <Pause className="w-5 h-5 text-white" /> : <Play className="w-5 h-5 text-white" />}
             </button>
-
+            
             <span className="text-white text-sm">
               {formatTime(currentTime)} / {formatTime(duration)}
             </span>
           </div>
 
           <div className="flex items-center gap-2">
-            <motion.button
+            <button
+              onClick={() => setIsMuted(!isMuted)}
+              className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+            >
+              {isMuted ? <VolumeX className="w-5 h-5 text-white" /> : <Volume2 className="w-5 h-5 text-white" />}
+            </button>
+            
+            <button
               onClick={handleDownload}
-              className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              className="p-2 rounded-lg bg-purple-600 hover:bg-purple-700 transition-colors"
             >
-              <Download className="w-4 h-4" />
-              Download
-            </motion.button>
-
-            <motion.button
-              onClick={() => {
-                if (canvasRef.current) {
-                  if (document.fullscreenElement) {
-                    document.exitFullscreen();
-                  } else {
-                    canvasRef.current.requestFullscreen();
-                  }
-                }
-              }}
-              className="text-white hover:text-purple-400 transition-colors"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Maximize className="w-5 h-5" />
-            </motion.button>
+              <Download className="w-5 h-5 text-white" />
+            </button>
           </div>
-        </div>
-
-        {/* Video Stats */}
-        <div className="flex items-center justify-between text-xs text-gray-400">
-          <span>Procedural Video • {frames.length} frames • 30 FPS</span>
-          <span>Local Generation • Downloadable</span>
         </div>
       </div>
     </div>
