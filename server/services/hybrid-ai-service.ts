@@ -484,12 +484,10 @@ class HybridAIService {
     // Generate thumbnail (first frame)  
     const thumbnailUrl = `data:image/svg+xml;base64,${Buffer.from(frames[0]).toString('base64')}`;
     
-    // Create proper video player HTML instead of broken data URL
-    const videoPlayerHtml = this.createVideoPlayerHTML(frames, duration, request.prompt);
-    const videoUrl = `data:text/html;base64,${Buffer.from(videoPlayerHtml).toString('base64')}`;
-    
+    // Return the thumbnail as the video preview
+    // Real video generation would require a video API
     return {
-      videoUrl: videoUrl,
+      videoUrl: thumbnailUrl, // Use the generated frame as preview
       thumbnailUrl: thumbnailUrl
     };
   }
