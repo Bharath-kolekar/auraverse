@@ -149,80 +149,50 @@ class HybridAIService {
       this.updateProgress(jobId, 20);
       await this.delay(1000);
       
-      const hasOpenAI = await this.checkOpenAIAvailability();
+      // Always use local video generation for actual video content
+      // OpenAI can only generate images, not videos
       
-      if (hasOpenAI && openai) {
-        // Generate storyboard with OpenAI
-        const storyboardResponse = await openai.images.generate({
-          model: "dall-e-3",
-          prompt: `Video storyboard in English: ${request.prompt}, cinematic composition, English text only`,
-          n: 1,
-          size: "1792x1024"
-        });
-        
-        this.updateProgress(jobId, 70);
-        await this.delay(1500);
-        
-        const result: ContentGenerationResult = {
-          id: jobId,
-          type: 'video',
-          status: 'completed',
-          progress: 100,
-          url: storyboardResponse.data?.[0]?.url || '',
-          metadata: {
-            prompt: request.prompt,
-            duration: request.duration || 30,
-            model: 'dall-e-3',
-            mode: 'openai',
-            note: 'Video storyboard generated with OpenAI'
-          }
-        };
-        
-        this.activeJobs.set(jobId, result);
-        return result;
-      } else {
-        // Local video preview generation
-        this.updateProgress(jobId, 50);
-        await this.delay(2000);
-        
-        const videoData = this.generateLocalVideo(request);
-        
-        this.updateProgress(jobId, 100);
-        
-        // Validate against Oscar standards
-        const validation = oscarStandardsService.validateContentAgainstStandards('cinematography', {
-          duration: request.duration || 30,
-          resolution: '1920x1080',
-          format: 'Digital Cinema'
-        });
+      // Local video preview generation
+      this.updateProgress(jobId, 50);
+      await this.delay(2000);
+      
+      const videoData = this.generateLocalVideo(request);
+      
+      this.updateProgress(jobId, 100);
+      
+      // Validate against Oscar standards
+      const validation = oscarStandardsService.validateContentAgainstStandards('cinematography', {
+        duration: request.duration || 30,
+        resolution: '1920x1080',
+        format: 'Digital Cinema'
+      });
 
-        const result: ContentGenerationResult = {
-          id: jobId,
-          type: 'video',
-          status: 'completed',
-          progress: 100,
-          url: videoData.videoUrl,
-          metadata: {
-            prompt: request.prompt,
-            duration: request.duration || 30,
-            model: 'oscar-quality-procedural-generator',
-            mode: 'local',
-            note: 'Oscar-quality video with professional cinematography standards',
-            thumbnail: videoData.thumbnailUrl,
-            downloadable: true,
-            autoplay: true,
-            oscarStandards: {
-              validated: validation.meets,
-              category: 'Cinematography',
-              recommendations: validation.recommendations,
-              issues: validation.issues
-            }
+      const result: ContentGenerationResult = {
+        id: jobId,
+        type: 'video',
+        status: 'completed',
+        progress: 100,
+        url: videoData.videoUrl,
+        metadata: {
+          prompt: request.prompt,
+          duration: request.duration || 30,
+          model: 'oscar-quality-procedural-generator',
+          mode: 'local',
+          note: 'Oscar-quality video with professional cinematography standards',
+          thumbnail: videoData.thumbnailUrl,
+          downloadable: true,
+          autoplay: true,
+          oscarStandards: {
+            validated: validation.meets,
+            category: 'Cinematography',
+            recommendations: validation.recommendations,
+            issues: validation.issues
           }
-        };
-        
-        this.activeJobs.set(jobId, result);
-        return result;
-      }
+        }
+      };
+      
+      this.activeJobs.set(jobId, result);
+      return result;
       
     } catch (error) {
       const failedResult: ContentGenerationResult = {
