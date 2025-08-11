@@ -61,7 +61,7 @@ export function Navbar() {
                 </div>
                 <div className="flex items-center space-x-1 mt-0.5">
                   <div className="h-px w-4 bg-gradient-to-r from-transparent via-cyan-400 to-transparent"></div>
-                  <p className="text-xs font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-cyan-300 uppercase">
+                  <p className="text-[11px] font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-cyan-300 uppercase">
                     Production Intelligence
                   </p>
                   <div className="h-px w-4 bg-gradient-to-r from-transparent via-purple-400 to-transparent"></div>

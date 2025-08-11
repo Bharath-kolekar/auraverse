@@ -218,7 +218,7 @@ export default function Home() {
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-cyan-400 to-pink-400">COGNO</span>
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-pink-400 to-purple-400">MEGA</span>
                   </span>
-                  <span className="text-[10px] font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-cyan-300 uppercase">
+                  <span className="text-[9px] font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-cyan-300 uppercase">
                     Production Intelligence
                   </span>
                 </div>
