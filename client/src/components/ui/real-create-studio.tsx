@@ -12,6 +12,9 @@ import { NeuralButton } from '@/components/effects/NeuralButton';
 import { NeuralCard } from '@/components/effects/NeuralCard';
 import { NeuralText } from '@/components/effects/NeuralText';
 import { NeuralLoader } from '@/components/effects/NeuralLoader';
+import { NeuralProgress } from '@/components/effects/NeuralProgress';
+import { NeuralTabs } from '@/components/effects/NeuralTabs';
+import { NeuralTooltip } from '@/components/effects/NeuralTooltip';
 
 interface ContentGenerationRequest {
   type: 'video' | 'audio' | 'image' | 'voice' | 'vfx';
@@ -237,31 +240,16 @@ export function RealCreateStudio() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <h2 className="text-2xl font-bold text-white mb-6">Choose Content Type</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {contentTypes.map((type) => {
-              const IconComponent = type.icon;
-              return (
-                <motion.button
-                  key={type.id}
-                  className={`glass-card p-6 text-center transition-all duration-300 ${
-                    activeTab === type.id 
-                      ? 'border-purple-500/50 bg-purple-500/10' 
-                      : 'hover:border-purple-500/30 hover:bg-white/5'
-                  }`}
-                  onClick={() => setActiveTab(type.id)}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-r ${type.color} mb-4`}>
-                    <IconComponent className="w-6 h-6 text-white" />
-                  </div>
-                  <h3 className="text-white font-semibold mb-2">{type.title}</h3>
-                  <p className="text-white/70 text-sm">{type.description}</p>
-                </motion.button>
-              );
-            })}
-          </div>
+          <NeuralText variant="subtitle" className="mb-6">Choose Content Type</NeuralText>
+          <NeuralTabs 
+            tabs={contentTypes.map(type => ({
+              id: type.id,
+              label: type.title,
+              icon: type.icon
+            }))}
+            activeTab={activeTab}
+            onChange={setActiveTab}
+          />
         </motion.div>
 
         {/* Generation Controls */}
@@ -333,16 +321,19 @@ export function RealCreateStudio() {
             {/* Duration for audio/video */}
             {(activeTab === 'audio' || activeTab === 'video') && (
               <div className="mb-6">
-                <label className="block text-white font-medium mb-3">
-                  Duration: {duration} seconds
-                </label>
+                <NeuralProgress 
+                  value={(duration - 10) / 110 * 100}
+                  label={`Duration: ${duration} seconds`}
+                  showPercentage={false}
+                  size="medium"
+                />
                 <input
                   type="range"
                   min="10"
                   max="120"
                   value={duration}
                   onChange={(e) => setDuration(parseInt(e.target.value))}
-                  className="w-full accent-purple-500"
+                  className="w-full mt-2 opacity-0 h-3 cursor-pointer relative z-10"
                   disabled={isGenerating}
                 />
               </div>
@@ -391,16 +382,12 @@ export function RealCreateStudio() {
                 </div>
 
                 {/* Progress Bar */}
-                <div className="bg-black/30 rounded-full h-3">
-                  <motion.div
-                    className="bg-gradient-to-r from-purple-500 to-pink-500 h-3 rounded-full"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${currentJob.progress}%` }}
-                    transition={{ duration: 0.5 }}
-                  />
-                </div>
-                
-                <p className="text-white/70">{currentJob.progress}% complete</p>
+                <NeuralProgress 
+                  value={currentJob.progress}
+                  label="Generation Progress"
+                  showPercentage={true}
+                  size="large"
+                />
 
                 {currentJob.status === 'completed' && currentJob.url && (
                   <div className="space-y-4">

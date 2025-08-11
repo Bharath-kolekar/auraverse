@@ -25,6 +25,9 @@ import { NeuralButton } from '@/components/effects/NeuralButton';
 import { NeuralCard } from '@/components/effects/NeuralCard';
 import { NeuralText } from '@/components/effects/NeuralText';
 import { NeuralLoader } from '@/components/effects/NeuralLoader';
+import { NeuralProgress } from '@/components/effects/NeuralProgress';
+import { NeuralTooltip } from '@/components/effects/NeuralTooltip';
+import { NeuralModal } from '@/components/effects/NeuralModal';
 
 export default function Home() {
   const { user } = useAuth();
@@ -225,53 +228,58 @@ export default function Home() {
               transition={{ delay: 0.3 }}
             >
               {/* Achievement Trophy Button */}
-              <motion.button 
-                className="p-2.5 rounded-xl bg-gradient-to-r from-yellow-400 to-orange-400 hover:from-yellow-500 hover:to-orange-500 shadow-lg hover:shadow-xl"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setAchievementPanelOpen(true)}
-                title="Achievements"
-                animate={{
-                  scale: [1, 1.05, 1],
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              >
-                <Trophy className="w-5 h-5 text-white" />
-                {userStats && userStats.level >= 1 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full min-w-[18px] h-4 px-1 flex items-center justify-center shadow-lg">
-                    {userStats.level}
-                  </span>
-                )}
-              </motion.button>
+              <NeuralTooltip content="View your achievements and progress">
+                <motion.button 
+                  className="p-2.5 rounded-xl bg-gradient-to-r from-yellow-400 to-orange-400 hover:from-yellow-500 hover:to-orange-500 shadow-lg hover:shadow-xl"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setAchievementPanelOpen(true)}
+                  animate={{
+                    scale: [1, 1.05, 1],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                >
+                  <Trophy className="w-5 h-5 text-white" />
+                  {userStats && userStats.level >= 1 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full min-w-[18px] h-4 px-1 flex items-center justify-center shadow-lg">
+                      {userStats.level}
+                    </span>
+                  )}
+                </motion.button>
+              </NeuralTooltip>
 
               <div className="glass-card px-3 py-1.5 flex items-center gap-2">
                 <Activity className="w-4 h-4 text-green-400" />
                 <span className="text-xs text-white">Active</span>
               </div>
               
-              <Button 
-                variant="outline" 
-                size="sm"
-                className="glass-card hover:bg-white/10"
-                onClick={() => setThemeCustomizerOpen(true)}
-              >
-                <Palette className="w-4 h-4 mr-1" />
-                Theme
-              </Button>
+              <NeuralTooltip content="Customize your visual theme">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="glass-card hover:bg-white/10"
+                  onClick={() => setThemeCustomizerOpen(true)}
+                >
+                  <Palette className="w-4 h-4 mr-1" />
+                  Theme
+                </Button>
+              </NeuralTooltip>
 
-              <Button 
-                variant="outline" 
-                size="sm"
-                className="glass-card hover:bg-white/10"
-                onClick={() => setTransitionSettingsOpen(true)}
-              >
-                <Zap className="w-4 h-4 mr-1" />
-                Transitions
-              </Button>
+              <NeuralTooltip content="Adjust animation speeds">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="glass-card hover:bg-white/10"
+                  onClick={() => setTransitionSettingsOpen(true)}
+                >
+                  <Zap className="w-4 h-4 mr-1" />
+                  Transitions
+                </Button>
+              </NeuralTooltip>
 
               <a href="/api/logout">
                 <Button variant="outline" size="sm" className="glass-card hover:bg-white/10">
