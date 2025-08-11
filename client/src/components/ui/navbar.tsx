@@ -7,7 +7,8 @@ import {
   ShoppingBag, 
   Image as Gallery, 
   Sparkles,
-  LogOut
+  LogOut,
+  Brain
 } from "lucide-react";
 
 export function Navbar() {
@@ -32,17 +33,39 @@ export function Navbar() {
           {/* Logo */}
           <Link href="/">
             <motion.div 
-              className="flex items-center space-x-3 cursor-pointer group"
-              whileHover={{ scale: 1.05 }}
+              className="flex items-center space-x-4 cursor-pointer group"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
-              <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-xl flex items-center justify-center neural-pulse">
-                <Sparkles className="h-5 w-5 text-white" />
+              {/* Stunning Brain Icon with Advanced Glow Effect */}
+              <div className="relative logo-float-effect">
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-cyan-500 to-pink-600 rounded-2xl blur-xl opacity-75 animate-pulse"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-pink-600 via-purple-600 to-cyan-500 rounded-2xl blur-xl opacity-50 animate-pulse animation-delay-1000"></div>
+                <div className="relative w-14 h-14 bg-gradient-to-br from-purple-600 via-cyan-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-2xl transform transition-all duration-300 group-hover:rotate-12 logo-glow-effect">
+                  <Brain className="h-8 w-8 text-white drop-shadow-lg animate-pulse" />
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-white/0 to-white/30 shimmer-text"></div>
+                </div>
               </div>
-              <div>
-                <h1 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">
-                  Magic AI
-                </h1>
-                <p className="text-xs text-gray-400">Maya's Kingdom</p>
+              
+              {/* Stunning Text Logo */}
+              <div className="flex flex-col">
+                <div className="flex items-baseline space-x-2">
+                  <h1 className="text-3xl font-black tracking-tight">
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-cyan-400 to-pink-400 drop-shadow-sm">
+                      COGNO
+                    </span>
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-pink-400 to-purple-400 drop-shadow-sm">
+                      MEGA
+                    </span>
+                  </h1>
+                </div>
+                <div className="flex items-center space-x-1 mt-0.5">
+                  <div className="h-px w-4 bg-gradient-to-r from-transparent via-cyan-400 to-transparent"></div>
+                  <p className="text-xs font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-cyan-300 uppercase">
+                    Production Intelligence
+                  </p>
+                  <div className="h-px w-4 bg-gradient-to-r from-transparent via-purple-400 to-transparent"></div>
+                </div>
               </div>
             </motion.div>
           </Link>
