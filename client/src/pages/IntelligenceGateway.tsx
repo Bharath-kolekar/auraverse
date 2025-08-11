@@ -162,9 +162,6 @@ export default function IntelligenceGateway() {
     setGpuStatus(status);
     console.log('🎮 GPU Status:', status);
 
-    // Load capabilities
-    capabilitiesMutation.mutate({});
-
     // Initialize WebGL visualization if canvas is available
     if (canvasRef.current && status.capabilities.webgl2) {
       gpuAccelerator.applyVisualEffect(canvasRef.current, 'neural', 1.0);
@@ -194,7 +191,7 @@ export default function IntelligenceGateway() {
 
   const tiers = tiersData?.tiers || [];
   const behaviors = behaviorsData?.behaviors || [];
-  const capabilities = capabilitiesMutation.data?.capabilities || [];
+  const capabilities = capabilitiesData?.capabilities || [];
 
   // Filter behaviors by category
   const filteredBehaviors = filterCategory === 'all' 
