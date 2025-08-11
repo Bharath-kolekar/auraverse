@@ -173,6 +173,7 @@ class HybridAIService {
         status: 'completed',
         progress: 100,
         url: videoData.videoUrl,
+        thumbnail: videoData.thumbnailUrl, // Add thumbnail at root level for backward compatibility
         metadata: {
           prompt: request.prompt,
           duration: request.duration || 30,
