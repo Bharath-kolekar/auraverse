@@ -490,8 +490,9 @@ Include detailed scene breakdowns, technical specifications, and post-production
       
       this.updateProgress(jobId, 100);
       
-      // For demo purposes, use a test video URL instead of an image
-      const testVideoUrl = 'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_1MB.mp4';
+      // For demo purposes, use a reliable test video URL
+      // Using a sample video from a CDN that's widely accessible
+      const testVideoUrl = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
       
       const result: ContentGenerationResult = {
         id: jobId,

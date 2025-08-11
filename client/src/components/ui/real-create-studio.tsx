@@ -130,10 +130,13 @@ export function RealCreateStudio() {
       link.href = content.url;
       link.download = `voice_${content.id}.mp3`;
       link.click();
-    } else if (content.type === 'video' && content.metadata?.downloadable) {
-      // Handle procedural video download - will be handled by VideoPlayer component
-      const event = new CustomEvent('downloadVideo', { detail: content });
-      window.dispatchEvent(event);
+    } else if (content.type === 'video') {
+      // Handle video download - open in new tab for download
+      const link = document.createElement('a');
+      link.href = content.url;
+      link.download = `video_${content.id}.mp4`;
+      link.target = '_blank';
+      link.click();
     } else if (content.url.startsWith('data:image/svg+xml')) {
       // Handle SVG downloads
       const link = document.createElement('a');
@@ -402,11 +405,14 @@ export function RealCreateStudio() {
                           <video 
                             controls 
                             autoPlay 
+                            muted
                             className="w-full rounded-lg"
                             src={currentJob.url}
+                            onError={(e) => console.error('Video playback error:', e)}
                           >
                             Your browser does not support the video tag.
                           </video>
+                          <p className="text-xs text-white/50">Video URL: {currentJob.url}</p>
                         </div>
                       ) : (
                         <img 
