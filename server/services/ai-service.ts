@@ -215,6 +215,7 @@ export interface ContentGenerationRequest {
   duration?: number;
   quality?: 'standard' | 'hd' | 'ultra';
   userId: string;
+  useEnsemble?: boolean;
 }
 
 export interface ContentGenerationResult {
