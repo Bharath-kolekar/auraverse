@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trophy, Star, Zap, Crown, Medal, Sparkles, Target, Brain, Mic, MicOff, Share2, X, MessageCircle } from 'lucide-react';
+import { Trophy, Star, Zap, Crown, Medal, Sparkles, Target, Brain, Mic, MicOff, Share2, X, MessageCircle, Download, Image } from 'lucide-react';
 import { FaLinkedin, FaTwitter, FaFacebook, FaWhatsapp } from 'react-icons/fa';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { AchievementVisual, generateShareableImage } from './achievement-visual';
 
 export interface Achievement {
   id: string;
@@ -297,89 +298,25 @@ export function AchievementPopup({ achievement, onClose, autoClose = 0 }: Achiev
             {/* Particle Effects */}
             <ParticleEffect rarity={achievement.rarity} />
             
-            {/* Header with sparkles */}
-            <div className="text-center mb-6 relative">
-              <motion.div
-                initial={{ scale: 0, rotate: -180 }}
-                animate={{ scale: 1, rotate: 0 }}
-                transition={{ delay: 0.2, type: "spring", damping: 10 }}
-                className="inline-block relative"
-              >
-                {/* Icon background with gradient */}
-                <div className={cn(
-                  "relative w-20 h-20 mx-auto mb-4 rounded-full",
-                  "bg-gradient-to-br", gradientClass,
-                  "flex items-center justify-center",
-                  "shadow-lg", glowClass
-                )}>
-                  <PulseRing rarity={achievement.rarity} />
-                  <IconComponent className="w-10 h-10 text-white drop-shadow-lg" />
-                  
-                  {/* Sparkle effects for legendary */}
-                  {achievement.rarity === 'legendary' && (
-                    <>
-                      <Sparkles className="absolute -top-2 -right-2 w-6 h-6 text-yellow-300 animate-pulse" />
-                      <Sparkles className="absolute -bottom-2 -left-2 w-4 h-4 text-yellow-300 animate-pulse delay-500" />
-                    </>
-                  )}
-                </div>
-              </motion.div>
-              
-              {/* Achievement Title */}
-              <motion.h2
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className={cn(
-                  "text-2xl font-bold mb-2",
-                  "bg-gradient-to-r bg-clip-text text-transparent",
-                  gradientClass
-                )}
-              >
-                {achievement.title}
-              </motion.h2>
-              
-              {/* Rarity Badge */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.4 }}
-                className={cn(
-                  "inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide",
-                  "bg-gradient-to-r text-white shadow-sm",
-                  gradientClass
-                )}
-              >
-                {achievement.rarity}
-              </motion.div>
-            </div>
-            
-            {/* Description */}
-            <motion.p
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="text-center text-gray-600 dark:text-gray-300 mb-6 leading-relaxed"
+            {/* Enhanced Visual Achievement Display */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2 }}
+              className="mb-6"
             >
-              {achievement.description}
-            </motion.p>
+              <AchievementVisual
+                title={achievement.title}
+                description={achievement.description}
+                rarity={achievement.rarity}
+                credits={achievement.credits}
+                className="w-full"
+              />
+            </motion.div>
             
-            {/* Rewards Section */}
-            {achievement.credits && (
-              <motion.div
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
-                className="text-center mb-6"
-              >
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 rounded-full">
-                  <Brain className="w-4 h-4 text-green-600 dark:text-green-400" />
-                  <span className="text-green-700 dark:text-green-300 font-semibold">
-                    +{achievement.credits} Credits
-                  </span>
-                </div>
-              </motion.div>
-            )}
+
+            
+
             
             {/* Voice Command Guide */}
             <motion.div
@@ -445,6 +382,98 @@ export function AchievementPopup({ achievement, onClose, autoClose = 0 }: Achiev
               >
                 <Share2 className="w-4 h-4 mr-2" />
                 Share Achievement
+              </Button>
+              
+              {/* Visual Download Option */}
+              <Button
+                onClick={async () => {
+                  try {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    if (!ctx) return;
+
+                    // Create high-quality achievement card
+                    canvas.width = 800;
+                    canvas.height = 600;
+                    
+                    // Background gradient
+                    const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                    const colors = {
+                      common: ['#4B5563', '#6B7280'],
+                      rare: ['#2563EB', '#3B82F6'],
+                      epic: ['#7C3AED', '#9333EA'],
+                      legendary: ['#D97706', '#DC2626']
+                    };
+                    const [color1, color2] = colors[achievement?.rarity || 'common'];
+                    gradient.addColorStop(0, color1);
+                    gradient.addColorStop(1, color2);
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    // White card background
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+                    ctx.roundRect(50, 50, 700, 500, 20);
+                    ctx.fill();
+                    
+                    // Title
+                    ctx.fillStyle = '#111827';
+                    ctx.font = 'bold 48px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(achievement?.title || '', 400, 150);
+                    
+                    // Rarity badge
+                    ctx.fillStyle = color1;
+                    ctx.font = 'bold 24px sans-serif';
+                    ctx.fillText(achievement?.rarity?.toUpperCase() || '', 400, 200);
+                    
+                    // Description
+                    ctx.fillStyle = '#4B5563';
+                    ctx.font = '28px sans-serif';
+                    const lines = achievement?.description?.match(/.{1,40}/g) || [];
+                    lines.forEach((line, i) => {
+                      ctx.fillText(line, 400, 280 + i * 40);
+                    });
+                    
+                    // Credits
+                    if (achievement?.credits) {
+                      ctx.fillStyle = '#10B981';
+                      ctx.font = 'bold 36px sans-serif';
+                      ctx.fillText(`+${achievement.credits} Credits`, 400, 450);
+                    }
+                    
+                    // Branding
+                    ctx.fillStyle = '#9CA3AF';
+                    ctx.font = '20px sans-serif';
+                    ctx.fillText('Infinite Intelligence AI', 400, 520);
+                    
+                    // Download the image
+                    canvas.toBlob((blob) => {
+                      if (blob) {
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `achievement-${achievement?.title?.replace(/\s+/g, '-').toLowerCase()}.png`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                        toast({ 
+                          title: "Achievement downloaded!", 
+                          description: "Share your achievement image on social media!"
+                        });
+                      }
+                    });
+                  } catch (error) {
+                    toast({ 
+                      title: "Download failed", 
+                      description: "Could not generate achievement image",
+                      variant: "destructive"
+                    });
+                  }
+                }}
+                variant="outline"
+                className="w-full"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Download Achievement Image
               </Button>
               
               {/* Copy to Clipboard Option */}

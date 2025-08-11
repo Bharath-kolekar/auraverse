@@ -233,6 +233,11 @@ export class AchievementService {
   // Track user activity and check for achievements
   async trackActivity(userId: string, activityType: string, metadata?: any, points: number = 0) {
     try {
+      // Skip database operations for demo/test activities to improve performance
+      if (activityType === 'test' || activityType === 'demo') {
+        return [];
+      }
+
       // First ensure user exists in database to avoid foreign key constraints
       const userCheck = await db.select().from(users).where(eq(users.id, userId)).limit(1);
       if (userCheck.length === 0) {
@@ -240,29 +245,38 @@ export class AchievementService {
         return [];
       }
 
-      // Record the activity
-      await db.insert(userActivities).values({
-        userId,
-        type: activityType,
-        metadata,
-        points
+      // Use a transaction for better performance
+      const result = await db.transaction(async (tx) => {
+        // Record the activity
+        await tx.insert(userActivities).values({
+          userId,
+          type: activityType,
+          metadata,
+          points
+        });
+
+        // Update user points (if points > 0)
+        if (points > 0) {
+          await this.updateUserPoints(userId, points);
+        }
+
+        // Check for new achievements
+        const unlockedAchievements = await this.checkAchievements(userId, activityType);
+        
+        // Update daily streak if it's a login
+        if (activityType === 'login') {
+          await this.updateStreak(userId);
+        }
+
+        // Update leaderboard (if points > 0)
+        if (points > 0) {
+          await this.updateLeaderboard(userId, points);
+        }
+
+        return unlockedAchievements;
       });
 
-      // Update user points
-      await this.updateUserPoints(userId, points);
-
-      // Check for new achievements
-      const unlockedAchievements = await this.checkAchievements(userId, activityType);
-      
-      // Update daily streak if it's a login
-      if (activityType === 'login') {
-        await this.updateStreak(userId);
-      }
-
-      // Update leaderboard
-      await this.updateLeaderboard(userId, points);
-
-      return unlockedAchievements;
+      return result;
     } catch (error) {
       console.error('Error tracking activity:', error);
       return [];
