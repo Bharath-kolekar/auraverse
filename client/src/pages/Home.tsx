@@ -163,7 +163,14 @@ export default function Home() {
   ];
 
   const handleQuickAction = (action: any) => {
-    trackActivity({ type: 'content_created', metadata: { contentType: action.title } });
+    // Safe activity tracking
+    try {
+      if (trackActivity) {
+        trackActivity({ type: 'content_created', metadata: { contentType: action.title } });
+      }
+    } catch (err) {
+      console.log('Activity tracking skipped');
+    }
     setLocation(action.link);
   };
 
@@ -359,10 +366,20 @@ export default function Home() {
                   // Simulate generation
                   setTimeout(() => {
                     setIsGenerating(false);
-                    trackActivity('content_generated', { 
-                      contentType: selectedContentType,
-                      prompt: promptValue 
-                    });
+                    // Safe activity tracking
+                    try {
+                      if (trackActivity) {
+                        trackActivity({ 
+                          type: 'content_generated',
+                          metadata: {
+                            contentType: selectedContentType,
+                            prompt: promptValue 
+                          }
+                        });
+                      }
+                    } catch (err) {
+                      console.log('Activity tracking skipped');
+                    }
                   }, 2000);
                 }}
               />
@@ -376,10 +393,20 @@ export default function Home() {
                     setIsGenerating(true);
                     setTimeout(() => {
                       setIsGenerating(false);
-                      trackActivity('content_generated', { 
-                        contentType: selectedContentType,
-                        prompt: promptValue 
-                      });
+                      // Safe activity tracking
+                      try {
+                        if (trackActivity) {
+                          trackActivity({ 
+                            type: 'content_generated',
+                            metadata: {
+                              contentType: selectedContentType,
+                              prompt: promptValue 
+                            }
+                          });
+                        }
+                      } catch (err) {
+                        console.log('Activity tracking skipped');
+                      }
                     }, 2000);
                   }}
                 >
