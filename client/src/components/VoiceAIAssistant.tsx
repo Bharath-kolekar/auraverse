@@ -625,29 +625,47 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
     onToggle?.(newState);
     
     if (newState) {
+      // Reset workflow states for fresh conversation
+      setWorkflowState(WORKFLOW_STATES.IDLE);
+      setCurrentProject(null);
+      setHasSpokenWelcome(false);
+      setIsUserSpeaking(false);
+      setLastInterimTranscript('');
+      
+      // Clear any existing timers
+      if (silenceTimer) {
+        clearTimeout(silenceTimer);
+        setSilenceTimer(null);
+      }
+      
       // Reset NLP engine context for fresh conversation
       nlpEngine.resetContext();
       
       const welcomeMessage = selectedLanguage === 'en' 
-        ? 'Hello! I am your intelligent AI creative assistant. I can help you generate professional audio, stunning videos, beautiful images, and Hollywood-quality VFX. What type of content would you like to create today?'
+        ? 'Hello! I can help you create professional content. What would you like to make today? You can say "video", "audio", or "VFX".'
         : selectedLanguage === 'es'
-        ? '¡Hola! Soy tu asistente creativo de IA inteligente. Puedo ayudarte a generar audio profesional, videos impresionantes, imágenes hermosas y VFX de calidad de Hollywood. ¿Qué tipo de contenido te gustaría crear hoy?'
+        ? '¡Hola! Puedo ayudarte a crear contenido profesional. ¿Qué te gustaría hacer hoy? Puedes decir "video", "audio" o "VFX".'
         : selectedLanguage === 'fr'
-        ? 'Bonjour! Je suis votre assistant créatif IA intelligent. Je peux vous aider à générer de l\'audio professionnel, des vidéos époustouflantes, de belles images et des VFX de qualité hollywoodienne. Quel type de contenu aimeriez-vous créer aujourd\'hui?'
-        : 'Hello! I am your intelligent AI creative assistant. I can help you generate professional audio, stunning videos, beautiful images, and Hollywood-quality VFX. What type of content would you like to create today?';
+        ? 'Bonjour! Je peux vous aider à créer du contenu professionnel. Que souhaitez-vous créer aujourd\'hui? Vous pouvez dire "vidéo", "audio" ou "VFX".'
+        : 'Hello! I can help you create professional content. What would you like to make today?';
       
-      console.log('Setting intelligent welcome message:', welcomeMessage);
+      console.log('Setting welcome message:', welcomeMessage);
       setCurrentMessage(welcomeMessage);
-      // Don't clear conversation history to maintain memory across sessions
-      // setConversationHistory([]); // Commented out to preserve memory
       
-      // Add a small delay to ensure the panel is visible before speaking
+      // Speak welcome and then start listening
       setTimeout(() => {
         speakMessage(welcomeMessage);
-      }, 100);
+      }, 500);
     } else {
+      // Clean up when closing
       stopSpeaking();
       stopListening();
+      if (silenceTimer) {
+        clearTimeout(silenceTimer);
+        setSilenceTimer(null);
+      }
+      setWorkflowState(WORKFLOW_STATES.IDLE);
+      setIsUserSpeaking(false);
     }
   };
 
