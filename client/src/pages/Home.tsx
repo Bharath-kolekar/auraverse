@@ -16,6 +16,7 @@ import { FixedNavigation } from '@/components/ui/fixed-navigation';
 import { ThemeCustomizer } from '@/components/ui/theme-customizer';
 import { useTheme } from '@/contexts/ThemeContext';
 import { AchievementPanel } from '@/components/achievements/AchievementPanel';
+import { DeepLearningPanel } from '@/components/effects/DeepLearningPanel';
 import { useTrackActivity, useUserStats } from '@/hooks/useAchievements';
 import { TransitionSettings } from '@/components/ui/transition-settings';
 import { PredictivePrompt } from '@/components/PredictivePrompt';
@@ -755,6 +756,12 @@ export default function Home() {
           </div>
         )}
       </AnimatePresence>
+      
+      {/* Deep Learning Panel */}
+      <DeepLearningPanel 
+        input={promptValue}
+        onPrediction={(prediction) => setPromptValue(promptValue + ' ' + prediction)}
+      />
 
       {/* Transition Settings */}
       <TransitionSettings 

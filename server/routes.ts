@@ -547,6 +547,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register advanced AI orchestrator routes
   app.use('/api', advancedAiRoutes);
+  
+  // Register ensemble learning routes
+  const ensembleRoutes = (await import('./routes-ensemble')).default;
+  app.use(ensembleRoutes);
 
   // Oscar Standards API routes
   app.get('/api/oscar/standards/:category', async (req, res) => {

@@ -19,6 +19,7 @@ import CreateSimple from "@/pages/Create-Simple";
 import Marketplace from "@/pages/Marketplace";
 import Gallery from "@/pages/Gallery";
 import Intelligence from "@/pages/Intelligence";
+import IntelligenceTest from "@/pages/IntelligenceTest";
 import NotFound from "@/pages/not-found";
 
 // Transition configuration for different routes with creative effects
@@ -67,6 +68,7 @@ function Router() {
         <Route path="/marketplace" component={Marketplace} />
         <Route path="/gallery" component={Gallery} />
         <Route path="/intelligence" component={Intelligence} />
+        <Route path="/intelligence-test" component={IntelligenceTest} />
         
         {/* Home/Landing based on authentication */}
         <Route path="/" component={isAuthenticated ? Home : Landing} />
