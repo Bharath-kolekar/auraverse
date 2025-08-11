@@ -1,6 +1,6 @@
 # Overview
 
-This is a full-stack web application called "Infinite Intelligence" that provides AI-powered content creation tools. The platform allows users to generate audio, video, VFX, and images using artificial intelligence, with features like voice command controls and a marketplace for sharing/selling content. Built with a modern React frontend, Express backend, and PostgreSQL database using Drizzle ORM. The application is designed for deployment on the user's custom domain cognomega.com.
+This is a full-stack web application called "Infinite Intelligence" that provides AI-powered content creation tools. The platform allows users to generate audio, video, VFX, and images using artificial intelligence, with features like voice command controls and a marketplace for sharing/selling content. The application aims to provide professional-quality content generation with end-to-end automation, targeting global market expansion through localization and diverse payment methods. Its business vision includes a pay-per-intelligence monetization model with high profit margins and advanced analytics for optimization.
 
 # User Preferences
 
@@ -12,7 +12,6 @@ Platform features: Multi-device recording capabilities from mobile phones and co
 Monetization model: Pay-per-intelligence system where users purchase credits to access premium AI models.
 Global payment support: Multiple payment methods including UPI, PayPal, cryptocurrency, and bank transfers for worldwide accessibility.
 Cost optimization: Zero-cost local processing with advanced performance optimization achieving 10-1500x speed improvements.
-Payment Integration Status: Payment accounts being created (as of January 10, 2025) - payment testing pending until accounts are ready.
 Performance enhancement: Enhanced intelligence system with intelligent caching, pattern learning, and GPU acceleration delivering <1ms cached responses.
 Revenue strategy: Pay-per-intelligence model with 99.8% profit margins and comprehensive analytics for business optimization.
 Advanced features: Multi-tier optimization system, predictive analytics, user behavior analysis, and automated performance tuning.
@@ -21,6 +20,7 @@ Regional pricing strategy: Localized pricing with 35-65% discounts for developin
 Global market expansion: Automatic language detection and localization, cultural adaptation of generated content, region-specific AI model optimizations, and multi-currency payment processing for worldwide market penetration.
 Business intelligence: User journey analysis and conversion optimization, content popularity tracking and trend analysis, revenue forecasting based on usage patterns, and automated marketing campaign triggers for data-driven growth.
 Mobile optimization: Compressed AI models for mobile devices, progressive web app capabilities, offline-first architecture with sync capabilities, and touch-optimized interfaces for seamless mobile content creation.
+AI research integration: Few-shot learning for rapid model adaptation, transfer learning for specialized content types, generative adversarial networks for quality improvement, and reinforcement learning for continuous optimization.
 UI terminology: Complete removal of "Oscar" and "standards" references from user interface, replaced with "Professional Quality Standards" and "Industry-leading benchmarks".
 Quality implementation: Comprehensive professional quality standards based on Academy specifications but hidden from user-facing interface.
 Global Development Rules: Voice-first, multi-language, assistant-led UX architecture with self-healing AI agents, fallback systems, and accent-aware assistants integrated across all components.
@@ -38,106 +38,67 @@ Deep Learning Pattern Recognition: WebAssembly-based neural networks for browser
 Neural UI/UX System: Comprehensive neural-enhanced components including NeuralInput (particle-animated inputs), NeuralSelect (rotating connections), NeuralModal (orbital particles), NeuralProgress (traveling particles), NeuralTooltip (flowing waves), NeuralSwitch (energy flow), NeuralTabs (wave connections), NeuralDropdown (expanding waves), NeuralCheckbox (neural pulse), NeuralButton (quantum effects), NeuralCard (living edges), NeuralText (gradient animations), NeuralLoader (spinning neurons), and NeuralNetworkBackground (system-wide canvas animations).
 Interface Enhancement: 60fps smooth animations with particle physics, triple gradient effects (purple→cyan→pink), radial node gradients, shadow blur depth, spinning glow layers, and comprehensive neural effects injected throughout Landing, Home, Gallery, Marketplace, and RealCreateStudio pages.
 
-# Fortune 20 Enterprise Standards Implementation
-
-## Enterprise Components (Added August 10, 2025)
-- **Enterprise Error Handler**: Comprehensive error handling with detailed error codes, logging, and monitoring
-- **Enterprise Security Middleware**: Helmet integration, rate limiting, CORS, input sanitization, XSS/SQL injection prevention
-- **Enterprise Monitoring**: Real-time performance tracking, health checks, analytics, and metrics collection
-- **Enterprise Data Validation**: Zod-based validation schemas, content moderation, business rules validation
-- **Enterprise Validation Service**: Automated system validation, compliance checking, and optimization recommendations
-- **Security Audit Logger**: Comprehensive audit trail for all security events and user actions
-- **Performance Monitor**: Real-time CPU, memory, response time, and error rate tracking
-- **Analytics Tracker**: Event tracking, user session management, and behavior analysis
-- **Business Intelligence Engine**: User journey funnel analysis, content popularity heatmaps, revenue forecasting models, and automated marketing triggers
-
-## Enterprise Features
-- Zero tolerance for user-facing errors with comprehensive error handling
-- Fortune 20 level security with rate limiting and input sanitization
-- Real-time health monitoring with automatic alerts
-- Compliance with GDPR, CCPA, PCI-DSS, ISO 27001 standards
-- Automated performance optimization and recommendations
-- Comprehensive audit logging and analytics
-- Enterprise-grade middleware stack
-- Multi-tier validation system
-- Deep business intelligence with conversion tracking, trend analysis, and revenue forecasting
-- Automated marketing campaign triggers based on user behavior patterns
-- Progressive Web App (PWA) with offline capabilities and mobile optimization
-- Adaptive AI model compression for low-bandwidth environments
-
 # System Architecture
 
+The application is a full-stack web application with a React frontend, Express.js backend, and a flexible data storage approach.
+
 ## Frontend Architecture
-- **Framework**: React 18 with TypeScript using Vite as the build tool
-- **UI Library**: Shadcn/ui components built on Radix UI primitives with Tailwind CSS for styling
-- **State Management**: TanStack Query for server state management and caching
-- **Routing**: Wouter for client-side routing
-- **Authentication**: Session-based authentication with Replit Auth integration
-- **Voice Controls**: Web Speech API integration for voice command functionality
-- **AI Training Assistant**: Interactive floating assistant for user education and platform guidance
-- **PWA Support**: Progressive Web App with offline-first architecture and background sync
-- **Mobile Optimization**: Touch-optimized UI components and compressed AI models for mobile devices
+- **Framework**: React 18 with TypeScript and Vite.
+- **UI Library**: Shadcn/ui components built on Radix UI and Tailwind CSS.
+- **State Management**: TanStack Query for server state.
+- **Routing**: Wouter for client-side routing.
+- **Authentication**: Session-based authentication with Replit Auth.
+- **Voice Controls**: Web Speech API integration.
+- **AI Training Assistant**: Interactive floating assistant for user guidance.
+- **PWA Support**: Progressive Web App with offline-first architecture.
+- **Mobile Optimization**: Touch-optimized UI and compressed AI models.
+- **UI/UX Decisions**: Neural-enhanced components and 60fps smooth animations with particle physics, triple gradient effects (purple→cyan→pink), radial node gradients, and shadow blur depth. Specific component positioning for Neural Intelligence Core, Voice Assistant, and Super Intelligence Panel in corners with high z-index.
 
 ## Backend Architecture
-- **Framework**: Express.js with TypeScript running on Node.js
-- **API Design**: RESTful API with structured route handling
-- **Authentication**: Replit OpenID Connect (OIDC) with Passport.js strategy
-- **Session Management**: Express sessions stored in PostgreSQL with connect-pg-simple
-- **AI Services**: Production-grade hybrid AI system with professional quality standards
-- **Intelligence Service**: Multi-tier processing (basic/professional/expert) with advanced algorithms
-- **Super Intelligence Service**: Advanced AI with neural processing, creativity boost, emotional intelligence, and predictive analytics
-- **Advanced AI Orchestrator**: Comprehensive AI orchestration system with intelligent decision-making, user intent analysis, processing strategy generation, and multi-stage enhancement capabilities
-- **Global AI Agent**: Self-healing AI system with intelligent monitoring, performance optimization, learning capabilities, and automated error recovery
-- **Voice-First Service**: Comprehensive voice command processing with multi-language support and contextual understanding
-- **Training Service**: Local pattern-based training system with offline Maya assistant (zero cost)
-- **Storage**: In-memory storage system to eliminate database costs (with optional PostgreSQL for production)
-- **File Structure**: Modular organization with separate routes, services, and storage layers
+- **Framework**: Express.js with TypeScript on Node.js.
+- **API Design**: RESTful API.
+- **Authentication**: Replit OpenID Connect (OIDC) with Passport.js strategy.
+- **Session Management**: Express sessions stored in PostgreSQL.
+- **AI Services**: Production-grade hybrid AI system with professional quality standards, including Basic, Pro, Ultimate, and Super intelligence tiers. Features include neural processing, creativity boost, emotional intelligence, contextual awareness, and predictive analytics.
+- **Advanced AI Orchestrator**: Intelligent decision-making, user intent analysis, processing strategy generation, and multi-stage enhancement.
+- **Global AI Agent**: Self-healing AI system with intelligent monitoring and automated error recovery.
+- **Research-Driven AI**: Few-shot learning, transfer learning, GAN-based quality enhancement, and reinforcement learning optimization loops.
+- **Voice-First Service**: Comprehensive multi-language voice command processing.
+- **Training Service**: Local pattern-based training system with offline Maya assistant.
+- **File Structure**: Modular organization with separate routes, services, and storage layers.
+- **Enterprise Standards**: Includes Enterprise Error Handler, Security Middleware, Monitoring, Data Validation (Zod), Validation Service, Security Audit Logger, Performance Monitor, Analytics Tracker, and Business Intelligence Engine.
 
 ## Data Storage
-- **Primary Storage**: In-memory storage for zero-cost operation
-- **Optional Database**: PostgreSQL with Neon serverless driver (for production scaling)
-- **ORM**: Drizzle ORM for type-safe database operations (when database is enabled)
-- **Schema**: Well-structured data models for users, content, projects, voice commands, and training conversations
-- **Local Persistence**: Browser localStorage/IndexedDB for client-side data persistence with offline sync
-- **Cost Optimization**: Memory storage eliminates all database costs during development and testing
-- **Offline Storage**: Service Worker caching for offline content access and generation
+- **Primary Storage**: In-memory storage for zero-cost operation during development.
+- **Optional Database**: PostgreSQL with Neon serverless driver for production.
+- **ORM**: Drizzle ORM for type-safe operations.
+- **Schema**: Structured data models for users, content, projects, voice commands, and training conversations.
+- **Local Persistence**: Browser localStorage/IndexedDB for client-side data persistence with offline sync.
 
 ## Authentication & Authorization
-- **Provider**: Replit Auth using OpenID Connect protocol
-- **Session Storage**: PostgreSQL-backed sessions with configurable TTL
-- **Middleware**: Custom authentication middleware for protected routes
-- **User Management**: Automatic user creation/updates via OIDC claims
+- **Provider**: Replit Auth using OpenID Connect protocol.
+- **Session Storage**: PostgreSQL-backed sessions.
+- **Middleware**: Custom authentication middleware for protected routes.
+- **User Management**: Automatic user creation/updates via OIDC claims.
 
 # External Dependencies
 
 ## AI Services (Pay-Per-Intelligence Model)
-- **Local AI Services**: Template-based content generation using browser APIs and pattern matching (free tier)
-- **Super Intelligence Service**: Advanced AI models with neural processing, creativity boost, emotional intelligence, contextual awareness, and predictive analytics
-- **Premium Models**: DeepSeek R1, Stable Diffusion XL, Whisper Large, MusicGen Large (credit-based)
-- **Intelligence Tiers**: Basic (free), Pro (1-3 credits), Ultimate (4-5 credits), Super (5-10 credits)
-- **Real-time Processing**: Streaming intelligence with progressive enhancement stages
-- **Voice-First Integration**: Multi-language voice commands with contextual understanding
-- **Monetization**: Users purchase intelligence credits to access premium AI features
-- **Fallback System**: Enhanced local processing when external models unavailable
-- **Professional Quality Standards**: Comprehensive technical specifications including 4K UHD resolution, DCI-P3 color space, 24-bit/96kHz audio, Dolby Vision/HDR10+ support, and SMPTE DCP delivery formats
-- **Global Localization**: Automatic language detection, cultural content adaptation, and region-specific model optimizations for international users
+- **Local AI Services**: Template-based content generation using browser APIs and pattern matching.
+- **Super Intelligence Service**: Advanced AI models (details of specific models like DeepSeek R1, Stable Diffusion XL, Whisper Large, MusicGen Large mentioned as credit-based premium models).
+- **Professional Quality Standards**: Specific technical specifications for output (4K UHD resolution, DCI-P3 color space, 24-bit/96kHz audio, Dolby Vision/HDR10+, SMPTE DCP).
+- **Global Localization**: Automatic language detection and cultural content adaptation.
 
 ## Authentication
-- **Replit Auth**: OpenID Connect provider for user authentication
-- **Passport.js**: Authentication middleware with OpenID Connect strategy
+- **Replit Auth**: OpenID Connect provider.
+- **Passport.js**: Authentication middleware with OpenID Connect strategy.
 
 ## Database & Infrastructure
-- **Neon Database**: Serverless PostgreSQL hosting with connection pooling
-- **WebSocket Support**: For real-time features (configured via ws package)
+- **Neon Database**: Serverless PostgreSQL hosting.
+- **WebSocket Support**: Via `ws` package.
 
 ## Frontend Libraries
-- **Radix UI**: Headless UI component primitives for accessibility
-- **Tailwind CSS**: Utility-first CSS framework for styling
-- **React Hook Form**: Form handling with validation
-- **Date-fns**: Date manipulation utilities
-
-## Development Tools
-- **Vite**: Fast build tool with HMR and development server
-- **TypeScript**: Type safety across the entire application
-- **ESLint/Prettier**: Code quality and formatting (implied by project structure)
-- **Replit Integration**: Development environment with runtime error handling and cartographer plugin
+- **Radix UI**: Headless UI component primitives.
+- **Tailwind CSS**: Utility-first CSS framework.
+- **React Hook Form**: Form handling with validation.
+- **Date-fns**: Date manipulation utilities.
