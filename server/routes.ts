@@ -15,6 +15,7 @@ import { registerIntelligenceRoutes } from "./routes-intelligence";
 import { registerVideoRoutes } from "./routes-video";
 import { registerSuperIntelligenceRoutes } from "./routes-super-intelligence";
 import advancedAiRoutes from "./routes-advanced-ai";
+import cacheRoutes from "./routes-cache";
 import { oscarStandardsService } from "./services/oscar-standards-service";
 import { productionIntelligenceService } from "./services/production-intelligence-service";
 import { enhancedRouterService } from "./services/enhanced-router-service";
@@ -593,6 +594,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Import enhanced routes
   const { registerEnhancedIntelligenceRoutes } = await import("./routes-intelligence-enhanced");
   registerEnhancedIntelligenceRoutes(app);
+  
+  // Register cache routes
+  app.use(cacheRoutes);
 
   const httpServer = createServer(app);
 

@@ -2,6 +2,7 @@ import OpenAI from "openai";
 import { aiEnsemble } from "./ai-ensemble";
 import { continuousImprovement } from "./continuous-improvement";
 import { deepLearning } from "./deep-learning";
+import { serverCache, ServerCacheable } from "./cache-service";
 
 const apiKey = process.env.OPENAI_API_KEY_NEW || process.env.OPENAI_API_KEY;
 

@@ -17,6 +17,7 @@ import { ThemeCustomizer } from '@/components/ui/theme-customizer';
 import { useTheme } from '@/contexts/ThemeContext';
 import { AchievementPanel } from '@/components/achievements/AchievementPanel';
 import { DeepLearningPanel } from '@/components/effects/DeepLearningPanel';
+import { CacheStatus } from '@/components/CacheStatus';
 import { useTrackActivity, useUserStats } from '@/hooks/useAchievements';
 import { TransitionSettings } from '@/components/ui/transition-settings';
 import { PredictivePrompt } from '@/components/PredictivePrompt';
@@ -762,6 +763,9 @@ export default function Home() {
         input={promptValue}
         onPrediction={(prediction) => setPromptValue(promptValue + ' ' + prediction)}
       />
+      
+      {/* Cache Status Display */}
+      <CacheStatus />
 
       {/* Transition Settings */}
       <TransitionSettings 
