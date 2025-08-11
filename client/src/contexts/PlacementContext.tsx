@@ -1,6 +1,6 @@
 // Global Placement Context for managing component positions
-import React, { createContext, useContext, useState, useCallback, useEffect, useRef, ReactNode } from 'react';
-import { useIntelligentPlacement, ComponentDimensions, ComponentPosition, PlacementConfig } from '@/hooks/useIntelligentPlacement';
+import React, { createContext, useContext, useState, useCallback, useEffect, useRef, ReactNode, useMemo } from 'react';
+import { ComponentDimensions, ComponentPosition, PlacementConfig } from '@/hooks/useIntelligentPlacement';
 
 interface PlacementContextValue {
   registerComponent: (id: string, dimensions: ComponentDimensions) => void;
@@ -12,58 +12,74 @@ interface PlacementContextValue {
 
 const PlacementContext = createContext<PlacementContextValue | null>(null);
 
+// Simple position management without complex hook
+const SIMPLE_ZONES: Record<string, { x: number; y: number }> = {
+  'top-left': { x: 16, y: 100 },
+  'top-right': { x: -208, y: 100 },
+  'bottom-left': { x: 16, y: -316 },
+  'bottom-right': { x: -208, y: -316 },
+};
+
 export function PlacementProvider({ children }: { children: ReactNode }) {
-  const [components, setComponents] = useState<Map<string, ComponentDimensions>>(new Map());
-  const [componentsList, setComponentsList] = useState<ComponentDimensions[]>([]);
+  const [components] = useState<Map<string, ComponentDimensions>>(new Map());
+  const [positions] = useState<Map<string, ComponentPosition>>(new Map());
+  const componentsRef = useRef(components);
+  const positionsRef = useRef(positions);
 
-  // Convert map to array for the placement hook
-  useEffect(() => {
-    setComponentsList(Array.from(components.values()));
-  }, [components]);
-
-  const placementConfig: PlacementConfig = {
-    margin: 20,
-    screenPadding: 16,
-    avoidCenter: true,
-    smartCollisionDetection: true
-  };
-
-  const { positions, getPosition, recalculate } = useIntelligentPlacement(componentsList, placementConfig);
-
-  const registerComponent = useCallback((id: string, dimensions: ComponentDimensions) => {
-    setComponents(prev => {
-      const newMap = new Map(prev);
-      newMap.set(id, { ...dimensions, id });
-      return newMap;
-    });
+  // Simple position assignment based on component count
+  const assignPosition = useCallback((id: string): ComponentPosition => {
+    const zoneKeys = Object.keys(SIMPLE_ZONES);
+    const index = componentsRef.current.size % zoneKeys.length;
+    const zoneKey = zoneKeys[index];
+    const zone = SIMPLE_ZONES[zoneKey];
+    
+    const position: ComponentPosition = {
+      x: zone.x >= 0 ? zone.x : window.innerWidth + zone.x,
+      y: zone.y >= 0 ? zone.y : window.innerHeight + zone.y,
+      zone: zoneKey as any
+    };
+    
+    positionsRef.current.set(id, position);
+    return position;
   }, []);
 
+  const registerComponent = useCallback((id: string, dimensions: ComponentDimensions) => {
+    if (!componentsRef.current.has(id)) {
+      componentsRef.current.set(id, { ...dimensions, id });
+      assignPosition(id);
+    }
+  }, [assignPosition]);
+
   const unregisterComponent = useCallback((id: string) => {
-    setComponents(prev => {
-      const newMap = new Map(prev);
-      newMap.delete(id);
-      return newMap;
-    });
+    componentsRef.current.delete(id);
+    positionsRef.current.delete(id);
+  }, []);
+
+  const getPosition = useCallback((id: string): ComponentPosition | undefined => {
+    return positionsRef.current.get(id);
   }, []);
 
   const updateDimensions = useCallback((id: string, dimensions: Partial<ComponentDimensions>) => {
-    setComponents(prev => {
-      const newMap = new Map(prev);
-      const existing = newMap.get(id);
-      if (existing) {
-        newMap.set(id, { ...existing, ...dimensions });
-      }
-      return newMap;
-    });
+    const existing = componentsRef.current.get(id);
+    if (existing) {
+      componentsRef.current.set(id, { ...existing, ...dimensions });
+    }
   }, []);
 
-  const value: PlacementContextValue = {
+  const recalculate = useCallback(() => {
+    // Simplified - just reassign positions
+    componentsRef.current.forEach((_, id) => {
+      assignPosition(id);
+    });
+  }, [assignPosition]);
+
+  const value: PlacementContextValue = useMemo(() => ({
     registerComponent,
     unregisterComponent,
     getPosition,
     updateDimensions,
     recalculate
-  };
+  }), [registerComponent, unregisterComponent, getPosition, updateDimensions, recalculate]);
 
   return (
     <PlacementContext.Provider value={value}>
@@ -86,61 +102,51 @@ export function useSmartPosition(
   defaultDimensions: { width: number; height: number },
   priority: number = 0
 ) {
-  const { registerComponent, unregisterComponent, getPosition, updateDimensions } = usePlacement();
-  const [position, setPosition] = useState<ComponentPosition | undefined>();
-  
-  // Use refs to track if we've already registered
-  const hasRegisteredRef = useRef(false);
-  const dimensionsRef = useRef(defaultDimensions);
-
-  useEffect(() => {
-    // Only register once
-    if (!hasRegisteredRef.current) {
-      hasRegisteredRef.current = true;
-      registerComponent(componentId, {
-        id: componentId,
-        width: defaultDimensions.width,
-        height: defaultDimensions.height,
-        priority
-      });
-    }
-
-    // Unregister on unmount
-    return () => {
-      if (hasRegisteredRef.current) {
-        hasRegisteredRef.current = false;
-        unregisterComponent(componentId);
+  const context = useContext(PlacementContext);
+  if (!context) {
+    // Return a dummy position if context is not available
+    return {
+      style: {
+        position: 'fixed' as const,
+        left: 16,
+        top: 100,
+        zIndex: 50
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty deps - only run on mount/unmount
+  }
+  
+  const { registerComponent, unregisterComponent, getPosition } = context;
+  const [mounted, setMounted] = useState(false);
 
-  // Update dimensions only when they actually change
   useEffect(() => {
-    if (dimensionsRef.current.width !== defaultDimensions.width || 
-        dimensionsRef.current.height !== defaultDimensions.height) {
-      dimensionsRef.current = defaultDimensions;
-      updateDimensions(componentId, {
-        width: defaultDimensions.width,
-        height: defaultDimensions.height
-      });
+    setMounted(true);
+    registerComponent(componentId, {
+      id: componentId,
+      width: defaultDimensions.width,
+      height: defaultDimensions.height,
+      priority
+    });
+
+    return () => {
+      unregisterComponent(componentId);
+    };
+  }, []); // Empty deps is intentional - we only want to register once
+
+  const position = mounted ? getPosition(componentId) : undefined;
+  
+  return {
+    style: position ? {
+      position: 'fixed' as const,
+      left: position.x,
+      top: position.y,
+      zIndex: 50
+    } : {
+      position: 'fixed' as const,
+      left: 16,
+      top: 100,
+      zIndex: 50
     }
-  }, [componentId, defaultDimensions.width, defaultDimensions.height, updateDimensions]);
-
-  // Get position updates - simplified to avoid dependency on position state
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const pos = getPosition(componentId);
-      setPosition(prevPos => {
-        if (pos && (!prevPos || pos.x !== prevPos.x || pos.y !== prevPos.y)) {
-          return pos;
-        }
-        return prevPos;
-      });
-    }, 500);
-
-    return () => clearInterval(interval);
-  }, [componentId, getPosition]); // Don't depend on position state
+  };
 
   return {
     position,
