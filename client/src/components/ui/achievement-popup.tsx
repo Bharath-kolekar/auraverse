@@ -204,9 +204,8 @@ export function AchievementPopup({ achievement, onClose, autoClose = 0 }: Achiev
   };
 
   const shareOnLinkedIn = () => {
-    // LinkedIn uses the page's Open Graph tags for the preview, but we can control the post text
-    const achievementText = `🏆 Achievement Unlocked: ${achievement?.title}!\n\n${achievement?.description}\n\nRarity: ${achievement?.rarity?.toUpperCase()}\nCredits Earned: ${achievement?.credits || 0}\n\n#Achievement #InfiniteIntelligence #AI\n\nPlatform: ${window.location.href}`;
-    // Copy to clipboard first as LinkedIn may not use the summary parameter
+    // LinkedIn - plain text without emojis for better compatibility
+    const achievementText = `Achievement Unlocked: ${achievement?.title}!\n\n${achievement?.description}\n\nRarity: ${achievement?.rarity?.toUpperCase()}\nCredits Earned: ${achievement?.credits || 0}\n\n#Achievement #InfiniteIntelligence #AI\n\nPlatform: ${window.location.href}`;
     navigator.clipboard.writeText(achievementText);
     const shareUrl = `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(achievementText)}`;
     window.open(shareUrl, '_blank');
@@ -217,15 +216,14 @@ export function AchievementPopup({ achievement, onClose, autoClose = 0 }: Achiev
   };
 
   const shareOnTwitter = () => {
-    const achievementText = `🏆 Just unlocked "${achievement?.title}" achievement!\n\n${achievement?.description}\n\nRarity: ${achievement?.rarity?.toUpperCase()}\nCredits: +${achievement?.credits || 0}\n\n#Achievement #InfiniteIntelligence #AI #ContentCreation`;
+    const achievementText = `Just unlocked "${achievement?.title}" achievement!\n\n${achievement?.description}\n\nRarity: ${achievement?.rarity?.toUpperCase()}\nCredits: +${achievement?.credits || 0}\n\n#Achievement #InfiniteIntelligence #AI #ContentCreation`;
     const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(achievementText)}`;
     window.open(shareUrl, '_blank');
     toast({ title: "Shared on Twitter!" });
   };
 
   const shareOnFacebook = () => {
-    const achievementText = `🏆 Achievement Unlocked: ${achievement?.title}!\n\n${achievement?.description}\n\nRarity: ${achievement?.rarity?.toUpperCase()}\nCredits Earned: ${achievement?.credits || 0}`;
-    // Facebook uses Open Graph tags for preview, but quote parameter adds custom text
+    const achievementText = `Achievement Unlocked: ${achievement?.title}!\n\n${achievement?.description}\n\nRarity: ${achievement?.rarity?.toUpperCase()}\nCredits Earned: ${achievement?.credits || 0}`;
     navigator.clipboard.writeText(achievementText);
     const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${encodeURIComponent(achievementText)}&hashtag=%23Achievement`;
     window.open(shareUrl, '_blank');
@@ -236,7 +234,7 @@ export function AchievementPopup({ achievement, onClose, autoClose = 0 }: Achiev
   };
 
   const shareOnWhatsApp = () => {
-    const achievementText = `🏆 *Achievement Unlocked!*\n\n*${achievement?.title}*\n${achievement?.description}\n\n📊 Rarity: ${achievement?.rarity?.toUpperCase()}\n💰 Credits: +${achievement?.credits || 0}\n\nCheck out Infinite Intelligence AI Platform!`;
+    const achievementText = `*Achievement Unlocked!*\n\n*${achievement?.title}*\n${achievement?.description}\n\nRarity: ${achievement?.rarity?.toUpperCase()}\nCredits: +${achievement?.credits || 0}\n\nCheck out Infinite Intelligence AI Platform!`;
     const shareUrl = `https://wa.me/?text=${encodeURIComponent(achievementText + '\n\n' + window.location.href)}`;
     window.open(shareUrl, '_blank');
     toast({ title: "Shared on WhatsApp!" });
@@ -452,7 +450,7 @@ export function AchievementPopup({ achievement, onClose, autoClose = 0 }: Achiev
               {/* Copy to Clipboard Option */}
               <Button
                 onClick={() => {
-                  const text = `🏆 Achievement Unlocked: ${achievement?.title}!\n\n${achievement?.description}\n\nRarity: ${achievement?.rarity?.toUpperCase()}\nCredits: +${achievement?.credits || 0}\n\n#InfiniteIntelligence`;
+                  const text = `Achievement Unlocked: ${achievement?.title}!\n\n${achievement?.description}\n\nRarity: ${achievement?.rarity?.toUpperCase()}\nCredits: +${achievement?.credits || 0}\n\n#InfiniteIntelligence #Achievement #AI`;
                   navigator.clipboard.writeText(text);
                   toast({ 
                     title: "Copied to clipboard!", 

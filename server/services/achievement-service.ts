@@ -233,6 +233,13 @@ export class AchievementService {
   // Track user activity and check for achievements
   async trackActivity(userId: string, activityType: string, metadata?: any, points: number = 0) {
     try {
+      // First ensure user exists in database to avoid foreign key constraints
+      const userCheck = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+      if (userCheck.length === 0) {
+        console.log(`User ${userId} not found, skipping activity tracking`);
+        return [];
+      }
+
       // Record the activity
       await db.insert(userActivities).values({
         userId,
