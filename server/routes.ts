@@ -62,9 +62,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Production AI Content Generation Routes
-  app.post('/api/ai/generate', isAuthenticated, async (req: any, res) => {
+  app.post('/api/ai/generate', async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user?.claims?.sub || 'anonymous';
       const request: ContentGenerationRequest = {
         ...req.body,
         userId
@@ -98,7 +98,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/ai/status/:jobId', isAuthenticated, async (req: any, res) => {
+  app.get('/api/ai/status/:jobId', async (req: any, res) => {
     try {
       const { jobId } = req.params;
       const status = aiService.getJobStatus(jobId);
@@ -114,9 +114,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/ai/jobs', isAuthenticated, async (req: any, res) => {
+  app.get('/api/ai/jobs', async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user?.claims?.sub || 'anonymous';
       const jobs = aiService.getAllJobs(userId);
       res.json(jobs);
     } catch (error) {
@@ -218,7 +218,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Local AI Content Generation routes (zero cost)
-  app.post('/api/ai/generate-audio', isAuthenticated, async (req: any, res) => {
+  app.post('/api/ai/generate-audio', async (req: any, res) => {
     try {
       const { text, voice, type } = req.body;
       const audioResult = await localAiServices.generateAudio(text, voice, type);
@@ -229,7 +229,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/ai/generate-video', isAuthenticated, async (req: any, res) => {
+  app.post('/api/ai/generate-video', async (req: any, res) => {
     try {
       const { prompt, style, duration } = req.body;
       const videoResult = await localAiServices.generateVideo(prompt, style, duration);
@@ -240,7 +240,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/ai/generate-vfx', isAuthenticated, async (req: any, res) => {
+  app.post('/api/ai/generate-vfx', async (req: any, res) => {
     try {
       const { type, parameters } = req.body;
       const vfxResult = await localAiServices.generateVFX(type, parameters);
