@@ -177,7 +177,7 @@ export function PredictivePrompt({
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
           onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
-          onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+          onBlur={() => setTimeout(() => setShowSuggestions(false), 100)}
           placeholder={placeholder}
           className="pr-10"
         />
@@ -191,7 +191,7 @@ export function PredictivePrompt({
       </div>
       
       {showSuggestions && suggestions.length > 0 && (
-        <Card className="absolute z-50 w-full mt-1 p-2 shadow-lg">
+        <Card className="absolute z-10 w-full mt-1 p-2 shadow-lg max-h-48 overflow-y-auto">
           <div className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
             <Brain className="w-3 h-3" />
             AI-powered suggestions
@@ -206,7 +206,10 @@ export function PredictivePrompt({
                   : 'hover:bg-muted'
                 }
               `}
-              onClick={() => handleSuggestionClick(suggestion)}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                handleSuggestionClick(suggestion);
+              }}
               onMouseEnter={() => setSelectedIndex(index)}
             >
               <span className="text-sm">{suggestion}</span>
