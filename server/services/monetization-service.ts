@@ -4,7 +4,7 @@
 
 // Monetization imports - using in-memory storage for now
 // Database imports commented out until needed
-import { awsPricingModel, type ReservedInstance, type SpotPricing, type CostEstimate } from './aws-pricing-model';
+import { intelligencePricingEngine, type IntelligenceCommitment, type FlashPricing, type CostEstimate } from './aws-pricing-model';
 
 interface PricingTier {
   id: string;
@@ -478,35 +478,35 @@ class MonetizationService {
     console.log(`✅ Payment processed: ${paymentId} - ${totalCredits} credits added`);
   }
 
-  // AWS-Style Pricing Methods
-  // Purchase Reserved Instance for long-term commitments
+  // Intelligence Pricing Methods
+  // Purchase Intelligence Commitment for long-term savings
   purchaseReservedCredits(
     userId: string,
     creditsPerMonth: number,
     term: '1-year' | '3-year',
     paymentOption: 'all-upfront' | 'partial-upfront' | 'no-upfront'
-  ): ReservedInstance {
+  ): IntelligenceCommitment {
     // Register user if new
     if (!this.userRegistrationDates.has(userId)) {
       this.userRegistrationDates.set(userId, new Date());
     }
     
-    return awsPricingModel.purchaseReservedInstance(userId, creditsPerMonth, term, paymentOption);
+    return intelligencePricingEngine.purchaseIntelligenceCommitment(userId, creditsPerMonth, term, paymentOption);
   }
 
-  // Get spot pricing for discounted temporary usage
-  getSpotPricing(): SpotPricing {
-    return awsPricingModel.getSpotPricing();
+  // Get flash pricing for discounted temporary usage
+  getSpotPricing(): FlashPricing {
+    return intelligencePricingEngine.getFlashPricing();
   }
 
-  // Calculate cost with AWS-style volume discounts
+  // Calculate cost with volume discounts
   calculateWithVolumeDiscounts(credits: number, region: string = 'default'): {
     standardCost: number;
     volumeDiscountedCost: number;
     savings: number;
     effectiveRate: number;
   } {
-    const volumePrice = awsPricingModel.calculateVolumePrice(credits);
+    const volumePrice = intelligencePricingEngine.calculateVolumePrice(credits);
     const regionalMultiplier = this.regionalPricing.get(region) || 1.0;
     
     return {
@@ -517,13 +517,13 @@ class MonetizationService {
     };
   }
 
-  // Get Free Tier benefits
+  // Get Intelligence Grant benefits
   getFreeTierBenefits(userId: string): any {
     const accountAge = this.getUserAccountAge(userId);
-    return awsPricingModel.getFreeTierBenefits(userId, accountAge);
+    return intelligencePricingEngine.getIntelligenceGrants(userId, accountAge);
   }
 
-  // Cost Calculator (AWS-style)
+  // Intelligence Cost Calculator
   estimateCost(
     userId: string,
     estimatedCredits: number,
@@ -534,7 +534,7 @@ class MonetizationService {
       region?: string;
     } = {}
   ): CostEstimate {
-    const estimate = awsPricingModel.estimateCost(
+    const estimate = intelligencePricingEngine.estimateCost(
       userId,
       estimatedCredits,
       estimatedDataGB,
@@ -549,7 +549,7 @@ class MonetizationService {
     return estimate;
   }
 
-  // Set budget alert (AWS Budgets style)
+  // Set budget alert for cost management
   setBudgetAlert(
     userId: string,
     threshold: number,
@@ -557,12 +557,12 @@ class MonetizationService {
     frequency: 'daily' | 'weekly' | 'monthly' = 'monthly',
     actions: ('email' | 'sms' | 'stop-usage')[] = ['email']
   ) {
-    return awsPricingModel.setBudgetAlert(userId, threshold, type, frequency, actions);
+    return intelligencePricingEngine.setBudgetAlert(userId, threshold, type, frequency, actions);
   }
 
   // Check budget alerts
   checkBudgetAlerts(userId: string, currentUsage: number, type: 'credits' | 'cost') {
-    return awsPricingModel.checkBudgetAlerts(userId, currentUsage, type);
+    return intelligencePricingEngine.checkBudgetAlerts(userId, currentUsage, type);
   }
 
   // Get effective price with all discounts applied
@@ -572,7 +572,7 @@ class MonetizationService {
     useSpot: boolean = false,
     region: string = 'default'
   ) {
-    const pricing = awsPricingModel.getEffectivePrice(userId, credits, useSpot);
+    const pricing = intelligencePricingEngine.getEffectivePrice(userId, credits, useSpot);
     const regionalMultiplier = this.regionalPricing.get(region) || 1.0;
     
     pricing.effectivePrice *= regionalMultiplier;
@@ -585,14 +585,14 @@ class MonetizationService {
     };
   }
 
-  // Get user Reserved Instances
-  getUserReservedInstances(userId: string): ReservedInstance[] {
-    return awsPricingModel.getUserReservedInstances(userId);
+  // Get user Intelligence Commitments
+  getUserReservedInstances(userId: string): IntelligenceCommitment[] {
+    return intelligencePricingEngine.getUserIntelligenceCommitments(userId);
   }
 
   // Calculate data transfer costs
   calculateDataTransferCost(gbTransferred: number) {
-    return awsPricingModel.calculateDataTransferCost(gbTransferred);
+    return intelligencePricingEngine.calculateDataTransferCost(gbTransferred);
   }
 
   private getUserAccountAge(userId: string): number {

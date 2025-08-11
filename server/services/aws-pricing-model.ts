@@ -1,7 +1,7 @@
-// AWS-Inspired Pricing Model Enhancement
-// Implements Reserved Instances, Spot Pricing, Volume Discounts, Free Tier, and more
+// Infinite Intelligence Pricing Model
+// Advanced commitment-based pricing with Neural Credits, Flash Pricing, Volume Tiers, and more
 
-export interface ReservedInstance {
+export interface IntelligenceCommitment {
   id: string;
   userId: string;
   creditsPerMonth: number;
@@ -16,13 +16,13 @@ export interface ReservedInstance {
   totalSavings: number;
 }
 
-export interface SpotPricing {
+export interface FlashPricing {
   currentPrice: number;
-  spotDiscount: number;
+  flashDiscount: number;
   availability: number;
-  terminationRisk: 'low' | 'medium' | 'high';
+  volatilityRisk: 'stable' | 'moderate' | 'volatile';
   maxDuration: number; // minutes
-  recommendedWorkloads: string[];
+  recommendedTasks: string[];
 }
 
 export interface VolumeTier {
@@ -33,8 +33,8 @@ export interface VolumeTier {
   tierName: string;
 }
 
-export interface FreeTier {
-  type: 'always-free' | '12-months' | 'trial';
+export interface IntelligenceGrant {
+  type: 'perpetual' | 'starter-year' | 'discovery';
   creditsPerMonth: number;
   capabilities: string[];
   expiryDate?: Date;
@@ -68,49 +68,49 @@ export interface BudgetAlert {
   percentUsed: number;
 }
 
-export class AWSPricingModel {
-  // Volume-based pricing tiers (like AWS S3)
+export class IntelligencePricingEngine {
+  // Neural Volume Tiers - Progressive discounts for increased usage
   private volumeTiers: VolumeTier[] = [
-    { minCredits: 0, maxCredits: 50, pricePerCredit: 1.00, discount: 0, tierName: 'Standard' },
-    { minCredits: 51, maxCredits: 500, pricePerCredit: 0.85, discount: 15, tierName: 'Volume' },
-    { minCredits: 501, maxCredits: 5000, pricePerCredit: 0.70, discount: 30, tierName: 'Business' },
-    { minCredits: 5001, maxCredits: 50000, pricePerCredit: 0.55, discount: 45, tierName: 'Enterprise' },
-    { minCredits: 50001, maxCredits: Infinity, pricePerCredit: 0.40, discount: 60, tierName: 'Mega' }
+    { minCredits: 0, maxCredits: 50, pricePerCredit: 1.00, discount: 0, tierName: 'Starter' },
+    { minCredits: 51, maxCredits: 500, pricePerCredit: 0.85, discount: 15, tierName: 'Growth' },
+    { minCredits: 501, maxCredits: 5000, pricePerCredit: 0.70, discount: 30, tierName: 'Professional' },
+    { minCredits: 5001, maxCredits: 50000, pricePerCredit: 0.55, discount: 45, tierName: 'Corporate' },
+    { minCredits: 50001, maxCredits: Infinity, pricePerCredit: 0.40, discount: 60, tierName: 'Quantum' }
   ];
 
-  // Reserved Instance configurations
-  private reservedInstanceDiscounts = {
+  // Intelligence Commitment Plans - Long-term savings
+  private commitmentDiscounts = {
     '1-year': {
       'all-upfront': 0.40,    // 40% off
-      'partial-upfront': 0.35, // 35% off
+      'partial-upfront': 0.35, // 35% off  
       'no-upfront': 0.30      // 30% off
     },
     '3-year': {
-      'all-upfront': 0.72,    // 72% off (like AWS)
-      'partial-upfront': 0.65, // 65% off
-      'no-upfront': 0.54      // 54% off (like AWS Convertible RIs)
+      'all-upfront': 0.72,    // 72% off for maximum commitment
+      'partial-upfront': 0.65, // 65% off with flexibility
+      'no-upfront': 0.54      // 54% off with monthly payments
     }
   };
 
-  // Spot pricing dynamics
-  private spotPricingFactors = {
+  // Flash pricing dynamics - Opportunistic discounts
+  private flashPricingFactors = {
     baseDiscount: 0.70, // 70% off standard price
-    maxDiscount: 0.90,  // Up to 90% off (like AWS)
+    maxDiscount: 0.90,  // Up to 90% off during low demand
     minAvailability: 0.1,
     maxAvailability: 1.0
   };
 
-  // Free tier configuration
-  private freeTierConfig = {
-    alwaysFree: {
+  // Intelligence Grant configuration - Free credits program
+  private grantConfig = {
+    perpetual: {
       creditsPerMonth: 25,
       capabilities: ['text_generation_basic', 'image_analysis_basic']
     },
-    newUser12Months: {
+    starterYear: {
       creditsPerMonth: 100,
       capabilities: ['all_basic', 'limited_advanced']
     },
-    trials: {
+    discovery: {
       superIntelligence: { credits: 50, duration: 7 }, // 7 days
       quantumProcessing: { credits: 25, duration: 3 }  // 3 days
     }
@@ -124,40 +124,40 @@ export class AWSPricingModel {
     over150TB: 0.05
   };
 
-  private reservedInstances: Map<string, ReservedInstance[]> = new Map();
+  private intelligenceCommitments: Map<string, IntelligenceCommitment[]> = new Map();
   private userBudgets: Map<string, BudgetAlert[]> = new Map();
-  private spotAvailability: number = 0.5;
-  private currentSpotPrice: number = 0.3;
+  private flashAvailability: number = 0.5;
+  private currentFlashPrice: number = 0.3;
 
   constructor() {
-    this.initializeSpotPricing();
-    this.initializeFreeTier();
+    this.initializeFlashPricing();
+    this.initializeIntelligenceGrants();
   }
 
-  private initializeSpotPricing() {
-    // Simulate spot price fluctuations
+  private initializeFlashPricing() {
+    // Dynamic flash pricing based on system load
     setInterval(() => {
-      this.spotAvailability = 0.1 + Math.random() * 0.9;
-      const discountRange = this.spotPricingFactors.maxDiscount - this.spotPricingFactors.baseDiscount;
-      const variableDiscount = this.spotPricingFactors.baseDiscount + (1 - this.spotAvailability) * discountRange;
-      this.currentSpotPrice = 1 - variableDiscount;
+      this.flashAvailability = 0.1 + Math.random() * 0.9;
+      const discountRange = this.flashPricingFactors.maxDiscount - this.flashPricingFactors.baseDiscount;
+      const variableDiscount = this.flashPricingFactors.baseDiscount + (1 - this.flashAvailability) * discountRange;
+      this.currentFlashPrice = 1 - variableDiscount;
       
-      console.log(`🎯 Spot pricing update: ${(variableDiscount * 100).toFixed(0)}% off, Availability: ${(this.spotAvailability * 100).toFixed(0)}%`);
+      console.log(`⚡ Flash pricing update: ${(variableDiscount * 100).toFixed(0)}% off, Capacity: ${(this.flashAvailability * 100).toFixed(0)}%`);
     }, 30000); // Update every 30 seconds
   }
 
-  private initializeFreeTier() {
-    console.log('🎁 Free tier initialized with AWS-style benefits');
+  private initializeIntelligenceGrants() {
+    console.log('🎁 Intelligence Grants initialized with starter benefits');
   }
 
-  // Purchase Reserved Instance (like AWS RIs)
-  purchaseReservedInstance(
+  // Purchase Intelligence Commitment for long-term savings
+  purchaseIntelligenceCommitment(
     userId: string,
     creditsPerMonth: number,
     term: '1-year' | '3-year',
     paymentOption: 'all-upfront' | 'partial-upfront' | 'no-upfront'
-  ): ReservedInstance {
-    const discount = this.reservedInstanceDiscounts[term][paymentOption];
+  ): IntelligenceCommitment {
+    const discount = this.commitmentDiscounts[term][paymentOption];
     const months = term === '1-year' ? 12 : 36;
     const totalCredits = creditsPerMonth * months;
     const standardCost = totalCredits * 1.0; // Base price per credit
@@ -181,7 +181,7 @@ export class AWSPricingModel {
         break;
     }
 
-    const ri: ReservedInstance = {
+    const commitment: IntelligenceCommitment = {
       id: `ri-${Date.now()}`,
       userId,
       creditsPerMonth,
@@ -196,29 +196,29 @@ export class AWSPricingModel {
       totalSavings: standardCost - discountedCost
     };
 
-    if (!this.reservedInstances.has(userId)) {
-      this.reservedInstances.set(userId, []);
+    if (!this.intelligenceCommitments.has(userId)) {
+      this.intelligenceCommitments.set(userId, []);
     }
-    this.reservedInstances.get(userId)!.push(ri);
+    this.intelligenceCommitments.get(userId)!.push(commitment);
 
-    console.log(`💳 Reserved Instance purchased: ${term} term, ${paymentOption}, saving $${ri.totalSavings.toFixed(2)}`);
-    return ri;
+    console.log(`💳 Intelligence Commitment purchased: ${term} term, ${paymentOption}, saving $${commitment.totalSavings.toFixed(2)}`);
+    return commitment;
   }
 
-  // Get spot pricing (like AWS Spot Instances)
-  getSpotPricing(): SpotPricing {
-    const spotDiscount = 1 - this.currentSpotPrice;
-    const terminationRisk = 
-      this.spotAvailability > 0.7 ? 'low' :
-      this.spotAvailability > 0.3 ? 'medium' : 'high';
+  // Get flash pricing for opportunistic discounts
+  getFlashPricing(): FlashPricing {
+    const flashDiscount = 1 - this.currentFlashPrice;
+    const volatilityRisk = 
+      this.flashAvailability > 0.7 ? 'stable' :
+      this.flashAvailability > 0.3 ? 'moderate' : 'volatile';
 
     return {
-      currentPrice: this.currentSpotPrice,
-      spotDiscount,
-      availability: this.spotAvailability,
-      terminationRisk,
-      maxDuration: Math.floor(this.spotAvailability * 120), // Max 2 hours
-      recommendedWorkloads: [
+      currentPrice: this.currentFlashPrice,
+      flashDiscount,
+      availability: this.flashAvailability,
+      volatilityRisk,
+      maxDuration: Math.floor(this.flashAvailability * 120), // Max 2 hours
+      recommendedTasks: [
         'Batch processing',
         'Development/testing',
         'Fault-tolerant workloads',
@@ -266,34 +266,34 @@ export class AWSPricingModel {
     };
   }
 
-  // Get Free Tier benefits
-  getFreeTierBenefits(userId: string, accountAge: number): FreeTier[] {
-    const benefits: FreeTier[] = [];
+  // Get Intelligence Grant benefits
+  getIntelligenceGrants(userId: string, accountAge: number): IntelligenceGrant[] {
+    const benefits: IntelligenceGrant[] = [];
 
-    // Always Free tier
+    // Perpetual grant
     benefits.push({
-      type: 'always-free',
-      creditsPerMonth: this.freeTierConfig.alwaysFree.creditsPerMonth,
-      capabilities: this.freeTierConfig.alwaysFree.capabilities,
-      remaining: this.freeTierConfig.alwaysFree.creditsPerMonth
+      type: 'perpetual',
+      creditsPerMonth: this.grantConfig.perpetual.creditsPerMonth,
+      capabilities: this.grantConfig.perpetual.capabilities,
+      remaining: this.grantConfig.perpetual.creditsPerMonth
     });
 
-    // 12 Months Free (for new users)
+    // Starter year grant (for new users)
     if (accountAge < 365) {
       const remainingMonths = Math.ceil((365 - accountAge) / 30);
       benefits.push({
-        type: '12-months',
-        creditsPerMonth: this.freeTierConfig.newUser12Months.creditsPerMonth,
-        capabilities: this.freeTierConfig.newUser12Months.capabilities,
+        type: 'starter-year',
+        creditsPerMonth: this.grantConfig.starterYear.creditsPerMonth,
+        capabilities: this.grantConfig.starterYear.capabilities,
         expiryDate: new Date(Date.now() + remainingMonths * 30 * 24 * 60 * 60 * 1000),
-        remaining: this.freeTierConfig.newUser12Months.creditsPerMonth
+        remaining: this.grantConfig.starterYear.creditsPerMonth
       });
     }
 
-    // Trial offers
-    Object.entries(this.freeTierConfig.trials).forEach(([service, config]) => {
+    // Discovery grants
+    Object.entries(this.grantConfig.discovery).forEach(([service, config]: [string, any]) => {
       benefits.push({
-        type: 'trial',
+        type: 'discovery',
         creditsPerMonth: config.credits,
         capabilities: [service],
         expiryDate: new Date(Date.now() + config.duration * 24 * 60 * 60 * 1000),
@@ -304,7 +304,7 @@ export class AWSPricingModel {
     return benefits;
   }
 
-  // Calculate data transfer costs (like AWS)
+  // Calculate data transfer costs
   calculateDataTransferCost(gbTransferred: number): {
     cost: number;
     breakdown: { tier: string; gb: number; cost: number }[];
@@ -341,7 +341,7 @@ export class AWSPricingModel {
     return { cost: totalCost, breakdown };
   }
 
-  // Cost Calculator (like AWS Pricing Calculator)
+  // Intelligence Cost Calculator
   estimateCost(
     userId: string,
     estimatedCredits: number,
@@ -360,23 +360,23 @@ export class AWSPricingModel {
 
     if (considerReserved) {
       // Assume 1-year partial upfront for estimation
-      const riDiscount = this.reservedInstanceDiscounts['1-year']['partial-upfront'];
-      withReserved = standardCost * (1 - riDiscount);
+      const commitmentDiscount = this.commitmentDiscounts['1-year']['partial-upfront'];
+      withReserved = standardCost * (1 - commitmentDiscount);
     }
 
     if (considerSpot) {
-      const spotPricing = this.getSpotPricing();
-      withSpot = standardCost * this.currentSpotPrice;
+      const flashPricing = this.getFlashPricing();
+      withSpot = standardCost * this.currentFlashPrice;
     }
 
     const recommendations: string[] = [];
     
     if (estimatedCredits > 500) {
-      recommendations.push('Consider Reserved Instances for predictable workloads');
+      recommendations.push('Consider Intelligence Commitments for predictable workloads');
     }
     
     if (withSpot < standardCost * 0.5) {
-      recommendations.push('Use Spot pricing for fault-tolerant batch jobs');
+      recommendations.push('Use Flash pricing for fault-tolerant batch jobs');
     }
     
     if (estimatedCredits > 5000) {
@@ -404,7 +404,7 @@ export class AWSPricingModel {
     };
   }
 
-  // Set budget alert (like AWS Budgets)
+  // Set budget alert
   setBudgetAlert(
     userId: string,
     threshold: number,
@@ -470,10 +470,10 @@ export class AWSPricingModel {
     }
   }
 
-  // Get user's Reserved Instances
-  getUserReservedInstances(userId: string): ReservedInstance[] {
-    const instances = this.reservedInstances.get(userId) || [];
-    return instances.filter(ri => ri.endDate > new Date());
+  // Get user's Intelligence Commitments
+  getUserIntelligenceCommitments(userId: string): IntelligenceCommitment[] {
+    const commitments = this.intelligenceCommitments.get(userId) || [];
+    return commitments.filter((c: IntelligenceCommitment) => c.endDate > new Date());
   }
 
   // Calculate effective price considering all discounts
@@ -504,28 +504,28 @@ export class AWSPricingModel {
       total: 0
     };
 
-    // Check for Reserved Instances
-    const userRIs = this.getUserReservedInstances(userId);
-    if (userRIs.length > 0) {
-      const bestRI = userRIs.reduce((best, ri) => 
-        ri.discount > best.discount ? ri : best
+    // Check for Intelligence Commitments
+    const userCommitments = this.getUserIntelligenceCommitments(userId);
+    if (userCommitments.length > 0) {
+      const bestCommitment = userCommitments.reduce((best, c) => 
+        c.discount > best.discount ? c : best
       );
-      discounts.reserved = bestRI.discount * 100;
-      effectivePrice *= (1 - bestRI.discount);
+      discounts.reserved = bestCommitment.discount * 100;
+      effectivePrice *= (1 - bestCommitment.discount);
     }
 
-    // Apply spot pricing if requested
+    // Apply flash pricing if requested
     if (useSpot) {
-      const spotPricing = this.getSpotPricing();
-      discounts.spot = spotPricing.spotDiscount * 100;
-      effectivePrice *= this.currentSpotPrice;
+      const flashPricing = this.getFlashPricing();
+      discounts.spot = flashPricing.flashDiscount * 100;
+      effectivePrice *= this.currentFlashPrice;
     }
 
-    // Check free tier eligibility
+    // Check grant eligibility
     const accountAge = 30; // Days (would be calculated from user registration)
-    const freeTierBenefits = this.getFreeTierBenefits(userId, accountAge);
-    const totalFreeCredits = freeTierBenefits.reduce((sum, benefit) => 
-      sum + benefit.creditsPerMonth, 0
+    const intelligenceGrants = this.getIntelligenceGrants(userId, accountAge);
+    const totalFreeCredits = intelligenceGrants.reduce((sum, grant) => 
+      sum + grant.creditsPerMonth, 0
     );
     
     if (totalFreeCredits > 0) {
@@ -547,4 +547,4 @@ export class AWSPricingModel {
 }
 
 // Export singleton instance
-export const awsPricingModel = new AWSPricingModel();
+export const intelligencePricingEngine = new IntelligencePricingEngine();
