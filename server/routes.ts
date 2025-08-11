@@ -300,6 +300,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Deep learning endpoints
+  app.post('/api/ai/analyze-sentiment', isAuthenticated, async (req: any, res) => {
+    try {
+      const { text } = req.body;
+      const { deepLearning } = await import('./services/deep-learning');
+      
+      const sentiment = await deepLearning.analyzeSentiment(text);
+      res.json(sentiment);
+    } catch (error) {
+      console.error('Sentiment analysis error:', error);
+      res.status(500).json({ message: 'Failed to analyze sentiment' });
+    }
+  });
+
+  app.post('/api/ai/predict-completion', isAuthenticated, async (req: any, res) => {
+    try {
+      const { prompt, contentType } = req.body;
+      const { deepLearning } = await import('./services/deep-learning');
+      
+      const predictions = await deepLearning.predictCompletion(prompt, { type: contentType });
+      res.json({ suggestions: predictions });
+    } catch (error) {
+      console.error('Prediction error:', error);
+      res.status(500).json({ message: 'Failed to predict completions' });
+    }
+  });
+
+  app.post('/api/ai/track-behavior', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { interactions } = req.body;
+      const { deepLearning } = await import('./services/deep-learning');
+      
+      const profile = await deepLearning.analyzeUserBehavior(userId, interactions);
+      res.json({ 
+        profile: {
+          creativityPreference: profile.preferences.creativityPreference,
+          qualityPreference: profile.preferences.qualityPreference,
+          recommendations: profile.recommendations
+        }
+      });
+    } catch (error) {
+      console.error('Behavior tracking error:', error);
+      res.status(500).json({ message: 'Failed to track behavior' });
+    }
+  });
+
   // Training assistant routes
   app.post('/api/training/chat', isAuthenticated, async (req: any, res) => {
     try {

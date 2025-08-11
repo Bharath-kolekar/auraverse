@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { aiEnsemble } from "./ai-ensemble";
 import { continuousImprovement } from "./continuous-improvement";
+import { deepLearning } from "./deep-learning";
 
 const apiKey = process.env.OPENAI_API_KEY_NEW || process.env.OPENAI_API_KEY;
 
@@ -257,19 +258,31 @@ class AIService {
       this.updateProgress(jobId, 25);
       const optimizedPrompt = await continuousImprovement.optimizePrompt(request.prompt, 'image');
       
+      // Get deep learning insights
+      const contentInsights = await deepLearning.getContentInsights(request);
+      
+      // Apply emotional intelligence from sentiment analysis
+      let emotionallyEnhancedPrompt = optimizedPrompt;
+      if (contentInsights.sentiment.sentiment === 'positive') {
+        emotionallyEnhancedPrompt += ', vibrant and uplifting';
+      } else if (contentInsights.sentiment.sentiment === 'negative') {
+        emotionallyEnhancedPrompt += ', thoughtful and meaningful';
+      }
+      
       // Get A/B test variant for parameters
       const abTestVariant = await continuousImprovement.getABTestVariant('image', request.userId);
       const testParams = abTestVariant ? abTestVariant.parameters : {};
       
-      // Get dynamically tuned parameters
+      // Get dynamically tuned parameters with user behavior insights
       const tunedParams = await continuousImprovement.getTunedParameters('image', {
         ...optimalSettings,
         ...testParams,
+        ...(contentInsights.userProfile?.preferredSettings || {}),
         style: request.style
       });
       
       this.updateProgress(jobId, 30);
-      const enhancedPrompt = await this.aiEngine.optimizePrompt(optimizedPrompt, 'image', intentAnalysis);
+      const enhancedPrompt = await this.aiEngine.optimizePrompt(emotionallyEnhancedPrompt, 'image', intentAnalysis);
       
       // Use ensemble learning for superior results when enabled
       if (request.useEnsemble !== false) {
@@ -297,8 +310,12 @@ class AIService {
             intentAnalysis: intentAnalysis,
             optimalSettings: optimalSettings,
             model: ensembleResult.selectedModel,
-            mode: 'ensemble_ai',
+            mode: 'ensemble_ai_with_deep_learning',
             aiEnhancements: [
+              'deep_learning_neural_networks',
+              'sentiment_analysis',
+              'predictive_completion',
+              'user_behavior_analysis',
               'ensemble_learning',
               'cross_validation',
               'quality_scoring',
@@ -311,6 +328,11 @@ class AIService {
               selectedModel: ensembleResult.selectedModel,
               reasoning: ensembleResult.reasoning,
               alternativeResults: ensembleResult.allResults.slice(1, 4)
+            },
+            deepLearningInsights: {
+              sentiment: contentInsights.sentiment,
+              userProfile: contentInsights.userProfile,
+              recommendations: contentInsights.recommendations
             }
           }
         };
