@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import { useNeuralTheme } from './NeuralThemeProvider';
 
 interface NeuralProgressProps {
   value: number; // 0 to 100
@@ -14,6 +15,7 @@ export function NeuralProgress({
   showPercentage = true,
   size = "medium"
 }: NeuralProgressProps) {
+  const { theme } = useNeuralTheme();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>();
   

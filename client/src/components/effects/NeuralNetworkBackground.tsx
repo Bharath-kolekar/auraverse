@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useNeuralTheme } from './NeuralThemeProvider';
 
 interface NeuralNetworkBackgroundProps {
   particleCount?: number;
@@ -7,12 +8,15 @@ interface NeuralNetworkBackgroundProps {
 }
 
 export function NeuralNetworkBackground({ 
-  particleCount = 50, 
+  particleCount, 
   opacity = 0.3,
   className = ""
 }: NeuralNetworkBackgroundProps) {
+  const { theme } = useNeuralTheme();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>();
+  
+  const finalParticleCount = particleCount || theme.effects.particleCount;
   
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -39,12 +43,12 @@ export function NeuralNetworkBackground({
     }> = [];
 
     // Initialize particles
-    for (let i = 0; i < particleCount; i++) {
+    for (let i = 0; i < finalParticleCount; i++) {
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.3,
-        vy: (Math.random() - 0.5) * 0.3,
+        vx: (Math.random() - 0.5) * theme.effects.particleSpeed,
+        vy: (Math.random() - 0.5) * theme.effects.particleSpeed,
         radius: Math.random() * 2 + 1
       });
     }
@@ -74,19 +78,20 @@ export function NeuralNetworkBackground({
               Math.pow(particle.y - other.y, 2)
             );
             
-            if (distance < 150) {
+            if (distance < theme.effects.connectionDistance) {
               ctx.beginPath();
               ctx.moveTo(particle.x, particle.y);
               ctx.lineTo(other.x, other.y);
-              const connectionOpacity = (1 - (distance / 150)) * opacity;
+              const connectionOpacity = (1 - (distance / theme.effects.connectionDistance)) * opacity * theme.effects.glowIntensity;
               
-              // Triple gradient effect on connections
+              // Theme-based gradient effect on connections
               const gradient = ctx.createLinearGradient(
                 particle.x, particle.y, other.x, other.y
               );
-              gradient.addColorStop(0, `rgba(168, 85, 247, ${connectionOpacity})`); // purple
-              gradient.addColorStop(0.5, `rgba(34, 211, 238, ${connectionOpacity})`); // cyan
-              gradient.addColorStop(1, `rgba(244, 114, 182, ${connectionOpacity})`); // pink
+              const colors = theme.particleColors;
+              gradient.addColorStop(0, colors[0] + Math.floor(connectionOpacity * 255).toString(16).padStart(2, '0'));
+              gradient.addColorStop(0.5, colors[1] + Math.floor(connectionOpacity * 255).toString(16).padStart(2, '0'));
+              gradient.addColorStop(1, colors[2] + Math.floor(connectionOpacity * 255).toString(16).padStart(2, '0'));
               
               ctx.strokeStyle = gradient;
               ctx.lineWidth = 0.5;
@@ -100,18 +105,18 @@ export function NeuralNetworkBackground({
           particle.x, particle.y, 0,
           particle.x, particle.y, particle.radius * 2
         );
-        gradient.addColorStop(0, `rgba(168, 85, 247, ${opacity * 2})`); // purple center
-        gradient.addColorStop(0.5, `rgba(34, 211, 238, ${opacity * 1.5})`); // cyan middle
-        gradient.addColorStop(1, `rgba(244, 114, 182, ${opacity})`); // pink edge
+        gradient.addColorStop(0, `rgba(${theme.primary}, ${opacity * 2 * theme.effects.glowIntensity})`);
+        gradient.addColorStop(0.5, `rgba(${theme.secondary}, ${opacity * 1.5 * theme.effects.glowIntensity})`);
+        gradient.addColorStop(1, `rgba(${theme.tertiary}, ${opacity * theme.effects.glowIntensity})`);
         
         ctx.beginPath();
         ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
         ctx.fillStyle = gradient;
         ctx.fill();
         
-        // Add shadow blur for depth
+        // Add shadow blur for depth with theme color
         ctx.shadowBlur = 15;
-        ctx.shadowColor = 'rgba(168, 85, 247, 0.5)';
+        ctx.shadowColor = theme.glow;
         ctx.fill();
         ctx.shadowBlur = 0;
       });
@@ -127,7 +132,7 @@ export function NeuralNetworkBackground({
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [particleCount, opacity]);
+  }, [finalParticleCount, opacity, theme]);
 
   return (
     <>

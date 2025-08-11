@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { NeuralButton } from "./NeuralButton";
+import { useNeuralTheme } from './NeuralThemeProvider';
 
 interface NeuralModalProps {
   isOpen: boolean;
@@ -18,6 +19,7 @@ export function NeuralModal({
   children,
   size = "medium"
 }: NeuralModalProps) {
+  const { theme } = useNeuralTheme();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>();
   

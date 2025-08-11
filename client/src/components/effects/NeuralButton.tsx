@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import { useNeuralTheme } from './NeuralThemeProvider';
 
 interface NeuralButtonProps {
   children: React.ReactNode;
@@ -18,6 +19,7 @@ export function NeuralButton({
   disabled,
   type = "button"
 }: NeuralButtonProps) {
+  const { theme } = useNeuralTheme();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>();
   const isHovered = useRef(false);
@@ -85,9 +87,9 @@ export function NeuralButton({
                 const gradient = ctx.createLinearGradient(
                   particle.x, particle.y, other.x, other.y
                 );
-                gradient.addColorStop(0, `rgba(168, 85, 247, ${particle.opacity * 0.2})`);
-                gradient.addColorStop(0.5, `rgba(34, 211, 238, ${particle.opacity * 0.2})`);
-                gradient.addColorStop(1, `rgba(244, 114, 182, ${particle.opacity * 0.2})`);
+                gradient.addColorStop(0, `rgba(${theme.primary}, ${particle.opacity * 0.2})`);
+                gradient.addColorStop(0.5, `rgba(${theme.secondary}, ${particle.opacity * 0.2})`);
+                gradient.addColorStop(1, `rgba(${theme.tertiary}, ${particle.opacity * 0.2})`);
                 
                 ctx.beginPath();
                 ctx.moveTo(particle.x, particle.y);
@@ -104,15 +106,15 @@ export function NeuralButton({
             particle.x, particle.y, 0,
             particle.x, particle.y, particle.radius * 2
           );
-          gradient.addColorStop(0, `rgba(168, 85, 247, ${particle.opacity})`);
-          gradient.addColorStop(0.5, `rgba(34, 211, 238, ${particle.opacity * 0.8})`);
-          gradient.addColorStop(1, `rgba(244, 114, 182, ${particle.opacity * 0.5})`);
+          gradient.addColorStop(0, `rgba(${theme.primary}, ${particle.opacity})`);
+          gradient.addColorStop(0.5, `rgba(${theme.secondary}, ${particle.opacity * 0.8})`);
+          gradient.addColorStop(1, `rgba(${theme.tertiary}, ${particle.opacity * 0.5})`);
           
           ctx.beginPath();
           ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
           ctx.fillStyle = gradient;
           ctx.shadowBlur = 10;
-          ctx.shadowColor = 'rgba(168, 85, 247, 0.5)';
+          ctx.shadowColor = theme.glow;
           ctx.fill();
           ctx.shadowBlur = 0;
         }
@@ -128,11 +130,11 @@ export function NeuralButton({
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, []);
+  }, [theme]);
 
   const baseClasses = "relative px-6 py-3 font-bold tracking-wider overflow-hidden rounded-xl transition-all duration-300";
   const variantClasses = {
-    primary: "bg-gradient-to-r from-purple-600 via-cyan-600 to-pink-600 text-white shadow-lg hover:shadow-xl",
+    primary: `text-white shadow-lg hover:shadow-xl ${theme.gradients.button}`,
     secondary: "bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20",
     ghost: "text-white hover:bg-white/10"
   };

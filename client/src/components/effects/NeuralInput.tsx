@@ -1,5 +1,6 @@
 import { useEffect, useRef, InputHTMLAttributes, forwardRef } from "react";
 import { motion } from "framer-motion";
+import { useNeuralTheme } from './NeuralThemeProvider';
 
 interface NeuralInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
   label?: string;
@@ -9,6 +10,7 @@ interface NeuralInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, '
 
 export const NeuralInput = forwardRef<HTMLInputElement, NeuralInputProps>(
   ({ label, onChange, error, className = "", ...props }, ref) => {
+    const { theme } = useNeuralTheme();
     const containerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const animationRef = useRef<number>();

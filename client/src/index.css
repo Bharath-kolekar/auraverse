@@ -345,6 +345,15 @@ body {
   animation: shimmer 2s linear infinite;
 }
 
+/* Neural theme CSS variables */
+:root {
+  --neural-primary: 64, 224, 208;
+  --neural-secondary: 72, 209, 204;
+  --neural-tertiary: 127, 255, 212;
+  --neural-accent: 152, 251, 152;
+  --neural-glow: rgba(127, 255, 212, 0.4);
+}
+
 /* Particles background animation */
 .particles-bg {
   position: absolute;

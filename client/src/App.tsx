@@ -7,6 +7,8 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { TransitionProvider } from "@/contexts/TransitionContext";
 import { TrainingAssistantButton } from "@/components/ui/training-assistant-button";
 import { PageTransition, PageLoadingSkeleton } from "@/components/ui/page-transition";
+import { NeuralThemeProvider } from "@/components/effects/NeuralThemeProvider";
+import { NeuralThemeSelector } from "@/components/effects/NeuralThemeSelector";
 import { useAuth } from "@/hooks/useAuth";
 import { useState, useEffect } from "react";
 
@@ -94,14 +96,17 @@ function AppContent() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <TransitionProvider>
-          <TooltipProvider>
-            <Toaster />
-            <AppContent />
-          </TooltipProvider>
-        </TransitionProvider>
-      </ThemeProvider>
+      <NeuralThemeProvider>
+        <ThemeProvider>
+          <TransitionProvider>
+            <TooltipProvider>
+              <Toaster />
+              <AppContent />
+              <NeuralThemeSelector />
+            </TooltipProvider>
+          </TransitionProvider>
+        </ThemeProvider>
+      </NeuralThemeProvider>
     </QueryClientProvider>
   );
 }
