@@ -110,16 +110,9 @@ export default function IntelligenceGateway() {
   });
 
   // Fetch capabilities
-  const capabilitiesMutation = useMutation({
-    mutationFn: async (filters: any) => {
-      return await apiRequest('/api/gateway/capabilities', 'POST', filters);
-    },
-    onSuccess: (data) => {
-      console.log('Capabilities loaded:', data);
-    },
-    onError: (error) => {
-      console.error('Failed to load capabilities:', error);
-    }
+  const { data: capabilitiesData, isLoading: capabilitiesLoading } = useQuery({
+    queryKey: ['/api/gateway/capabilities'],
+    enabled: true
   });
 
   // Test capability mutation

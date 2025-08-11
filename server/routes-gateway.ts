@@ -80,7 +80,7 @@ router.get('/behaviors/:tier?', async (req, res) => {
       success: true,
       behaviors,
       count: behaviors.length,
-      categories: [...new Set(behaviors.map(b => b.category))]
+      categories: Array.from(new Set(behaviors.map(b => b.category)))
     });
   } catch (error) {
     console.error('Failed to get behaviors:', error);
@@ -91,7 +91,25 @@ router.get('/behaviors/:tier?', async (req, res) => {
   }
 });
 
-// Get capabilities with optional filters
+// GET /api/gateway/capabilities - Get all available AI capabilities
+router.get('/capabilities', async (req, res) => {
+  try {
+    console.log('Fetching AI capabilities...');
+    const capabilities = await gatewayOrchestrator.getCapabilities();
+    res.json({
+      success: true,
+      capabilities
+    });
+  } catch (error) {
+    console.error('Failed to get capabilities:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to retrieve capabilities'
+    });
+  }
+});
+
+// POST /api/gateway/capabilities - Get capabilities with optional filters
 router.post('/capabilities', async (req, res) => {
   try {
     const filters = req.body;
@@ -235,8 +253,8 @@ router.post('/evolve', isAuthenticated, async (req: any, res) => {
 
     res.json({
       success: true,
-      ...response,
-      message: 'Intelligence configuration evolved successfully'
+      message: 'Intelligence configuration evolved successfully',
+      ...response
     });
   } catch (error) {
     console.error('Evolve intelligence failed:', error);
