@@ -10,6 +10,7 @@ import {
   LogOut,
   Brain
 } from "lucide-react";
+import { LogoAdvanced } from "@/components/logos/LogoAdvanced";
 
 export function Navbar() {
   const [location] = useLocation();
@@ -33,38 +34,11 @@ export function Navbar() {
           {/* Logo */}
           <Link href="/">
             <motion.div 
-              className="flex items-center space-x-4 cursor-pointer group"
+              className="cursor-pointer"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              {/* Stunning Brain Icon with Advanced Glow Effect */}
-              <div className="relative logo-float-effect">
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-cyan-500 to-pink-600 rounded-2xl blur-xl opacity-75 animate-pulse"></div>
-                <div className="absolute inset-0 bg-gradient-to-r from-pink-600 via-purple-600 to-cyan-500 rounded-2xl blur-xl opacity-50 animate-pulse animation-delay-1000"></div>
-                <div className="relative w-14 h-14 bg-gradient-to-br from-purple-600 via-cyan-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-2xl transform transition-all duration-300 group-hover:rotate-12 logo-glow-effect">
-                  <Brain className="h-8 w-8 text-white drop-shadow-lg animate-pulse" />
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-white/0 to-white/30 shimmer-text"></div>
-                </div>
-              </div>
-              
-              {/* Stunning Text Logo */}
-              <div className="flex flex-col">
-                <div className="flex items-baseline space-x-2">
-                  <h1 className="text-3xl font-black tracking-tight">
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-cyan-400 to-pink-400 drop-shadow-sm">
-                      COGNO
-                    </span>
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-pink-400 to-purple-400 drop-shadow-sm">
-                      MEGA
-                    </span>
-                  </h1>
-                </div>
-                <div className="flex justify-end mt-0.5">
-                  <p className="text-[11px] font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-cyan-300 uppercase">
-                    Production Intelligence
-                  </p>
-                </div>
-              </div>
+              <LogoAdvanced size="default" />
             </motion.div>
           </Link>
 

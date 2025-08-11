@@ -19,6 +19,7 @@ import { AchievementPanel } from '@/components/achievements/AchievementPanel';
 import { useTrackActivity, useUserStats } from '@/hooks/useAchievements';
 import { TransitionSettings } from '@/components/ui/transition-settings';
 import { PredictivePrompt } from '@/components/PredictivePrompt';
+import { LogoAdvanced } from '@/components/logos/LogoAdvanced';
 
 export default function Home() {
   const { user } = useAuth();
@@ -206,22 +207,7 @@ export default function Home() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                {/* Stunning Brain Icon with Glow */}
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-cyan-500 to-pink-600 rounded-xl blur-lg opacity-75 animate-pulse"></div>
-                  <div className="relative w-12 h-12 bg-gradient-to-br from-purple-600 via-cyan-500 to-pink-600 rounded-xl flex items-center justify-center shadow-2xl">
-                    <Brain className="w-7 h-7 text-white drop-shadow-lg" />
-                  </div>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-2xl font-bold">
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-cyan-400 to-pink-400">COGNO</span>
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-pink-400 to-purple-400">MEGA</span>
-                  </span>
-                  <span className="text-[9px] font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-cyan-300 uppercase text-right block">
-                    Production Intelligence
-                  </span>
-                </div>
+                <LogoAdvanced size="small" />
               </motion.div>
             </div>
             
