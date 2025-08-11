@@ -22,41 +22,16 @@ const supportedLanguages = [
   { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' }
 ];
 
-const proactiveMessages = [
-  { 
-    trigger: 'idle_5s',
-    messages: [
-      'How can I assist you today with AI content creation?',
-      'Would you like to explore our voice command features?',
-      'I can help you create professional quality content. What would you like to make?',
-      'Looking for something specific? Just ask!',
-      'I\'m here to help. You can ask me anything about the platform.'
-    ],
-    cooldown: 60000 // 1 minute cooldown
-  },
-  {
-    trigger: 'scroll_features',
-    messages: [
-      'I notice you\'re exploring our features. Any questions?',
-      'Would you like to learn more about what you\'re viewing?',
-      'I can explain any feature in detail. Just ask!',
-      'Curious about something? I\'m here to help.',
-      'Feel free to ask about any feature that interests you.'
-    ],
-    cooldown: 45000 // 45 seconds cooldown
-  },
-  {
-    trigger: 'hover_cta',
-    messages: [
-      'I can help you get started whenever you\'re ready.',
-      'Questions about getting started? I\'m here to help.',
-      'Would you like to know more about our platform?',
-      'I can guide you through any of our features.',
-      'Feel free to ask me anything about the platform.'
-    ],
-    cooldown: 90000 // 1.5 minute cooldown
-  }
-];
+// Workflow states for iterative improvements
+const WORKFLOW_STATES = {
+  IDLE: 'idle',
+  LISTENING: 'listening',
+  PROCESSING: 'processing',
+  CREATING: 'creating',
+  REVIEWING: 'reviewing',
+  SAVING: 'saving',
+  COMPLETE: 'complete'
+};
 
 export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -67,15 +42,18 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
   const [showLanguages, setShowLanguages] = useState(false);
   const [recognition, setRecognition] = useState<any | null>(null);
   const [synthesis, setSynthesis] = useState<SpeechSynthesis | null>(null);
-  const [proactiveTriggered, setProactiveTriggered] = useState<Set<string>>(new Set());
-  const [messageCooldowns, setMessageCooldowns] = useState<Map<string, number>>(new Map());
-  const [messageIndex, setMessageIndex] = useState<Map<string, number>>(new Map());
   const [nlpEngine] = useState(() => new NLPConversationEngine(selectedLanguage));
   const { executeCommand, isProcessing } = useVoiceActions();
   const [conversationHistory, setConversationHistory] = useState<Array<{type: 'user' | 'ai', message: string, timestamp: Date, language?: string, speaker?: string}>>([]);
   const [detectedSpeakers, setDetectedSpeakers] = useState<Set<string>>(new Set());
   const [currentSpeaker, setCurrentSpeaker] = useState<string>('Speaker 1');
   const [autoLanguageDetection, setAutoLanguageDetection] = useState(true);
+  const [workflowState, setWorkflowState] = useState(WORKFLOW_STATES.IDLE);
+  const [currentProject, setCurrentProject] = useState<any>(null);
+  const [silenceTimer, setSilenceTimer] = useState<NodeJS.Timeout | null>(null);
+  const [hasSpokenWelcome, setHasSpokenWelcome] = useState(false);
+  const [isUserSpeaking, setIsUserSpeaking] = useState(false);
+  const [lastInterimTranscript, setLastInterimTranscript] = useState('');
   
   useEffect(() => {
     const initializeSpeech = () => {
@@ -131,76 +109,77 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
     }
   }, [selectedLanguage]);
 
-  // Proactive messaging system
+  // Context-aware page guidance
   useEffect(() => {
-    const triggers = {
-      idle_5s: () => {
-        setTimeout(() => {
-          if (!proactiveTriggered.has('idle_5s')) {
-            showProactiveMessage('idle_5s');
-          }
-        }, 5000);
-      },
-      scroll_features: () => {
-        const handleScroll = () => {
-          const featuresSection = document.querySelector('[data-section="features"]');
-          if (featuresSection && !proactiveTriggered.has('scroll_features')) {
-            const rect = featuresSection.getBoundingClientRect();
-            if (rect.top <= window.innerHeight / 2) {
-              showProactiveMessage('scroll_features');
-            }
-          }
-        };
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-      },
-      hover_cta: () => {
-        const ctaButtons = document.querySelectorAll('.btn-primary');
-        const handleHover = () => {
-          if (!proactiveTriggered.has('hover_cta')) {
-            setTimeout(() => showProactiveMessage('hover_cta'), 1000);
-          }
-        };
-        ctaButtons.forEach(btn => btn.addEventListener('mouseenter', handleHover));
-        return () => ctaButtons.forEach(btn => btn.removeEventListener('mouseenter', handleHover));
-      }
+    if (!isOpen) return;
+    
+    const currentPath = window.location.pathname;
+    
+    // Provide proactive guidance based on current page
+    const pageGuidance: Record<string, string> = {
+      '/create': 'I see you\'re in the Create Studio. What type of content would you like to create? You can say "video", "audio", or "VFX".',
+      '/gallery': 'Welcome to your Gallery. Would you like to view your recent creations or search for something specific?',
+      '/marketplace': 'This is the Marketplace. You can browse content, purchase assets, or list your own creations for sale.',
+      '/intelligence': 'You\'re in the Intelligence Gateway. Which AI model would you like to use for your project?'
     };
-
-    const cleanups = Object.values(triggers).map(trigger => trigger());
     
-    return () => {
-      cleanups.forEach(cleanup => cleanup && cleanup());
-    };
-  }, [proactiveTriggered]);
-
-  const showProactiveMessage = (trigger: string) => {
-    // Check cooldown
-    const lastShown = messageCooldowns.get(trigger);
-    const now = Date.now();
-    
-    const messageData = proactiveMessages.find(msg => msg.trigger === trigger);
-    if (!messageData) return;
-    
-    // Check if message is on cooldown
-    if (lastShown && (now - lastShown) < messageData.cooldown) {
-      console.log(`Message ${trigger} on cooldown for ${(messageData.cooldown - (now - lastShown)) / 1000}s`);
-      return;
+    const guidance = pageGuidance[currentPath];
+    if (guidance && !hasSpokenWelcome) {
+      setTimeout(() => {
+        if (!isSpeaking && !isListening) {
+          speakMessage(guidance);
+          setHasSpokenWelcome(true);
+        }
+      }, 1500);
     }
+  }, [isOpen, hasSpokenWelcome]);
+
+  // Workflow management for iterative improvements
+  const handleWorkflowStep = async (step: string, data?: any) => {
+    console.log('Workflow step:', step, 'Current state:', workflowState);
     
-    // Get the next message in rotation
-    const currentIndex = messageIndex.get(trigger) || 0;
-    const message = messageData.messages[currentIndex % messageData.messages.length];
-    
-    // Update index for next time
-    setMessageIndex(prev => new Map(prev).set(trigger, currentIndex + 1));
-    
-    // Update cooldown
-    setMessageCooldowns(prev => new Map(prev).set(trigger, now));
-    
-    setCurrentMessage(message);
-    setIsOpen(true);
-    speakMessage(message);
-    setProactiveTriggered(prev => new Set(Array.from(prev).concat([trigger])));
+    switch (step) {
+      case 'CREATE':
+        setWorkflowState(WORKFLOW_STATES.CREATING);
+        speakMessage('Creating your content now. I\'ll let you know when it\'s ready for review.');
+        // Execute creation logic
+        setTimeout(() => {
+          setWorkflowState(WORKFLOW_STATES.REVIEWING);
+          speakMessage('Your content is ready. Would you like to review it or make any changes?');
+        }, 3000);
+        break;
+        
+      case 'REVIEW':
+        setWorkflowState(WORKFLOW_STATES.REVIEWING);
+        speakMessage('Please review the content. Let me know if you need any modifications.');
+        break;
+        
+      case 'MODIFY':
+        setWorkflowState(WORKFLOW_STATES.CREATING);
+        speakMessage('Making the requested changes. One moment please.');
+        setTimeout(() => {
+          setWorkflowState(WORKFLOW_STATES.REVIEWING);
+          speakMessage('Changes complete. How does it look now?');
+        }, 2000);
+        break;
+        
+      case 'SAVE':
+        setWorkflowState(WORKFLOW_STATES.SAVING);
+        speakMessage('Where would you like to save this file? You can specify a project name or folder.');
+        break;
+        
+      case 'COMPLETE':
+        setWorkflowState(WORKFLOW_STATES.COMPLETE);
+        speakMessage('Great! Your content has been saved successfully. Would you like to create something else?');
+        setCurrentProject(null);
+        setTimeout(() => {
+          setWorkflowState(WORKFLOW_STATES.IDLE);
+        }, 5000);
+        break;
+        
+      default:
+        setWorkflowState(WORKFLOW_STATES.IDLE);
+    }
   };
 
   const speakMessage = (message: string, targetLanguage?: string) => {
@@ -229,14 +208,13 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
         utterance.onend = () => {
           console.log('Speech ended');
           setIsSpeaking(false);
-          // Auto-start listening after speech ends if assistant is open
-          if (isOpen && recognition && !isSpeaking) {
+          // Only start listening if user hasn't started speaking
+          if (isOpen && recognition && !isUserSpeaking && workflowState !== WORKFLOW_STATES.COMPLETE) {
             setTimeout(() => {
-              console.log('Auto-starting listening after speech');
-              if (!isListening && !isSpeaking) { // Double-check states
+              if (!isListening && !isSpeaking && !isUserSpeaking) {
                 startListening();
               }
-            }, 1000); // Increased delay to prevent overlap
+            }, 1500); // Wait longer to ensure user can start speaking
           }
         };
         
@@ -307,7 +285,37 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
         
         console.log('Transcript:', transcript, 'isFinal:', lastResult.isFinal);
         
-        if (lastResult.isFinal && transcript.trim()) {
+        // Clear silence timer when user speaks
+        if (silenceTimer) {
+          clearTimeout(silenceTimer);
+          setSilenceTimer(null);
+        }
+        
+        if (!lastResult.isFinal) {
+          // User is still speaking - track interim results
+          setIsUserSpeaking(true);
+          setLastInterimTranscript(transcript);
+          
+          // Set a timer to detect when user stops speaking
+          const timer = setTimeout(() => {
+            setIsUserSpeaking(false);
+            if (lastInterimTranscript && lastInterimTranscript.trim()) {
+              // Process the last interim transcript as final
+              console.log('Processing after silence:', lastInterimTranscript);
+              setIsListening(false);
+              
+              const detectedLanguage = detectLanguage(lastInterimTranscript.trim());
+              const speakerId = identifySpeaker(lastInterimTranscript.trim());
+              
+              handleVoiceCommand(lastInterimTranscript.trim(), detectedLanguage, speakerId);
+              setLastInterimTranscript('');
+            }
+          }, 2000); // Wait 2 seconds of silence before processing
+          
+          setSilenceTimer(timer);
+        } else if (transcript.trim()) {
+          // Final transcript received
+          setIsUserSpeaking(false);
           console.log('Processing final transcript:', transcript);
           setIsListening(false);
           
@@ -443,27 +451,59 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
 
   const generateContextualResponse = async (command: string, language: string, speakerId: string): Promise<string> => {
     console.log('Generating contextual response for:', command);
+    const lowerCommand = command.toLowerCase();
+    
+    // Check for workflow-specific commands
+    if (lowerCommand.includes('vfx') || lowerCommand.includes('visual effect')) {
+      setWorkflowState(WORKFLOW_STATES.PROCESSING);
+      setCurrentProject({ type: 'vfx', request: command });
+      
+      // Navigate to create page and select VFX
+      const actionResult = await executeCommand('create vfx');
+      if (actionResult.success && actionResult.redirect) {
+        setTimeout(() => {
+          // Auto-select VFX option after navigation
+          const vfxButton = document.querySelector('[data-content-type="vfx"]') as HTMLElement;
+          if (vfxButton) {
+            vfxButton.click();
+            handleWorkflowStep('CREATE');
+          }
+        }, 1500);
+      }
+      return 'Perfect! Let me help you create VFX content. I\'m opening the Create Studio and selecting VFX for you.';
+    }
+    
+    // Check for review/modification commands
+    if (workflowState === WORKFLOW_STATES.REVIEWING) {
+      if (lowerCommand.includes('change') || lowerCommand.includes('modify') || lowerCommand.includes('different')) {
+        handleWorkflowStep('MODIFY');
+        return 'I understand. What specific changes would you like me to make?';
+      }
+      if (lowerCommand.includes('good') || lowerCommand.includes('perfect') || lowerCommand.includes('save')) {
+        handleWorkflowStep('SAVE');
+        return 'Excellent! Let me save this for you.';
+      }
+    }
+    
+    // Check for save location
+    if (workflowState === WORKFLOW_STATES.SAVING) {
+      setCurrentProject({ ...currentProject, savePath: command });
+      handleWorkflowStep('COMPLETE');
+      return `Perfect! I\'ve saved your project as "${command}". It\'s ready for use.`;
+    }
     
     // First priority: Execute action commands
     const actionResult = await executeCommand(command);
     if (actionResult.success) {
       console.log('Executed action:', actionResult.action, actionResult.message);
       
-      // If there's a redirect, provide enhanced feedback and execute navigation
+      // If there's a redirect, provide enhanced feedback
       if (actionResult.redirect) {
         console.log('Navigation command received for:', actionResult.redirect);
-        setCurrentMessage(actionResult.message + ' - Create Studio opening now!');
+        setCurrentMessage(actionResult.message + ' Opening now!');
         
-        // Additional navigation verification
-        setTimeout(() => {
-          const currentPath = window.location.pathname;
-          console.log('Current browser path after navigation:', currentPath);
-          if (currentPath !== actionResult.redirect) {
-            console.log('Navigation may have failed, current path:', currentPath, 'expected:', actionResult.redirect);
-          } else {
-            console.log('Navigation successful to:', currentPath);
-          }
-        }, 1000);
+        // Reset welcome message for new page
+        setHasSpokenWelcome(false);
       }
       
       return actionResult.message;
