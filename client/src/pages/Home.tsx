@@ -18,6 +18,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { AchievementPanel } from '@/components/achievements/AchievementPanel';
 import { useTrackActivity, useUserStats } from '@/hooks/useAchievements';
 import { TransitionSettings } from '@/components/ui/transition-settings';
+import { PredictivePrompt } from '@/components/PredictivePrompt';
 
 export default function Home() {
   const { user } = useAuth();
@@ -28,6 +29,9 @@ export default function Home() {
   const [themeCustomizerOpen, setThemeCustomizerOpen] = useState(false);
   const [achievementPanelOpen, setAchievementPanelOpen] = useState(false);
   const [transitionSettingsOpen, setTransitionSettingsOpen] = useState(false);
+  const [promptValue, setPromptValue] = useState('');
+  const [selectedContentType, setSelectedContentType] = useState<'image' | 'video' | 'audio' | 'text'>('image');
+  const [isGenerating, setIsGenerating] = useState(false);
   const { currentTheme, themeName } = useTheme();
   const trackActivity = useTrackActivity();
   const { stats: userStats } = useUserStats();
@@ -304,6 +308,130 @@ export default function Home() {
               </motion.div>
             ))}
           </div>
+        </motion.div>
+
+        {/* Predictive Prompt Demo Section */}
+        <motion.div 
+          className="mb-12"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.8 }}
+        >
+          <Card className="glass-card p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg">
+                <Brain className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-white">AI-Powered Predictive Prompt</h2>
+                <p className="text-white/60 text-sm mt-1">Start typing and watch our deep learning system suggest completions in real-time</p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              {/* Content Type Selector */}
+              <div className="flex gap-2 mb-4">
+                {(['image', 'video', 'audio', 'text'] as const).map((type) => (
+                  <Button
+                    key={type}
+                    variant={selectedContentType === type ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setSelectedContentType(type)}
+                    className={selectedContentType === type ? "bg-gradient-to-r from-purple-600 to-pink-600" : "glass-card"}
+                  >
+                    {type === 'image' && <Image className="w-4 h-4 mr-1" />}
+                    {type === 'video' && <Video className="w-4 h-4 mr-1" />}
+                    {type === 'audio' && <Music className="w-4 h-4 mr-1" />}
+                    {type === 'text' && <Code2 className="w-4 h-4 mr-1" />}
+                    {type.charAt(0).toUpperCase() + type.slice(1)}
+                  </Button>
+                ))}
+              </div>
+
+              {/* Predictive Prompt Input */}
+              <PredictivePrompt
+                value={promptValue}
+                onChange={setPromptValue}
+                placeholder={`Describe the ${selectedContentType} you want to create...`}
+                contentType={selectedContentType}
+                onSubmit={() => {
+                  setIsGenerating(true);
+                  // Simulate generation
+                  setTimeout(() => {
+                    setIsGenerating(false);
+                    trackActivity('content_generated', { 
+                      contentType: selectedContentType,
+                      prompt: promptValue 
+                    });
+                  }, 2000);
+                }}
+              />
+
+              {/* Generate Button */}
+              <div className="flex items-center gap-4">
+                <Button
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg"
+                  disabled={!promptValue || isGenerating}
+                  onClick={() => {
+                    setIsGenerating(true);
+                    setTimeout(() => {
+                      setIsGenerating(false);
+                      trackActivity('content_generated', { 
+                        contentType: selectedContentType,
+                        prompt: promptValue 
+                      });
+                    }, 2000);
+                  }}
+                >
+                  {isGenerating ? (
+                    <>
+                      <motion.div 
+                        className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full"
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      />
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4 mr-2" />
+                      Generate {selectedContentType.charAt(0).toUpperCase() + selectedContentType.slice(1)}
+                    </>
+                  )}
+                </Button>
+
+                <div className="flex items-center gap-2 text-sm text-white/60">
+                  <Brain className="w-4 h-4" />
+                  <span>Neural network predictions powered by WebAssembly</span>
+                </div>
+              </div>
+
+              {/* Features List */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 pt-6 border-t border-white/10">
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-400 mt-0.5" />
+                  <div>
+                    <h4 className="text-white font-semibold text-sm">Sentiment Analysis</h4>
+                    <p className="text-white/60 text-xs mt-1">Understands emotions in your prompts</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-400 mt-0.5" />
+                  <div>
+                    <h4 className="text-white font-semibold text-sm">User Behavior Learning</h4>
+                    <p className="text-white/60 text-xs mt-1">Adapts to your preferences over time</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-400 mt-0.5" />
+                  <div>
+                    <h4 className="text-white font-semibold text-sm">Real-time Predictions</h4>
+                    <p className="text-white/60 text-xs mt-1">Instant suggestions as you type</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card>
         </motion.div>
 
         {/* Performance Metrics Dashboard */}
