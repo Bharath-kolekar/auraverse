@@ -17,6 +17,7 @@ import { registerSuperIntelligenceRoutes } from "./routes-super-intelligence";
 import advancedAiRoutes from "./routes-advanced-ai";
 import cacheRoutes from "./routes-cache";
 import gatewayRoutes from "./routes-gateway";
+import { registerAchievementRoutes } from "./routes-achievements";
 import { oscarStandardsService } from "./services/oscar-standards-service";
 import { productionIntelligenceService } from "./services/production-intelligence-service";
 import { enhancedRouterService } from "./services/enhanced-router-service";

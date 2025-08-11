@@ -1,182 +1,170 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
-import { useEffect } from "react";
+import { useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useAchievements as useAchievementContext } from '@/contexts/AchievementContext';
+import { achievementService } from '@/services/achievement-service';
 
 // Achievement types
 export interface Achievement {
   id: string;
-  code: string;
   name: string;
   description: string;
   category: string;
-  icon: string;
-  rarity: string;
+  type: 'milestone' | 'progress' | 'streak' | 'special';
+  rarity: 'common' | 'rare' | 'epic' | 'legendary';
   points: number;
-  requirement: any;
-  order: number;
-  unlocked?: boolean;
-  unlockedAt?: string;
-  progress?: number;
   maxProgress?: number;
-  claimed?: boolean;
+  progress?: number;
+  unlocked: boolean;
+  unlockedAt?: Date;
+  icon?: string;
+  order: number;
 }
 
-export interface UserStats {
-  level: number;
-  experience: number;
-  totalPoints: number;
-  streak: number;
-  achievementCount: number;
-  activityCount: number;
+// Utility functions for achievement styling
+export function getAchievementRarityColor(rarity: Achievement['rarity']): string {
+  switch (rarity) {
+    case 'common': return 'text-gray-600 dark:text-gray-400';
+    case 'rare': return 'text-blue-600 dark:text-blue-400';
+    case 'epic': return 'text-purple-600 dark:text-purple-400';
+    case 'legendary': return 'text-yellow-600 dark:text-yellow-400';
+    default: return 'text-gray-600 dark:text-gray-400';
+  }
 }
 
-export interface LeaderboardEntry {
-  user: {
-    id: string;
-    firstName?: string;
-    lastName?: string;
-    profileImageUrl?: string;
-  };
-  points: number;
-  rank: number;
+export function getAchievementRarityBadgeClass(rarity: Achievement['rarity']): string {
+  switch (rarity) {
+    case 'common': return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200';
+    case 'rare': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+    case 'epic': return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200';
+    case 'legendary': return 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white';
+    default: return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200';
+  }
 }
 
-export function useAchievements() {
-  const { data: achievements, isLoading } = useQuery<Achievement[]>({
-    queryKey: ['/api/achievements'],
-  });
-
-  return { achievements, isLoading };
+export function calculateExpForNextLevel(experience: number): number {
+  const currentLevel = Math.floor(experience / 100) + 1;
+  return (currentLevel * 100) - experience;
 }
 
-export function useUserAchievements() {
-  const { data: userAchievements, isLoading } = useQuery<Achievement[]>({
-    queryKey: ['/api/achievements/user'],
-  });
-
-  return { userAchievements, isLoading };
+export function formatNumber(num: number): string {
+  if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+  if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+  return num.toString();
 }
 
+// Custom hooks for fetching achievement data
 export function useUserStats() {
-  const { data: stats, isLoading } = useQuery<UserStats>({
+  return useQuery({
     queryKey: ['/api/achievements/stats'],
+    select: (data: any) => ({
+      level: data.level || 1,
+      experience: data.experience || 0,
+      totalPoints: data.totalPoints || 0,
+      streak: data.streak || 0,
+      activityCount: data.activityCount || 0,
+      achievementCount: data.achievementCount || 0
+    })
   });
-
-  return { stats, isLoading };
 }
 
-export function useLeaderboard(period: string = 'all-time', limit: number = 10) {
-  const { data: leaderboard, isLoading } = useQuery<LeaderboardEntry[]>({
-    queryKey: ['/api/achievements/leaderboard', period, limit],
-    queryFn: async () => {
-      const response = await fetch(`/api/achievements/leaderboard?period=${period}&limit=${limit}`, {
-        credentials: 'include',
-      });
-      if (!response.ok) throw new Error('Failed to fetch leaderboard');
-      return response.json();
-    },
+export function useLeaderboard(period: string) {
+  return useQuery({
+    queryKey: ['/api/achievements/leaderboard', period],
+    queryParams: { period, limit: 10 }
   });
-
-  return { leaderboard, isLoading };
 }
 
-export function useTrackActivity() {
-  const queryClient = useQueryClient();
-  const { toast } = useToast();
-
-  const mutation = useMutation({
-    mutationFn: async (activity: { type: string; metadata?: any; points?: number }) => {
-      return apiRequest('POST', '/api/achievements/track', activity);
-    },
-    onSuccess: (data: any) => {
-      // Invalidate related queries
-      queryClient.invalidateQueries({ queryKey: ['/api/achievements'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/achievements/user'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/achievements/stats'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/achievements/leaderboard'] });
-
-      // Show notifications for unlocked achievements
-      if (data?.unlockedAchievements && data.unlockedAchievements.length > 0) {
-        data.unlockedAchievements.forEach((achievement: Achievement) => {
-          toast({
-            title: "🎉 Achievement Unlocked!",
-            description: `${achievement.name}: ${achievement.description}`,
-            className: `achievement-toast achievement-${achievement.rarity}`,
-            duration: 5000,
-          });
-        });
-      }
-    },
-    onError: (error) => {
-      console.error('Error tracking activity:', error);
-    },
-  });
-
-  return mutation.mutate;
-}
-
-// Auto-track page visits and interactions
 export function useActivityTracker() {
-  const trackActivity = useTrackActivity();
+  useEffect(() => {
+    // Track page visits and activity
+    const trackActivity = () => {
+      fetch('/api/achievements/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'page_visit',
+          metadata: { page: window.location.pathname },
+          points: 1
+        })
+      }).catch(() => {});
+    };
+
+    trackActivity();
+    
+    // Track activity every minute
+    const interval = setInterval(trackActivity, 60000);
+    return () => clearInterval(interval);
+  }, []);
+}
+
+// Main hook for achievements
+export function useAchievements() {
+  const { showAchievement, hasQueuedAchievements } = useAchievementContext();
+  
+  // Fetch achievements data
+  const achievementsQuery = useQuery({
+    queryKey: ['/api/achievements'],
+    select: (data: any[]) => data.map(achievement => ({
+      ...achievement,
+      unlocked: !!achievement.unlockedAt,
+      unlockedAt: achievement.unlockedAt ? new Date(achievement.unlockedAt) : undefined
+    }))
+  });
+
+  return {
+    achievements: achievementsQuery.data || [],
+    isLoading: achievementsQuery.isLoading,
+    hasQueuedAchievements
+  };
+}
+
+// Original hook for tracking activities
+export function useAchievementTracking() {
+  const { showAchievement, hasQueuedAchievements } = useAchievementContext();
 
   useEffect(() => {
-    // Track login/visit on mount
-    trackActivity({ type: 'login', points: 5 });
+    // Initialize achievement service with the context callback
+    achievementService.onAchievementUnlocked(showAchievement);
+    
+    // Track user login
+    achievementService.trackLogin();
+    
+    // Check for seasonal achievements
+    achievementService.checkSeasonalAchievements();
+  }, [showAchievement]);
 
-    // Track theme changes
-    const handleThemeChange = () => {
-      trackActivity({ type: 'theme_changed', points: 2 });
-    };
+  const trackContentGeneration = (type: string, quality?: number) => {
+    achievementService.trackContentGeneration(type, quality);
+    achievementService.maybeGrantSurpriseAchievement();
+  };
 
-    window.addEventListener('themeChanged', handleThemeChange);
+  const trackAdvancedFeature = (feature: string) => {
+    achievementService.trackAdvancedFeature(feature);
+  };
 
-    return () => {
-      window.removeEventListener('themeChanged', handleThemeChange);
-    };
-  }, [trackActivity]);
-}
+  const trackSpeedRecord = (timeMs: number) => {
+    achievementService.trackSpeedRecord(timeMs);
+  };
 
-// Get achievement icon based on rarity
-export function getAchievementRarityColor(rarity: string): string {
-  switch (rarity) {
-    case 'common':
-      return 'text-gray-500 dark:text-gray-400';
-    case 'rare':
-      return 'text-blue-500 dark:text-blue-400';
-    case 'epic':
-      return 'text-purple-500 dark:text-purple-400';
-    case 'legendary':
-      return 'text-yellow-500 dark:text-yellow-400';
-    default:
-      return 'text-gray-500 dark:text-gray-400';
-  }
-}
+  const trackExperiment = () => {
+    achievementService.trackExperiment();
+  };
 
-// Get achievement rarity badge styles
-export function getAchievementRarityBadgeClass(rarity: string): string {
-  switch (rarity) {
-    case 'common':
-      return 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300';
-    case 'rare':
-      return 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300';
-    case 'epic':
-      return 'bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300';
-    case 'legendary':
-      return 'bg-gradient-to-r from-yellow-100 to-orange-100 dark:from-yellow-900 dark:to-orange-900 text-yellow-700 dark:text-yellow-300 font-bold';
-    default:
-      return 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300';
-  }
-}
+  const trackCollaboration = () => {
+    achievementService.trackCollaboration();
+  };
 
-// Calculate experience needed for next level
-export function calculateExpForNextLevel(currentExp: number): number {
-  const currentLevel = Math.floor(currentExp / 100) + 1;
-  const nextLevelExp = currentLevel * 100;
-  return nextLevelExp - currentExp;
-}
+  const getStats = () => {
+    return achievementService.getStats();
+  };
 
-// Format numbers with commas
-export function formatNumber(num: number): string {
-  return num.toLocaleString();
+  return {
+    trackContentGeneration,
+    trackAdvancedFeature,
+    trackSpeedRecord,
+    trackExperiment,
+    trackCollaboration,
+    getStats,
+    hasQueuedAchievements
+  };
 }

@@ -18,7 +18,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { AchievementPanel } from '@/components/achievements/AchievementPanel';
 import { DeepLearningPanel } from '@/components/effects/DeepLearningPanel';
 import { CacheStatus } from '@/components/CacheStatus';
-import { useTrackActivity, useUserStats } from '@/hooks/useAchievements';
+import { useActivityTracker, useUserStats } from '@/hooks/useAchievements';
 import { TransitionSettings } from '@/components/ui/transition-settings';
 import { PredictivePrompt } from '@/components/PredictivePrompt';
 import { LogoAdvanced } from '@/components/logos/LogoAdvanced';
@@ -45,7 +45,7 @@ export default function Home() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedContent, setGeneratedContent] = useState<{ type: string; url?: string; content?: string } | null>(null);
   const { currentTheme, themeName } = useTheme();
-  const trackActivity = useTrackActivity();
+  useActivityTracker();
   const { stats: userStats } = useUserStats();
 
   useEffect(() => {

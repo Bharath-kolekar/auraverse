@@ -11,6 +11,8 @@ import { PageTransition, PageLoadingSkeleton } from "@/components/ui/page-transi
 import { NeuralThemeProvider } from "@/components/effects/NeuralThemeProvider";
 import { NeuralThemeSelector } from "@/components/effects/NeuralThemeSelector";
 import { useAuth } from "@/hooks/useAuth";
+import { AchievementProvider } from "@/contexts/AchievementContext";
+import { AchievementTestButton } from "@/components/ui/achievement-test-button";
 import { useState, useEffect } from "react";
 
 import Landing from "@/pages/Landing";
@@ -23,6 +25,7 @@ import Intelligence from "@/pages/Intelligence";
 import IntelligenceTest from "@/pages/IntelligenceTest";
 import IntelligenceGateway from "@/pages/IntelligenceGateway";
 import CacheTest from "@/pages/CacheTest";
+import AchievementDemo from "@/pages/AchievementDemo";
 import NotFound from "@/pages/not-found";
 
 // Transition configuration for different routes with creative effects
@@ -74,6 +77,7 @@ function Router() {
         <Route path="/intelligence-test" component={IntelligenceTest} />
         <Route path="/intelligence-gateway" component={IntelligenceGateway} />
         <Route path="/cache-test" component={CacheTest} />
+        <Route path="/achievement-demo" component={AchievementDemo} />
         
         {/* Home/Landing based on authentication */}
         <Route path="/" component={isAuthenticated ? Home : Landing} />
@@ -96,6 +100,7 @@ function AppContent() {
       {/* <SuperIntelligencePanel /> */}
       {/* <EnhancedVoiceAssistant /> */}
       {isAuthenticated && <TrainingAssistantButton />}
+      <AchievementTestButton />
     </>
   );
 }
@@ -105,15 +110,17 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <NeuralThemeProvider>
         <ThemeProvider>
-          <TransitionProvider>
-            <PlacementProvider>
-              <TooltipProvider>
-                <Toaster />
-                <AppContent />
-                <NeuralThemeSelector />
-              </TooltipProvider>
-            </PlacementProvider>
-          </TransitionProvider>
+          <AchievementProvider>
+            <TransitionProvider>
+              <PlacementProvider>
+                <TooltipProvider>
+                  <Toaster />
+                  <AppContent />
+                  <NeuralThemeSelector />
+                </TooltipProvider>
+              </PlacementProvider>
+            </TransitionProvider>
+          </AchievementProvider>
         </ThemeProvider>
       </NeuralThemeProvider>
     </QueryClientProvider>
