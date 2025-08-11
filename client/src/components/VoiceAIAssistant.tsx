@@ -668,7 +668,7 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
     <>
       {/* Floating Assistant Button */}
       <motion.div
-        className="fixed bottom-6 right-6 z-50"
+        className="fixed bottom-6 right-6 z-[70]"
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 2, type: "spring", stiffness: 200 }}
@@ -709,7 +709,7 @@ export default function VoiceAIAssistant({ onToggle }: VoiceAIAssistantProps) {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="voice-assistant-panel fixed bottom-24 right-6 w-80 max-h-96 bg-black/90 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl z-40 overflow-hidden"
+            className="voice-assistant-panel fixed bottom-24 right-6 w-80 max-h-96 bg-black/90 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl z-[65] overflow-hidden"
             initial={{ opacity: 0, y: 50, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 50, scale: 0.9 }}
