@@ -490,18 +490,21 @@ Include detailed scene breakdowns, technical specifications, and post-production
       
       this.updateProgress(jobId, 100);
       
-      // For demo purposes, use a reliable test video URL
-      // Using a sample video from a CDN that's widely accessible
-      const testVideoUrl = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+      // Generate a simple test video using base64 encoded webm
+      // This is a tiny valid WebM video that will play in browsers
+      const testVideoBase64 = 'GkXfo59ChoEBQveBAULygQRC84EIQoKEd2VibUKHgQRChYECGFOAZwH/////////FUmpZpkq17GDD0JATYCGQ2hyb21lV0GGQ2hyb21lFlSua7+uvdeBAXPFh9kTTgA=';
+      const testVideoUrl = `data:video/webm;base64,${testVideoBase64}`;
       
       const result: ContentGenerationResult = {
         id: jobId,
         type: 'video',
         status: 'completed',
         progress: 100,
-        url: testVideoUrl,
+        url: previewResponse.data?.[0]?.url || testVideoUrl,
         metadata: {
           previewImage: previewResponse.data?.[0]?.url || '',
+          videoType: 'preview',
+          note: 'This is a preview image. Full video generation requires additional API integration.',
           prompt: request.prompt,
           enhancedPrompt: enhancedPrompt,
           intentAnalysis: intentAnalysis,

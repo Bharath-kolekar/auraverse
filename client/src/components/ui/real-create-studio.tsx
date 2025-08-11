@@ -131,12 +131,21 @@ export function RealCreateStudio() {
       link.download = `voice_${content.id}.mp3`;
       link.click();
     } else if (content.type === 'video') {
-      // Handle video download - open in new tab for download
-      const link = document.createElement('a');
-      link.href = content.url;
-      link.download = `video_${content.id}.mp4`;
-      link.target = '_blank';
-      link.click();
+      // Handle video/image preview download
+      if (content.url.startsWith('data:')) {
+        // Base64 video
+        const link = document.createElement('a');
+        link.href = content.url;
+        link.download = `video_${content.id}.webm`;
+        link.click();
+      } else {
+        // Image preview
+        const link = document.createElement('a');
+        link.href = content.url;
+        link.download = `video_preview_${content.id}.jpg`;
+        link.target = '_blank';
+        link.click();
+      }
     } else if (content.url.startsWith('data:image/svg+xml')) {
       // Handle SVG downloads
       const link = document.createElement('a');
@@ -402,17 +411,35 @@ export function RealCreateStudio() {
                         </audio>
                       ) : currentJob.type === 'video' ? (
                         <div className="space-y-4">
-                          <video 
-                            controls 
-                            autoPlay 
-                            muted
-                            className="w-full rounded-lg"
-                            src={currentJob.url}
-                            onError={(e) => console.error('Video playback error:', e)}
-                          >
-                            Your browser does not support the video tag.
-                          </video>
-                          <p className="text-xs text-white/50">Video URL: {currentJob.url}</p>
+                          {currentJob.url.startsWith('data:') ? (
+                            // For base64 videos
+                            <video 
+                              controls 
+                              className="w-full rounded-lg"
+                              src={currentJob.url}
+                            >
+                              Your browser does not support the video tag.
+                            </video>
+                          ) : (
+                            // For image previews (since we're generating images as video previews)
+                            <div className="relative">
+                              <img 
+                                src={currentJob.url} 
+                                alt="Video preview"
+                                className="w-full rounded-lg"
+                              />
+                              <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg">
+                                <div className="text-center text-white">
+                                  <div className="text-4xl mb-2">🎬</div>
+                                  <p className="text-lg font-semibold">Video Preview Generated</p>
+                                  <p className="text-sm opacity-75">Full video generation in development</p>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          {currentJob.metadata?.note && (
+                            <p className="text-xs text-yellow-400/70 italic">{currentJob.metadata.note}</p>
+                          )}
                         </div>
                       ) : (
                         <img 
