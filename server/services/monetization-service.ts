@@ -499,7 +499,7 @@ class MonetizationService {
     }
 
     // Check credits
-    const pricing = this.pricingTiers.get(tier);
+    const pricing = this.basePricingTiers.get(tier);
     if (!pricing) {
       return { allowed: false, reason: 'Invalid tier' };
     }

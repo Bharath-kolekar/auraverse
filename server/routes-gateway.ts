@@ -315,7 +315,6 @@ router.post('/evolve', isAuthenticated, async (req: any, res) => {
     const response = await gatewayOrchestrator.evolveIntelligence(userId, data);
 
     res.json({
-      success: true,
       message: 'Intelligence configuration evolved successfully',
       ...response
     });

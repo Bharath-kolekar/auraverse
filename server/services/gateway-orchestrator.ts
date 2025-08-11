@@ -499,10 +499,10 @@ class GatewayOrchestrator {
         capabilities = capabilities.filter(c => c.type === filters.type);
       }
       if (filters.inputType) {
-        capabilities = capabilities.filter(c => c.inputTypes.includes(filters.inputType));
+        capabilities = capabilities.filter(c => c.inputTypes.includes(filters.inputType!));
       }
       if (filters.outputType) {
-        capabilities = capabilities.filter(c => c.outputTypes.includes(filters.outputType));
+        capabilities = capabilities.filter(c => c.outputTypes.includes(filters.outputType!));
       }
     }
     

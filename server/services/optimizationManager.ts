@@ -5,7 +5,7 @@ export class OptimizationManager {
   private memoryCache = new Map<string, any>();
   private analyticsData = new Map<string, any>();
   private pricingRules = new Map<string, any>();
-  private performanceMetrics = new Map<string, number>();
+  private performanceMetrics = new Map<string, any>();
 
   constructor() {
     this.initializeOptimizations();

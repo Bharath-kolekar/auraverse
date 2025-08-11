@@ -186,13 +186,8 @@ export class SuperIntelligenceService {
         result,
         creditsUsed: creditsRequired,
         tier,
-        model: modelType,
-        prompt,
-        timestamp: Date.now(),
         optimizations,
-        pricing: pricingInfo,
-        enhanced: true,
-        performanceGain: optimizations.estimatedSpeedup
+        pricing: pricingInfo
       };
 
     } catch (error) {

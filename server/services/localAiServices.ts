@@ -342,26 +342,28 @@ ${structure}
   }
 
   private getProfessionalLighting(style: any, shotNum: number): string {
-    const lightingStyles = {
+    const lightingStyles: Record<string, string[]> = {
       'Epic Action': ["High contrast dramatic", "Rim lighting with orange glow", "Volumetric fog lighting"],
       'Sci-Fi Epic': ["Cool blue dominant", "Neon accent lighting", "Stark shadows with colored fills"],
       'Romantic Drama': ["Golden hour warm", "Soft diffused key light", "Natural window lighting"],
       'Universal Cinematic': ["Three-point lighting setup", "Balanced exposure", "Cinematic color temperature"]
     };
 
-    const options = lightingStyles[style.primary] || lightingStyles['Universal Cinematic'];
+    const stylePrimary = style.primary as string;
+    const options = lightingStyles[stylePrimary] || lightingStyles['Universal Cinematic'];
     return options[shotNum % options.length];
   }
 
   private getCompositionRules(style: any): string {
-    const compositions = {
+    const compositions: Record<string, string> = {
       'Epic Action': "Rule of thirds with dynamic diagonals",
       'Sci-Fi Epic': "Symmetrical framing with leading lines",
       'Romantic Drama': "Shallow depth of field with intimate framing",
       'Universal Cinematic': "Balanced composition with visual hierarchy"
     };
 
-    return compositions[style.primary] || compositions['Universal Cinematic'];
+    const stylePrimary = style.primary as string;
+    return compositions[stylePrimary] || compositions['Universal Cinematic'];
   }
 
   private getShotSpecificVFX(words: string[], shotNum: number): string[] {
