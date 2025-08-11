@@ -33,6 +33,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { CreditDisplay } from '@/components/ui/credit-display';
 
 interface IntelligenceTier {
   id: string;
@@ -96,6 +97,7 @@ export default function IntelligenceGateway() {
   const [gpuStatus, setGpuStatus] = useState<any>(null);
   const [filterCategory, setFilterCategory] = useState('all');
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   // Fetch intelligence tiers
   const { data: tiersData, isLoading: tiersLoading } = useQuery({
@@ -192,6 +194,8 @@ export default function IntelligenceGateway() {
   const tiers = tiersData?.tiers || [];
   const behaviors = behaviorsData?.behaviors || [];
   const capabilities = capabilitiesData?.capabilities || [];
+  const userCredits = capabilitiesData?.userCredits || 100;
+  const paymentMethods = capabilitiesData?.paymentMethods || [];
 
   // Filter behaviors by category
   const filteredBehaviors = filterCategory === 'all' 
@@ -215,7 +219,7 @@ export default function IntelligenceGateway() {
       >
         <div className="container mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 flex-1">
               <motion.div
                 className="p-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600"
                 whileHover={{ scale: 1.1, rotate: 5 }}
@@ -227,6 +231,13 @@ export default function IntelligenceGateway() {
                 <p className="text-white/70">Explore and control AI intelligence levels</p>
               </div>
             </div>
+            
+            {/* Credit Display */}
+            <CreditDisplay
+              credits={userCredits}
+              onPurchase={() => setShowPaymentModal(true)}
+              compact={true}
+            />
             
             {/* GPU Status */}
             {gpuStatus && (

@@ -6,6 +6,7 @@ import { gatewayOrchestrator } from './services/gateway-orchestrator';
 import { isAuthenticated } from './replitAuth';
 import { z } from 'zod';
 import { globalAIAgent } from './services/global-ai-agent';
+import { monetizationService } from './services/monetization-service';
 
 const router = Router();
 
@@ -91,14 +92,37 @@ router.get('/behaviors/:tier?', async (req, res) => {
   }
 });
 
-// GET /api/gateway/capabilities - Get all available AI capabilities
-router.get('/capabilities', async (req, res) => {
+// GET /api/gateway/capabilities - Get available AI capabilities (secured & monetized)
+router.get('/capabilities', async (req: any, res) => {
   try {
-    console.log('Fetching AI capabilities...');
+    console.log('Fetching AI capabilities with pricing...');
+    const userId = req.user?.claims?.sub || 'anonymous';
+    const userCredits = monetizationService.getUserCredits(userId);
+    const pricingTiers = monetizationService.getPricingTiers();
+    
+    // Get capabilities from orchestrator
     const capabilities = await gatewayOrchestrator.getCapabilities();
+    
+    // Add pricing information to each capability
+    const capabilitiesWithPricing = capabilities.map((cap: any) => {
+      const tier = pricingTiers.find(t => t.id === cap.requiredTier) || pricingTiers.find(t => t.id === 'basic');
+      return {
+        ...cap,
+        pricing: {
+          creditsRequired: tier?.creditsRequired || 0,
+          costPerUse: tier ? tier.creditsRequired * tier.costPerCredit : 0,
+          profitMargin: tier?.profitMargin || 100,
+          userHasAccess: userCredits >= (tier?.creditsRequired || 0)
+        }
+      };
+    });
+    
     res.json({
       success: true,
-      capabilities
+      capabilities: capabilitiesWithPricing,
+      userCredits,
+      pricingTiers,
+      paymentMethods: monetizationService.getPaymentMethods('IN') // India-compatible payment methods
     });
   } catch (error) {
     console.error('Failed to get capabilities:', error);
@@ -162,7 +186,7 @@ router.post('/explore', isAuthenticated, async (req: any, res) => {
   }
 });
 
-// Test a specific capability
+// Test a specific capability (with monetization)
 router.post('/test', isAuthenticated, async (req: any, res) => {
   try {
     const validation = testSchema.safeParse(req.body);
@@ -176,6 +200,40 @@ router.post('/test', isAuthenticated, async (req: any, res) => {
 
     const { capabilityId, input, options } = validation.data;
     const userId = req.user?.claims?.sub || 'anonymous';
+    const userIp = req.ip || req.connection.remoteAddress;
+
+    // Get capability details to determine tier
+    const capabilities = await gatewayOrchestrator.getCapabilities();
+    const capability = capabilities.find((c: any) => c.id === capabilityId);
+    
+    if (!capability) {
+      return res.status(404).json({
+        success: false,
+        error: 'Capability not found'
+      });
+    }
+
+    // Validate access and check credits
+    const accessCheck = await monetizationService.validateAccess(
+      userId,
+      capabilityId,
+      capability.requiredTier || 'basic',
+      userIp
+    );
+
+    if (!accessCheck.allowed) {
+      return res.status(403).json({
+        success: false,
+        error: accessCheck.reason,
+        creditsRequired: accessCheck.creditsRequired,
+        userCredits: monetizationService.getUserCredits(userId)
+      });
+    }
+
+    // Deduct credits if required
+    if (accessCheck.creditsRequired && accessCheck.creditsRequired > 0) {
+      await monetizationService.deductCredits(userId, accessCheck.creditsRequired, capabilityId);
+    }
 
     // Process test with timeout
     const timeout = options?.timeout || 30000;
@@ -191,6 +249,8 @@ router.post('/test', isAuthenticated, async (req: any, res) => {
     res.json({
       success: true,
       result,
+      creditsDeducted: accessCheck.creditsRequired || 0,
+      remainingCredits: monetizationService.getUserCredits(userId),
       timestamp: Date.now()
     });
   } catch (error) {
@@ -305,6 +365,103 @@ router.get('/configuration', isAuthenticated, async (req: any, res) => {
     res.status(500).json({
       success: false,
       error: 'Failed to retrieve configuration'
+    });
+  }
+});
+
+// Credit purchase endpoints
+router.get('/credits/packages', (req, res) => {
+  try {
+    const packages = monetizationService.getCreditPackages();
+    const paymentMethods = monetizationService.getPaymentMethods('IN');
+    
+    res.json({
+      success: true,
+      packages,
+      paymentMethods,
+      message: 'Available in India via PayPal, UPI, Razorpay'
+    });
+  } catch (error) {
+    console.error('Failed to get credit packages:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to retrieve credit packages'
+    });
+  }
+});
+
+// Get user credits and usage analytics
+router.get('/credits/balance', isAuthenticated, async (req: any, res) => {
+  try {
+    const userId = req.user?.claims?.sub || 'anonymous';
+    const credits = monetizationService.getUserCredits(userId);
+    const analytics = monetizationService.getAnalytics(userId);
+    
+    res.json({
+      success: true,
+      credits,
+      analytics,
+      pricingTiers: monetizationService.getPricingTiers()
+    });
+  } catch (error) {
+    console.error('Failed to get credit balance:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to retrieve credit balance'
+    });
+  }
+});
+
+// Process payment webhook (PayPal, Razorpay, UPI)
+router.post('/payment/webhook', async (req, res) => {
+  try {
+    const { paymentId, userId, amount, paymentMethod, status } = req.body;
+    
+    await monetizationService.processPaymentWebhook(
+      paymentId,
+      userId,
+      amount,
+      paymentMethod,
+      status
+    );
+    
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Payment webhook failed:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Payment processing failed'
+    });
+  }
+});
+
+// Revenue analytics (admin only)
+router.get('/analytics/revenue', isAuthenticated, async (req: any, res) => {
+  try {
+    const userId = req.user?.claims?.sub;
+    // Check if user is admin (you can customize this check)
+    const isAdmin = userId === 'admin' || req.user?.email?.includes('cognomega');
+    
+    if (!isAdmin) {
+      return res.status(403).json({
+        success: false,
+        error: 'Admin access required'
+      });
+    }
+    
+    const analytics = monetizationService.getAnalytics();
+    
+    res.json({
+      success: true,
+      analytics,
+      profitMargin: '99.8%',
+      message: 'Revenue analytics with India-compatible payment methods'
+    });
+  } catch (error) {
+    console.error('Failed to get revenue analytics:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to retrieve analytics'
     });
   }
 });
