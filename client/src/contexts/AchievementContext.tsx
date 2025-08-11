@@ -1,5 +1,5 @@
-import React, { createContext, useContext, ReactNode } from 'react';
-import { AchievementPopup, useAchievementQueue, type Achievement } from '@/components/ui/achievement-popup';
+import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
+import { AchievementPopup, type Achievement } from '@/components/ui/achievement-popup';
 
 interface AchievementContextType {
   showAchievement: (achievement: Achievement) => void;
@@ -20,6 +20,36 @@ interface AchievementProviderProps {
   children: ReactNode;
 }
 
+// Custom hook for managing achievement queue
+function useAchievementQueue() {
+  const [queue, setQueue] = useState<Achievement[]>([]);
+  const [currentAchievement, setCurrentAchievement] = useState<Achievement | null>(null);
+
+  const addAchievement = (achievement: Achievement) => {
+    setQueue(prev => [...prev, achievement]);
+  };
+
+  const clearCurrent = () => {
+    setCurrentAchievement(null);
+  };
+
+  // Process queue when current achievement is cleared
+  useEffect(() => {
+    if (!currentAchievement && queue.length > 0) {
+      const [next, ...rest] = queue;
+      setCurrentAchievement(next);
+      setQueue(rest);
+    }
+  }, [currentAchievement, queue]);
+
+  return {
+    currentAchievement,
+    addAchievement,
+    clearCurrent,
+    hasQueue: queue.length > 0
+  };
+}
+
 export function AchievementProvider({ children }: AchievementProviderProps) {
   const { currentAchievement, addAchievement, clearCurrent, hasQueue } = useAchievementQueue();
 
@@ -38,7 +68,7 @@ export function AchievementProvider({ children }: AchievementProviderProps) {
       <AchievementPopup
         achievement={currentAchievement}
         onClose={clearCurrent}
-        autoClose={5000}
+        autoClose={0}
       />
     </AchievementContext.Provider>
   );
