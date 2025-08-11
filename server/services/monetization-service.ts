@@ -32,7 +32,7 @@ interface PaymentMethod {
 }
 
 class MonetizationService {
-  private readonly pricingTiers: Map<string, PricingTier> = new Map([
+  private readonly basePricingTiers: Map<string, PricingTier> = new Map([
     ['basic', {
       id: 'basic',
       name: 'Basic Intelligence',
@@ -45,7 +45,7 @@ class MonetizationService {
       id: 'advanced',
       name: 'Advanced Intelligence',
       creditsRequired: 3,
-      costPerCredit: 0.50, // $0.50 per credit ($1.50 per use)
+      costPerCredit: 0.50, // Base price, adjusted dynamically
       features: ['GPT-4o powered', 'GPU acceleration', 'High quality'],
       profitMargin: 98.5 // 98.5% profit margin
     }],
@@ -53,7 +53,7 @@ class MonetizationService {
       id: 'super',
       name: 'Super Intelligence',
       creditsRequired: 5,
-      costPerCredit: 0.80, // $0.80 per credit ($4.00 per use)
+      costPerCredit: 0.80, // Base price, adjusted dynamically
       features: ['Neural processing', 'WebGPU optimization', 'Real-time'],
       profitMargin: 99.2 // 99.2% profit margin
     }],
@@ -61,10 +61,29 @@ class MonetizationService {
       id: 'quantum',
       name: 'Quantum Intelligence',
       creditsRequired: 10,
-      costPerCredit: 1.00, // $1.00 per credit ($10.00 per use)
+      costPerCredit: 1.00, // Base price, adjusted dynamically
       features: ['Quantum-inspired', 'Multi-modal', 'Unlimited quality'],
       profitMargin: 99.8 // 99.8% profit margin
     }]
+  ]);
+
+  // Dynamic pricing factors
+  private serverLoad: number = 0.5; // 0-1 scale
+  private demandMultiplier: number = 1.0; // Market demand factor
+  private peakHours: Set<number> = new Set([9, 10, 11, 14, 15, 16, 17, 18, 19, 20]);
+  private loyaltyLevels: Map<string, number> = new Map(); // User loyalty tiers
+  private regionalPricing: Map<string, number> = new Map([
+    ['US', 1.0],
+    ['EU', 0.95],
+    ['IN', 0.40], // 60% discount for India
+    ['BR', 0.50], // 50% discount for Brazil
+    ['CN', 0.45], // 55% discount for China
+    ['NG', 0.35], // 65% discount for Nigeria
+    ['ID', 0.40], // 60% discount for Indonesia
+    ['PH', 0.45], // 55% discount for Philippines
+    ['VN', 0.40], // 60% discount for Vietnam
+    ['EG', 0.35], // 65% discount for Egypt
+    ['default', 0.80] // 20% discount for other regions
   ]);
 
   private readonly paymentMethods: PaymentMethod[] = [
@@ -111,7 +130,56 @@ class MonetizationService {
   private profitTracker: number = 0;
 
   constructor() {
-    console.log('💰 Monetization Service initialized with India-compatible payment methods');
+    console.log('💰 Monetization Service initialized with dynamic pricing optimization');
+    this.startDynamicPricingEngine();
+    this.initializeLoyaltyProgram();
+  }
+
+  // Start dynamic pricing engine
+  private startDynamicPricingEngine() {
+    setInterval(() => {
+      // Simulate server load changes
+      this.serverLoad = 0.3 + Math.random() * 0.5;
+      
+      // Update demand based on time of day
+      const hour = new Date().getHours();
+      this.demandMultiplier = this.peakHours.has(hour) ? 1.2 : 0.9;
+      
+      console.log(`📊 Dynamic pricing update: Load ${(this.serverLoad * 100).toFixed(0)}%, Demand ${this.demandMultiplier}x`);
+    }, 60000); // Update every minute
+  }
+
+  // Initialize loyalty program
+  private initializeLoyaltyProgram() {
+    // Loyalty tiers: 0-100 uses = Bronze, 101-500 = Silver, 501-1000 = Gold, 1000+ = Platinum
+    console.log('🎁 Loyalty program initialized with progressive bonuses');
+  }
+
+  // Get user loyalty level and bonus
+  private getUserLoyaltyBonus(userId: string): { level: string; bonus: number } {
+    const uses = this.usageMetrics.filter(m => m.userId === userId).length;
+    
+    if (uses >= 1000) return { level: 'Platinum', bonus: 0.25 }; // 25% bonus
+    if (uses >= 501) return { level: 'Gold', bonus: 0.15 }; // 15% bonus
+    if (uses >= 101) return { level: 'Silver', bonus: 0.10 }; // 10% bonus
+    if (uses >= 10) return { level: 'Bronze', bonus: 0.05 }; // 5% bonus
+    return { level: 'New', bonus: 0 };
+  }
+
+  // Get dynamic pricing based on current conditions
+  private getDynamicPricing(basePrice: number, region: string = 'default'): number {
+    // Apply server load pricing (higher load = higher price)
+    let price = basePrice * (1 + this.serverLoad * 0.3);
+    
+    // Apply demand multiplier
+    price *= this.demandMultiplier;
+    
+    // Apply regional pricing
+    const regionalMultiplier = this.regionalPricing.get(region) || this.regionalPricing.get('default')!;
+    price *= regionalMultiplier;
+    
+    // Round to 2 decimal places
+    return Math.round(price * 100) / 100;
   }
 
   // Get available payment methods for a country
@@ -122,20 +190,21 @@ class MonetizationService {
     );
   }
 
-  // Calculate pricing for a capability
-  calculatePricing(capability: string, tier: string): {
+  // Calculate pricing for a capability with dynamic adjustments
+  calculatePricing(capability: string, tier: string, region: string = 'default'): {
     creditsRequired: number;
     totalCost: number;
     actualCost: number;
     profit: number;
     profitMargin: number;
   } {
-    const pricing = this.pricingTiers.get(tier);
+    const pricing = this.basePricingTiers.get(tier);
     if (!pricing) {
       throw new Error(`Invalid tier: ${tier}`);
     }
 
-    const totalCost = pricing.creditsRequired * pricing.costPerCredit;
+    const dynamicCostPerCredit = this.getDynamicPricing(pricing.costPerCredit, region);
+    const totalCost = pricing.creditsRequired * dynamicCostPerCredit;
     const actualCost = totalCost * (1 - pricing.profitMargin / 100);
     const profit = totalCost - actualCost;
 
@@ -199,7 +268,7 @@ class MonetizationService {
 
   // Get tier by credits required
   private getTierByCredits(credits: number): string {
-    const entries = Array.from(this.pricingTiers.entries());
+    const entries = Array.from(this.basePricingTiers.entries());
     for (const [tierId, tier] of entries) {
       if (tier.creditsRequired === credits) {
         return tierId;
@@ -208,46 +277,119 @@ class MonetizationService {
     return 'basic';
   }
 
-  // Get pricing tiers for display
-  getPricingTiers(): PricingTier[] {
-    return Array.from(this.pricingTiers.values());
+  // Get pricing tiers with dynamic adjustments
+  getPricingTiers(region: string = 'default'): PricingTier[] {
+    const tiers = Array.from(this.basePricingTiers.values());
+    
+    // Apply dynamic pricing to each tier
+    return tiers.map(tier => ({
+      ...tier,
+      costPerCredit: this.getDynamicPricing(tier.costPerCredit, region),
+      currentLoad: this.serverLoad,
+      demandLevel: this.demandMultiplier > 1 ? 'High' : 'Normal',
+      regionalDiscount: this.regionalPricing.get(region) || 1.0
+    }));
   }
 
-  // Calculate credit packages for purchase
-  getCreditPackages(): Array<{
+  // Get server optimization metrics
+  getOptimizationMetrics(): {
+    serverLoad: number;
+    demandMultiplier: number;
+    isPeakHour: boolean;
+    recommendedTier: string;
+    pricingTrend: string;
+  } {
+    const hour = new Date().getHours();
+    const isPeakHour = this.peakHours.has(hour);
+    
+    return {
+      serverLoad: this.serverLoad,
+      demandMultiplier: this.demandMultiplier,
+      isPeakHour,
+      recommendedTier: this.serverLoad > 0.7 ? 'basic' : 'super',
+      pricingTrend: this.demandMultiplier > 1 ? 'increasing' : 'decreasing'
+    };
+  }
+
+  // Calculate credit packages with dynamic bulk discounts
+  getCreditPackages(userId: string = 'anonymous', region: string = 'default'): Array<{
     credits: number;
     price: number;
+    originalPrice: number;
     bonus: number;
+    loyaltyBonus: number;
     savings: number;
+    discountPercentage: number;
     popular?: boolean;
+    bestValue?: boolean;
   }> {
-    return [
+    const loyalty = this.getUserLoyaltyBonus(userId);
+    const basePrice = this.getDynamicPricing(0.10, region); // Base price per credit
+    
+    const packages = [
       {
         credits: 100,
-        price: 9.99,
+        baseMultiplier: 1.0, // No bulk discount
         bonus: 0,
-        savings: 0
+        popular: false
       },
       {
         credits: 500,
-        price: 39.99,
-        bonus: 50, // 10% bonus
-        savings: 10,
+        baseMultiplier: 0.85, // 15% bulk discount
+        bonus: 50,
         popular: true
       },
       {
         credits: 1000,
-        price: 69.99,
-        bonus: 150, // 15% bonus
-        savings: 30
+        baseMultiplier: 0.75, // 25% bulk discount
+        bonus: 150,
+        popular: false
+      },
+      {
+        credits: 2500,
+        baseMultiplier: 0.65, // 35% bulk discount
+        bonus: 500,
+        popular: false
       },
       {
         credits: 5000,
-        price: 299.99,
-        bonus: 1000, // 20% bonus
-        savings: 200
+        baseMultiplier: 0.55, // 45% bulk discount
+        bonus: 1500,
+        popular: false,
+        bestValue: true
+      },
+      {
+        credits: 10000,
+        baseMultiplier: 0.45, // 55% bulk discount
+        bonus: 4000,
+        popular: false,
+        bestValue: true
       }
     ];
+    
+    return packages.map(pkg => {
+      const originalPrice = pkg.credits * basePrice;
+      const discountedPrice = originalPrice * pkg.baseMultiplier;
+      const loyaltyBonusCredits = Math.floor(pkg.credits * loyalty.bonus);
+      const totalCredits = pkg.credits + pkg.bonus + loyaltyBonusCredits;
+      const savings = originalPrice - discountedPrice;
+      const discountPercentage = Math.round((1 - pkg.baseMultiplier) * 100);
+      
+      return {
+        credits: pkg.credits,
+        price: Math.round(discountedPrice * 100) / 100,
+        originalPrice: Math.round(originalPrice * 100) / 100,
+        bonus: pkg.bonus,
+        loyaltyBonus: loyaltyBonusCredits,
+        savings: Math.round(savings * 100) / 100,
+        discountPercentage,
+        popular: pkg.popular,
+        bestValue: pkg.bestValue,
+        totalCredits,
+        pricePerCredit: Math.round((discountedPrice / totalCredits) * 1000) / 1000,
+        loyaltyLevel: loyalty.level
+      };
+    });
   }
 
   // Get revenue analytics

@@ -97,8 +97,9 @@ router.get('/capabilities', async (req: any, res) => {
   try {
     console.log('Fetching AI capabilities with pricing...');
     const userId = req.user?.claims?.sub || 'anonymous';
+    const region = req.headers['x-region'] || req.query.region || 'IN';
     const userCredits = monetizationService.getUserCredits(userId);
-    const pricingTiers = monetizationService.getPricingTiers();
+    const pricingTiers = monetizationService.getPricingTiers(region);
     
     // Get capabilities from orchestrator
     const capabilities = await gatewayOrchestrator.getCapabilities();
@@ -122,7 +123,9 @@ router.get('/capabilities', async (req: any, res) => {
       capabilities: capabilitiesWithPricing,
       userCredits,
       pricingTiers,
-      paymentMethods: monetizationService.getPaymentMethods('IN') // India-compatible payment methods
+      paymentMethods: monetizationService.getPaymentMethods(region),
+      optimizationMetrics: monetizationService.getOptimizationMetrics(),
+      region
     });
   } catch (error) {
     console.error('Failed to get capabilities:', error);
@@ -369,17 +372,23 @@ router.get('/configuration', isAuthenticated, async (req: any, res) => {
   }
 });
 
-// Credit purchase endpoints
-router.get('/credits/packages', (req, res) => {
+// Credit purchase endpoints with dynamic pricing
+router.get('/credits/packages', (req: any, res) => {
   try {
-    const packages = monetizationService.getCreditPackages();
-    const paymentMethods = monetizationService.getPaymentMethods('IN');
+    const userId = req.user?.claims?.sub || 'anonymous';
+    const region = req.headers['x-region'] || req.query.region || 'IN'; // Default to India
+    
+    const packages = monetizationService.getCreditPackages(userId, region);
+    const paymentMethods = monetizationService.getPaymentMethods(region);
+    const optimizationMetrics = monetizationService.getOptimizationMetrics();
     
     res.json({
       success: true,
       packages,
       paymentMethods,
-      message: 'Available in India via PayPal, UPI, Razorpay'
+      optimizationMetrics,
+      region,
+      message: `Dynamic pricing active - ${optimizationMetrics.isPeakHour ? 'Peak hours' : 'Off-peak discount'}`
     });
   } catch (error) {
     console.error('Failed to get credit packages:', error);

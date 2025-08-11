@@ -8,11 +8,6 @@ import { queryClient, apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { gpuAccelerator } from '@/services/gpu-accelerator';
-import { NeuralNetworkVisualization } from '@/components/ui/neural-network-visualization';
-import { IntelligenceTierCard } from '@/components/ui/intelligence-tier-card';
-import { BehaviorExplorer } from '@/components/ui/behavior-explorer';
-import { CapabilityMatrix } from '@/components/ui/capability-matrix';
-import { InteractivePlayground } from '@/components/ui/interactive-playground';
 import {
   Brain, Sparkles, Zap, Activity, Cpu, Layers, GitBranch,
   ChevronRight, Play, Settings, Info, ArrowRight, BarChart3,
@@ -34,6 +29,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { CreditDisplay } from '@/components/ui/credit-display';
+import { PaymentModal } from '@/components/PaymentModal';
 
 interface IntelligenceTier {
   id: string;
@@ -122,10 +118,10 @@ export default function IntelligenceGateway() {
     mutationFn: async (data: { capabilityId: string; input: any }) => {
       return await apiRequest('/api/gateway/test', 'POST', data);
     },
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
       toast({
         title: 'Test Successful',
-        description: `Capability tested successfully. Processing time: ${data.result?.performance?.processingTime}ms`
+        description: `Capability tested successfully. Processing time: ${data?.performance?.processingTime || 'N/A'}ms`
       });
     },
     onError: (error) => {
@@ -191,11 +187,11 @@ export default function IntelligenceGateway() {
     });
   };
 
-  const tiers = tiersData?.tiers || [];
-  const behaviors = behaviorsData?.behaviors || [];
-  const capabilities = capabilitiesData?.capabilities || [];
-  const userCredits = capabilitiesData?.userCredits || 100;
-  const paymentMethods = capabilitiesData?.paymentMethods || [];
+  const tiers = (tiersData as any)?.tiers || [];
+  const behaviors = (behaviorsData as any)?.behaviors || [];
+  const capabilities = (capabilitiesData as any)?.capabilities || [];
+  const userCredits = (capabilitiesData as any)?.userCredits || 100;
+  const paymentMethods = (capabilitiesData as any)?.paymentMethods || [];
 
   // Filter behaviors by category
   const filteredBehaviors = filterCategory === 'all' 
@@ -625,11 +621,17 @@ export default function IntelligenceGateway() {
 
           {/* Playground Tab */}
           <TabsContent value="playground" className="space-y-6">
-            <InteractivePlayground 
-              selectedTier={selectedTier}
-              selectedCapability={selectedCapability}
-              gpuAccelerator={gpuAccelerator}
-            />
+            <Card className="glass-morphism border-white/10">
+              <CardHeader>
+                <CardTitle className="text-white">Interactive Playground</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-64 flex items-center justify-center text-white/50">
+                  <Play className="w-8 h-8 mr-2" />
+                  <span>Select a tier or capability to test</span>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* Analytics Tab */}
@@ -721,12 +723,23 @@ export default function IntelligenceGateway() {
                 <CardTitle className="text-white">Neural Network Activity</CardTitle>
               </CardHeader>
               <CardContent>
-                <NeuralNetworkVisualization />
+                <div className="h-64 flex items-center justify-center text-white/50">
+                  <Sparkles className="w-8 h-8 mr-2" />
+                  <span>Neural Network Visualization</span>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Payment Modal */}
+      <PaymentModal
+        isOpen={showPaymentModal}
+        onClose={() => setShowPaymentModal(false)}
+        userId={(user as any)?.id}
+        region="IN"
+      />
     </div>
   );
 }
