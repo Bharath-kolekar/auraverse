@@ -155,7 +155,7 @@ class HybridAIService {
         // Generate storyboard with OpenAI
         const storyboardResponse = await openai.images.generate({
           model: "dall-e-3",
-          prompt: `Video storyboard: ${request.prompt}, cinematic composition`,
+          prompt: `Video storyboard in English: ${request.prompt}, cinematic composition, English text only`,
           n: 1,
           size: "1792x1024"
         });
@@ -987,9 +987,9 @@ class HybridAIService {
   }
 
   private enhanceImagePrompt(prompt: string, style?: string): string {
-    const baseEnhancement = "Professional, high-quality, detailed, cinematic lighting, 8K resolution";
+    const baseEnhancement = "Professional, high-quality, detailed, cinematic lighting, 8K resolution, respond in English";
     const styleEnhancement = style ? `, ${style} style` : ", photorealistic";
-    return `${prompt}, ${baseEnhancement}${styleEnhancement}`;
+    return `${prompt}, ${baseEnhancement}${styleEnhancement}, English language output`;
   }
 }
 

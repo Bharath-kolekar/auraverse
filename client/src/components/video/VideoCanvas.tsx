@@ -12,7 +12,7 @@ export function VideoCanvas({ prompt, duration = 5, onComplete }: VideoCanvasPro
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
-  const [isGenerating, setIsGenerating] = useState(true);
+  const [isGenerating, setIsGenerating] = useState(false);
   const animationRef = useRef<number>();
   const framesRef = useRef<ImageData[]>([]);
 

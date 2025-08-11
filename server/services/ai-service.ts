@@ -30,7 +30,7 @@ class AdvancedAIEngine {
         return { intent: 'basic_creation', recommendations: [] };
       }
       
-      const prompt = `Analyze this user request for content creation and provide strategic recommendations:
+      const prompt = `Analyze this user request for content creation and provide strategic recommendations. IMPORTANT: Respond only in English.
 
 Request: ${JSON.stringify(request)}
 
@@ -41,7 +41,7 @@ Please analyze:
 4. Technical optimization suggestions
 5. Artistic direction insights
 
-Return a JSON response with detailed analysis and recommendations.`;
+Return a JSON response with detailed analysis and recommendations in English.`;
 
       const response = await openai.chat.completions.create({
         model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
@@ -65,7 +65,7 @@ Return a JSON response with detailed analysis and recommendations.`;
         return prompt;
       }
       
-      const optimizationPrompt = `As an advanced AI prompt engineer, optimize this content creation prompt:
+      const optimizationPrompt = `As an advanced AI prompt engineer, optimize this content creation prompt. IMPORTANT: Always respond in English.
 
 Original: "${prompt}"
 Content Type: ${type}
@@ -78,7 +78,7 @@ Create an enhanced version that:
 4. Maintains the user's original vision
 5. Suggests innovative elements
 
-Return only the optimized prompt as a string.`;
+Return only the optimized prompt as a string in English.`;
 
       const response = await openai.chat.completions.create({
         model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
